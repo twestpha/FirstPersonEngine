@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Global.unity
+    guid: 3544f6a28b3fd3f4ea459899361c2b1e
+  - enabled: 1
+    path: Assets/Scenes/Gun and Player Scene.unity
+    guid: 568fc6c60da2e3d4fa2381c49fcbc8f2
+  - enabled: 1
+    path: Assets/Scenes/Sound Scene.unity
+    guid: 74e7167bce067954a9e6a898eb3005de
+  - enabled: 1
+    path: Assets/Scenes/Lighting Level.unity
+    guid: 6987cc54c0d765e459eeef2ba94933f4
+  - enabled: 1
+    path: Assets/Scenes/Secondary Level Scene.unity
+    guid: fc8bb6def4938f84ea927e0bc8254305
+  - enabled: 1
+    path: Assets/Scenes/Billboard Scene.unity
+    guid: 7283788335a83e14382caa7f347a68bc
+  m_configObjects: {}

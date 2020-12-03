@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 247ef4aa608854c4381dc1c9cc6308ef, type: 3}
+  m_Name: SimpleMachineGun
+  m_EditorClassIdentifier: 
+  damage: 1
+  damageType: 1
+  coolDown: 0.15
+  spread: 0.5
+  shots: 1
+  useAmmo: 1
+  ammoCount: 25
+  reloadTime: 2
+  momentumRecoil: 0.1
+  aimRecoil: 0.1
+  muzzleVelocity: 50
+  bulletPrefab: {fileID: 1552996330619193922, guid: 61614e4c9eb07364fbad373e5993ef00,
+    type: 3}
+  muzzleOffset: {x: 0, y: 0, z: 0}
+  effectsPrefab: {fileID: 5381237789843640210, guid: 8e8b419cca0449744b8099af1bac32f0,
+    type: 3}
+  fireSound: {fileID: 8300000, guid: 9ce8ae02598843e44b2bd1c34f3dea78, type: 3}
+  fireSoundVolume: 1
+  fireSoundPitchBend: 0
+  reloadSound: {fileID: 8300000, guid: 983660341a200394fa519d2292b22f29, type: 3}
+  reloadSoundVolume: 1
+  reloadSoundPitchBend: 0
