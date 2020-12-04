@@ -13,36 +13,25 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //##################################################################################################
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 //##################################################################################################
 // Sub Components are a toolbox of simple, common building block behaviours, meant to do a single
 // thing within the constraints of the other existing components.
 //
-// Spawn Effects On Death Component
-// This script simply spawns an effects prefab gameobject, and if marked to, destroys the original
-// gameObject. This is used for exploding simple things into particles.
+// Detach From Bullet Component
+// Once the bullet this is on is destroyed, unattach ourselves. This is commonly used for trails or
+// effects, that shouldn't get destroyed along with a bullet.
 //##################################################################################################
-[RequireComponent(typeof(DamageableComponent))]
-public class SpawnEffectsOnDeathComponent : MonoBehaviour {
+public class DetachFromBulletComponent : MonoBehaviour {
 
-    public bool destroyOriginal;
+    public BulletComponent bulletParent;
 
-    public GameObject effectsPrefab;
-    public Vector3 effectsOffset;
-
-    private void Start(){
-        GetComponent<DamageableComponent>().RegisterOnKilledDelegate(Killed);
+    void Start(){
+        bulletParent.RegisterOnBulletDestroyedDelegate(BulletDestroyed);
     }
 
-    private void Killed(DamageableComponent damage){
-        GameObject newEffects = Object.Instantiate(effectsPrefab);
-        newEffects.transform.position = transform.position + effectsOffset;
-
-        if(destroyOriginal){
-            Destroy(gameObject);
-        }
+    public void BulletDestroyed(){
+        transform.parent = null;
     }
 }

@@ -1,61 +1,44 @@
+//##################################################################################################
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//##################################################################################################
+
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SpeedModifierZoneComponent : MonoBehaviour {
 
-    private const float SPEED_MULTIPLIER = 0.5f;
-
-    private static GameObject modifierObject;
-    private static List<GameObject> activeModifiers;
+    public float speedMultiplier = 0.5f;
 
     void Start(){
-        if(activeModifiers == null){
-            modifierObject = gameObject;
-            activeModifiers = new List<GameObject>();
-
-            DamageableComponent playerDamageable = PlayerComponent.player.GetComponent<DamageableComponent>();
-            playerDamageable.RegisterOnKilledDelegate(PlayerKilled);
-        }
+        DamageableComponent playerDamageable = PlayerComponent.player.GetComponent<DamageableComponent>();
+        playerDamageable.RegisterOnKilledDelegate(PlayerKilled);
     }
 
     void OnTriggerEnter(Collider other){
         if(other.tag == "Player"){
-            AddActiveModifier(gameObject);
+            PlayerComponent.player.AddSpeedModifier(gameObject, speedMultiplier);
         }
     }
 
     void OnTriggerExit(Collider other){
         if(other.tag == "Player"){
-            RemoveActiveModifier(gameObject);
-        }
-    }
-
-    private static void AddActiveModifier(GameObject modifier){
-        if(!activeModifiers.Contains(modifier)){
-            activeModifiers.Add(modifier);
-        } else {
-            Debug.LogError("Already added");
-        }
-
-        if(activeModifiers.Count == 1){
-            PlayerComponent.player.AddSpeedModifier(modifierObject, SPEED_MULTIPLIER);
-        }
-    }
-
-    private static void RemoveActiveModifier(GameObject modifier){
-        if(activeModifiers.Contains(modifier)){
-            activeModifiers.Remove(modifier);
-        } else {
-            Debug.LogError("Already removed");
-        }
-
-        if(activeModifiers.Count == 0){
-            PlayerComponent.player.RemoveSpeedModifier(modifierObject);
+            PlayerComponent.player.RemoveSpeedModifier(gameObject);
         }
     }
 
     void PlayerKilled(DamageableComponent damaged){
-        activeModifiers.Clear();
+        PlayerComponent.player.RemoveSpeedModifier(gameObject);
     }
 }
