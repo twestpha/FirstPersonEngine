@@ -15,43 +15,36 @@ Behaviors are less restrictive, and represent the open ended nature of video gam
 
 # Feature List
 Billboard Sprites Components, used for 2D sprites in 3d space, much like Doom or Wolfenstein 3D.
-
-├ Material Animation
-
-├ Mesh Bounds
-
-└ Rotatable
+* Material Animation
+* Mesh Bounds
+* Rotatable
 
 Enemy Components, used for managing enemies and their actions
-
-├ Attack Token
-
-├ Bark
-
-└ Enemy Manager
-
+* Attack Token
+* Bark
+* Enemy Manager
 
 Level Components, used for level loading and lighting changes
-├ Level Lighting Volume
-├ Level Manager
-└ Level Trigger
+* Level Lighting Volume
+* Level Manager
+* Level Trigger
 
 Player Components TODO
-├ ...
-└ ...
+* ...
+* ...
 
 Shooting Components, used for shooting a bullet and dealing damage to damageables
-├ Bullet
-├ Damageable
-├ FlatAnimatedGun
-├ Gun
-├ Gun Selection
-└ Zoomable Gun
+* Bullet
+* Damageable
+* FlatAnimatedGun
+* Gun
+* Gun Selection
+* Zoomable Gun
 
 Sound Components, used for managing the sounds within the game
-├ Ambient Sound
-├ Sound
-└ Sound Manager
+* Ambient Sound
+* Sound
+* Sound Manager
 
 # Future Work
 TODO
