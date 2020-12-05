@@ -17,6 +17,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//##################################################################################################
+// Sub Components are a toolbox of simple, common building block behaviours, meant to do a single
+// thing within the constraints of the other existing components.
+//
+// Speed Modifier Zone Component
+// This component is used to add or remove a speed modifier to the player. We use our gameobject
+// as the id object.
+//##################################################################################################
 public class SpeedModifierZoneComponent : MonoBehaviour {
 
     public float speedMultiplier = 0.5f;

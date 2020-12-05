@@ -339,7 +339,7 @@ public class PlayerComponent : MonoBehaviour {
     public void OnDamaged(DamageableComponent damage){
         damagedInvulnerabilityTimer.Start();
         damage.SetInvincible(true);
-        GetComponent<ConversationComponent>().Bark();
+        GetComponent<BarkComponent>().Bark();
     }
 
     public void OnKilled(DamageableComponent damage){

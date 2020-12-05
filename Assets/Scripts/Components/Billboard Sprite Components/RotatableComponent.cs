@@ -145,10 +145,14 @@ public class RotatableComponent : MonoBehaviour {
             angle = Mathf.Max(angle, 0.0f);
         }
 
-        // Fixes a NaN flickering bug when angle is close to 180*
-        if(angle != angle){
-            angle = 180.0f;
-        }
+        #pragma warning disable 1718
+            // Fixes a NaN flickering bug when angle is close to 180*
+            // This works because NaN fails all comparisons, even against NaN. But, self comparison
+            // also generates a warning.
+            if(angle != angle){
+                angle = 180.0f;
+            }
+        #pragma warning restore 1718
 
         // We want the sprite to be centered in the section of the degreesPerSprite segments
         angle += degreesPerSprite * 0.5f;
