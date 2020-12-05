@@ -15,14 +15,21 @@ Behaviors are less restrictive, and represent the open ended nature of video gam
 
 # Feature List
 Billboard Sprites Components, used for 2D sprites in 3d space, much like Doom or Wolfenstein 3D.
+
 ├ Material Animation
+
 ├ Mesh Bounds
+
 └ Rotatable
 
 Enemy Components, used for managing enemies and their actions
+
 ├ Attack Token
+
 ├ Bark
+
 └ Enemy Manager
+
 
 Level Components, used for level loading and lighting changes
 ├ Level Lighting Volume
