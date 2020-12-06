@@ -23,8 +23,9 @@ Shooting Components, used for shooting a bullet and dealing damage to damageable
 * FlatAnimatedGun
 * Gun Selection
 
-Player Components TODO
-* ...
+Player Components, for managing the first person player
+* First Person Player
+* Player Respawn Volume
 
 Billboard Sprites Components, used for 2D sprites in 3d space, much like Doom or Wolfenstein 3D.
 * Material Animation

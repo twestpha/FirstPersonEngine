@@ -380,7 +380,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 8805142647528595552}
-  cameraFadeLayer: {fileID: 926934536745443610}
+  cameraFadeLayer: {fileID: 8372026921362142281}
   xSensitivity: 1.5
   ySensitivity: -1.5
   accelTime: 0.2
@@ -388,10 +388,8 @@ MonoBehaviour:
   respawnTime: 6
   respawnSpeedTime: 10
   damagedInvulnerabilityTime: 1.5
-  hudOverlay: {fileID: 8372026921362142281}
-  footStepSounds:
-  - {fileID: 0}
-  footStepVolume: 0.3
+  playerHurtBarkComponent: {fileID: 0}
+  playerFootstepBarkComponent: {fileID: 0}
   shakeAmount: 0
 --- !u!114 &7960176447092203934
 MonoBehaviour:

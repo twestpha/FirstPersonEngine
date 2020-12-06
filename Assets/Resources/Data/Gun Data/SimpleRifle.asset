@@ -22,7 +22,9 @@ MonoBehaviour:
   ammoCount: 5
   reloadTime: 2
   useZoom: 1
-  zoomAmount: 2
+  zoomTime: 0.15
+  zoomedFieldOfView: 15
+  zoomMovementModifier: 0.35
   momentumRecoil: 0
   aimRecoil: 0
   muzzleVelocity: 150

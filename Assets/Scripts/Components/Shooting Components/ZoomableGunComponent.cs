@@ -17,7 +17,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 //##################################################################################################
-//
+// Zoomable Gun Component
+// This is an inheritable class for player guns that zoom in and have a reticle. This makes the
+// assumption that we have an overlay image that should be made more or less opaque when zooming.
 //##################################################################################################
 public class ZoomableGunComponent : GunComponent {
     private const float ZOOM_IN = 1.0f;
@@ -74,6 +76,10 @@ public class ZoomableGunComponent : GunComponent {
 
             // Drive the field of view and reticle overlay alpha from that
             playerCamera.fieldOfView = Mathf.Lerp(defaultFieldOfView, currentGunData.zoomedFieldOfView, parameterSquared);
+
+            // Drive the player movement speed multiplier, lerp from 1 to the modifier
+            float speedModifierParameter = Mathf.Lerp(1.0f, currentGunData.zoomMovementModifier, zoomParameter);
+            FirstPersonPlayerComponent.player.AddSpeedModifier(gameObject, speedModifierParameter);
 
             tintColor.a = parameterSquared;
             reticleOverlayImage.color = tintColor;
