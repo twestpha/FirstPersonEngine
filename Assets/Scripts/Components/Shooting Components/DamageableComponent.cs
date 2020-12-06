@@ -74,7 +74,6 @@ public class DamageableComponent : MonoBehaviour {
     private List<OnDamageableKilled> killedDelegates;
 
     private Vector3 damagerOrigin;
-    private PlayerComponent player;
     private GameObject damager;
 
     //##############################################################################################
@@ -90,8 +89,6 @@ public class DamageableComponent : MonoBehaviour {
         }
 
         currentHealth = maxHealth;
-
-        player = GetComponent<PlayerComponent>();
 	}
 
     //##############################################################################################

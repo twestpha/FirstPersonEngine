@@ -25,7 +25,7 @@ using UnityEngine.UI;
 //
 // This class descends from ZoomableGunComponent, which descends from GunComponent
 //##################################################################################################
-[RequireComponent(typeof(PlayerComponent))]
+[RequireComponent(typeof(FirstPersonPlayerComponent))]
 public class FlatAnimatedGunComponent : ZoomableGunComponent {
 
     private enum AnimatedGunState {

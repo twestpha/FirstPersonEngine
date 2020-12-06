@@ -30,23 +30,23 @@ public class SpeedModifierZoneComponent : MonoBehaviour {
     public float speedMultiplier = 0.5f;
 
     void Start(){
-        DamageableComponent playerDamageable = PlayerComponent.player.GetComponent<DamageableComponent>();
+        DamageableComponent playerDamageable = FirstPersonPlayerComponent.player.GetComponent<DamageableComponent>();
         playerDamageable.RegisterOnKilledDelegate(PlayerKilled);
     }
 
     void OnTriggerEnter(Collider other){
         if(other.tag == "Player"){
-            PlayerComponent.player.AddSpeedModifier(gameObject, speedMultiplier);
+            FirstPersonPlayerComponent.player.AddSpeedModifier(gameObject, speedMultiplier);
         }
     }
 
     void OnTriggerExit(Collider other){
         if(other.tag == "Player"){
-            PlayerComponent.player.RemoveSpeedModifier(gameObject);
+            FirstPersonPlayerComponent.player.RemoveSpeedModifier(gameObject);
         }
     }
 
     void PlayerKilled(DamageableComponent damaged){
-        PlayerComponent.player.RemoveSpeedModifier(gameObject);
+        FirstPersonPlayerComponent.player.RemoveSpeedModifier(gameObject);
     }
 }

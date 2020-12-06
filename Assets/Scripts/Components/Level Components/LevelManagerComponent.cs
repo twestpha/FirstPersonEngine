@@ -93,6 +93,7 @@ public class LevelManagerComponent : MonoBehaviour {
         unloadQueue = new Queue<Level>();
 
         levelIsLoaded = new bool[levelLoads.Length];
+        levelIsLoaded[0] = true; // Since we're in global
 
         for(int i = 0; i < levelLoads.Length; ++i){
             if(levelLoads[i].selfLevelLabel != (Level)(i)){

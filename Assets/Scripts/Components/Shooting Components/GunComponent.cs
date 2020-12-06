@@ -37,7 +37,7 @@ public class GunComponent : MonoBehaviour {
     private Timer gunTimer;
     private Timer reloadTimer;
 
-    protected PlayerComponent player;
+    protected FirstPersonPlayerComponent player;
 
     //##############################################################################################
     // Check for required data, then setup the gun
@@ -58,7 +58,7 @@ public class GunComponent : MonoBehaviour {
             currentAmmoCount = currentGunData.ammoCount;
         }
 
-        player = GetComponent<PlayerComponent>();
+        player = GetComponent<FirstPersonPlayerComponent>();
 	}
 
     //##############################################################################################

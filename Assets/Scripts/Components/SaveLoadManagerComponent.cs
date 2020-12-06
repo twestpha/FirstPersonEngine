@@ -1,9 +1,34 @@
+//##################################################################################################
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//##################################################################################################
+
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+
+//##################################################################################################
+// Serializable Classes
+// The collection of following classes are helpers, since Unity doesn't natively support
+// serializing these to a binary formatter for saving. These all implment a From setter, to convert
+// from their native Unity counterpart type, and a To getter, to convert back. In same cases, this
+// process is failable and will return null.
+// Note that base types (float, int, bool) are already binary serializable, so those don't need
+// implementation here.
+//##################################################################################################
 
 [System.Serializable]
 public class SerializableVector3 {
@@ -38,18 +63,22 @@ public class SerializableQuaternion {
 
 [System.Serializable]
 public class SerializableSpawnedPrefab {
+    // This requires the serializable spawned prefabs to be in the directory /Assets/Prefabs
     private const string PREFAB_PATH = "Prefabs/";
     string assetName;
 
     public void FromGameObject(GameObject g){
         assetName = g.name;
 
-        // Catch non-prefab gameobjects when saving
+        // This triggers the below error for non-prefab gameobjects when saving
         #if UNITY_EDITOR
             ToGameObject();
         #endif
     }
 
+    // Note that this does not instantiate the prefab, simply returning the loaded asset reference.
+    // This also means no state of that gameobject in-game was stored or will get loaded. That must
+    // happen separately.
     public GameObject ToGameObject(){
         GameObject foundAsset = Resources.Load<GameObject>(PREFAB_PATH + assetName);
 
@@ -72,189 +101,109 @@ public class SerializableGameObjectReference {
     }
 
     public GameObject ToGameObject(){
-        // LevelManagerComponent.Level owningLevel = (LevelManagerComponent.Level)(levelIndex);
+        LevelManagerComponent.Level owningLevel = (LevelManagerComponent.Level)(levelIndex);
 
-        // if(!LevelManagerComponent.LevelCurrentlyLoaded(owningLevel)){
-        //     return null;
-        // }
-        //
-        // GameObject[] allGameObjects = Object.FindObjectsOfType<GameObject>();
-        // for(int i = 0; i < allGameObjects.Length; ++i){
-        //     if(allGameObjects[i].name == name && allGameObjects[i].scene.buildIndex == levelIndex){
-        //         return allGameObjects[i];
-        //     }
-        // }
+        if(!LevelManagerComponent.LevelCurrentlyLoaded(owningLevel)){
+            return null;
+        }
 
-        // Debug.LogError("Error referencing gameobject '" + name + "' (Level " + owningLevel + ") for SerializableGameObjectReference connection.");
+        // This is an expensive operation, because it requires searching through all gameobjects in
+        // all scenes. But it will find that object, if it exists.
+        GameObject[] allGameObjects = Object.FindObjectsOfType<GameObject>();
+        for(int i = 0; i < allGameObjects.Length; ++i){
+            if(allGameObjects[i].name == name && allGameObjects[i].scene.buildIndex == levelIndex){
+                return allGameObjects[i];
+            }
+        }
+
+        Debug.LogError("Error referencing gameobject '" + name + "' (Level " + owningLevel + ") for SerializableGameObjectReference connection.");
         return null;
     }
 }
 
+//##################################################################################################
+// Save
+// This class contains all the data that will get saved to disk and loaded back in and restored.
+// It is meant to be edited and extended for each game. Below are some simple examples of doing
+// that.
+//##################################################################################################
 [System.Serializable]
 public class Save {
-    public int version;
+    public int version = SaveLoadManagerComponent.SAVE_VERSION;
 
-    // Enemy Combatants
-    public int enemyIndex;
-    public SerializableGameObjectReference[] enemyCombatants;
-    public SerializableSpawnedPrefab[] enemyBodyPrefabs;
-    public SerializableVector3[] enemyBodyPositions;
-    public SerializableQuaternion[] enemyBodyOrientations;
+    public SerializableGameObjectReference currentRespawn = new SerializableGameObjectReference();
 
-    // Companion and Self Bodies
-    public int demonIndex;
-    public SerializableSpawnedPrefab[] demonBodyPrefabs;
-    public SerializableVector3[] demonBodyPositions;
-    public SerializableQuaternion[] demonBodyOrientations;
+    // This is where you would fill out the structs/arrays of data that needs to get saved for your
+    // game. For illustrative purposes, we're going to save and load the player's position.
+    public SerializableGameObjectReference playerGameObject = new SerializableGameObjectReference();
+    public SerializableVector3 playerPosition = new SerializableVector3();
 
-    // Player previous spawn and key count
-    public int playerKeyCount;
-    public int playerRuneCount;
-    public SerializableGameObjectReference currentRespawn;
-
-    // Key manager states, currently spawned keys
-    public int completedKeyManagerCount;
-    public SerializableGameObjectReference[] completedKeyManagers;
-    public int spawnedKeyCount;
-    public SerializableVector3[] spawnedKeyPositions;
-
-    // Picked up Runes
-    public int runesPickedUpCount;
-    public SerializableGameObjectReference[] pickedUpRunes;
-
-    // Opened Gates
-    public int openedGateCount;
-    public SerializableGameObjectReference[] openedGates;
-
-    // Unlocked Spawn Points
-    // This is just a decorative effect only, since the player unlocks them by
-    // walking to them, which stomps and sets the latest
-    public int unlockedSpawnPointCount;
-    public SerializableGameObjectReference[] unlockedSpawnPoints;
-
-    // Destroyed Tanks
-    public int destroyedTankCount;
-    public SerializableGameObjectReference[] destroyedTanks;
-
+    // This is for if any serializable defaults need to be overridden.
     public Save(){
-        // Enemy Combatants
-        enemyIndex = 0;
-        enemyCombatants = new SerializableGameObjectReference[SaveLoadManagerComponent.MAX_ENEMIES];
-        for(int i = 0; i < SaveLoadManagerComponent.MAX_ENEMIES; ++i){ enemyCombatants[i] = new SerializableGameObjectReference(); }
 
-        enemyBodyPrefabs = new SerializableSpawnedPrefab[SaveLoadManagerComponent.MAX_ENEMIES];
-        for(int i = 0; i < SaveLoadManagerComponent.MAX_ENEMIES; ++i){ enemyBodyPrefabs[i] = new SerializableSpawnedPrefab(); }
-
-        enemyBodyPositions = new SerializableVector3[SaveLoadManagerComponent.MAX_ENEMIES];
-        for(int i = 0; i < SaveLoadManagerComponent.MAX_ENEMIES; ++i){ enemyBodyPositions[i] = new SerializableVector3(); }
-
-        enemyBodyOrientations = new SerializableQuaternion[SaveLoadManagerComponent.MAX_ENEMIES];
-        for(int i = 0; i < SaveLoadManagerComponent.MAX_ENEMIES; ++i){ enemyBodyOrientations[i] = new SerializableQuaternion(); }
-
-        // Companion and Self Bodies
-        demonIndex = 0;
-
-        demonBodyPrefabs = new SerializableSpawnedPrefab[SaveLoadManagerComponent.MAX_COMPANIONS];
-        for(int i = 0; i < SaveLoadManagerComponent.MAX_COMPANIONS; ++i){ demonBodyPrefabs[i] = new SerializableSpawnedPrefab(); }
-
-        demonBodyPositions = new SerializableVector3[SaveLoadManagerComponent.MAX_COMPANIONS];
-        for(int i = 0; i < SaveLoadManagerComponent.MAX_COMPANIONS; ++i){ demonBodyPositions[i] = new SerializableVector3(); }
-
-        demonBodyOrientations = new SerializableQuaternion[SaveLoadManagerComponent.MAX_COMPANIONS];
-        for(int i = 0; i < SaveLoadManagerComponent.MAX_COMPANIONS; ++i){ demonBodyOrientations[i] = new SerializableQuaternion(); }
-
-        // Player
-        playerKeyCount = 0;
-        playerRuneCount = 0;
-        currentRespawn = new SerializableGameObjectReference();
-
-        completedKeyManagerCount = 0;
-        completedKeyManagers = new SerializableGameObjectReference[SaveLoadManagerComponent.MAX_KEY_MANAGERS];
-        for(int i = 0; i < SaveLoadManagerComponent.MAX_KEY_MANAGERS; ++i){
-            completedKeyManagers[i] = new SerializableGameObjectReference();
-        }
-
-        spawnedKeyCount = 0;
-        spawnedKeyPositions = new SerializableVector3[SaveLoadManagerComponent.MAX_KEYS];
-        for(int i = 0; i < SaveLoadManagerComponent.MAX_KEYS; ++i){
-            spawnedKeyPositions[i] = new SerializableVector3();
-        }
-
-        runesPickedUpCount = 0;
-        pickedUpRunes = new SerializableGameObjectReference[SaveLoadManagerComponent.MAX_RUNES];
-        for(int i = 0; i < SaveLoadManagerComponent.MAX_RUNES; ++i){
-            pickedUpRunes[i] = new SerializableGameObjectReference();
-        }
-
-        openedGateCount = 0;
-        openedGates = new SerializableGameObjectReference[SaveLoadManagerComponent.MAX_GATES];
-        for(int i = 0; i < SaveLoadManagerComponent.MAX_GATES; ++i){
-            openedGates[i] = new SerializableGameObjectReference();
-        }
-
-        unlockedSpawnPointCount = 0;
-        unlockedSpawnPoints = new SerializableGameObjectReference[SaveLoadManagerComponent.MAX_SPAWN_POINTS];
-        for(int i = 0; i < SaveLoadManagerComponent.MAX_SPAWN_POINTS; ++i){
-            unlockedSpawnPoints[i] = new SerializableGameObjectReference();
-        }
-
-        destroyedTankCount = 0;
-        destroyedTanks = new SerializableGameObjectReference[SaveLoadManagerComponent.MAX_TANKS];
-        for(int i = 0; i < SaveLoadManagerComponent.MAX_TANKS; ++i){
-            destroyedTanks[i] = new SerializableGameObjectReference();
-        }
     }
 }
 
+//##################################################################################################
+// Save Load Manager Component
+// This is the main class responsible for handling saves and loads of game data, and then restoring
+// that data to the currently loaded scenes.
+// TODO save slots and slot management?
+//##################################################################################################
 public class SaveLoadManagerComponent : MonoBehaviour {
     private static SaveLoadManagerComponent instance;
 
-    private const string SAVE_NAME = "/anopek.save";
-    private const int SAVE_VERSION = 7;
+    // Edit this to be your games name
+    private const string SAVE_NAME = "/GAME_NAME.save";
 
-    public const int MAX_ENEMIES = 1024;
-    public const int MAX_COMPANIONS = 1024;
+    // This allows older, invalid saves to be rejected. Bump this whenever making major changes to
+    // the Save class that cannot be reconciled on a load.
+    public const int SAVE_VERSION = 0;
 
-    public const int MAX_GATES = 64;
-    public const int MAX_SPAWN_POINTS = 6;
-
-    public const int MAX_KEY_MANAGERS = 6;
-    public const int MAX_KEYS = 5;
-    public const int MAX_RUNES = 3;
-
-    public const int MAX_TANKS = 3;
-
+    // Serialized just for viewing in editor, don't edit this
     [SerializeField]
     private Save save;
-
-    public GameObject globalKeyPrefab;
 
     public enum SaveApplicationMode {
         Full,
         PerLevel,
     }
 
+    //##############################################################################################
+    // Setup the instance, and create a new empty save
+    //##############################################################################################
     void Start(){
+        instance = this;
         save = new Save();
     }
 
+    //##############################################################################################
+    // Only in unity editor, save on F5, and load on F6.
+    //##############################################################################################
+    #if UNITY_EDITOR
     void Update(){
-        #if UNITY_EDITOR
-            // Quicksave/Quickload for debugging
-            if(Input.GetKeyDown(KeyCode.F5)){
-                Save();
-            }
-            if(Input.GetKeyDown(KeyCode.F6)){
-                Load();
-            }
-        #endif
+        // Quicksave/Quickload for debugging
+        if(Input.GetKeyDown(KeyCode.F5)){
+            Save();
+        }
+        if(Input.GetKeyDown(KeyCode.F6)){
+            Load();
+        }
     }
+    #endif // UNITY_EDITOR
 
+    //##############################################################################################
+    // Meant to be called externally to A) set up a new save, and then B) immediately save that to
+    // disk, making it the 'current' saved game. This stomps any existing save.
+    //##############################################################################################
     public void NewGame(){
         save = new Save();
         Save();
     }
 
+    //##############################################################################################
+    // Return whether or not a valid save game exists on disk.
+    //##############################################################################################
     public bool SavedGameExists(){
       Save temp = new Save();
 
@@ -270,10 +219,10 @@ public class SaveLoadManagerComponent : MonoBehaviour {
       return temp.version == SAVE_VERSION;
     }
 
+    //##############################################################################################
+    // First, update the save with data, then write that out to disk.
+    //##############################################################################################
     public void Save(){
-        // We should write to disk only when exiting the game (and maybe on a timer?)
-        // However, the save values should be kept up to date with the different setters
-
         Debug.Log("Saving Game...");
 
         UpdateSave();
@@ -284,6 +233,9 @@ public class SaveLoadManagerComponent : MonoBehaviour {
         file.Close();
     }
 
+    //##############################################################################################
+    // Load the data from disk if possible, then apply the save if it's valid.
+    //##############################################################################################
     public void Load(){
         Debug.Log("Loading Game...");
 
@@ -310,102 +262,39 @@ public class SaveLoadManagerComponent : MonoBehaviour {
         }
     }
 
+    //##############################################################################################
+    // Before writing to disk, update the save's information with all the information about the
+    // world.
+    //##############################################################################################
     public void UpdateSave(){
-        save.version = SAVE_VERSION;
-
-        // Save player properties
         PlayerRespawnVolumeComponent respawnComponent = PlayerRespawnVolumeComponent.GetCurrentRespawn();
         if(respawnComponent){
             save.currentRespawn.FromGameObject(respawnComponent.gameObject);
         }
+
+        // Continuing our example, get the player's position and fill out the save data
+        GameObject player = FirstPersonPlayerComponent.player.gameObject;
+        save.playerGameObject.FromGameObject(player);
+        save.playerPosition.FromVector3(player.transform.position);
     }
 
-    // Every level load calls this, and it'll run and apply partially on those levels
+    //##############################################################################################
+    // After loading a valid save, apply it, while keeping in mind what mode we're in.
+    //
+    // The modes are important for keeping it clear what level of restoration we want. For example,
+    // if we're loading from the main menu, we want a Full load, restoring the players position
+    // and respawn point.
+    // However, loading a level triggers a applySave, but on in PerLevel mode, so that the save runs
+    // for the objects that just got loaded, only applying operations that are for level objects.
+    // For example, open doors in that level that saved that they had been opened.
+    //##############################################################################################
     public void ApplySave(SaveApplicationMode mode){
-        for(int i = 0; i < save.enemyIndex; ++i){
-            // Regardless of mode, always clean up the combatant
-            GameObject deadCombatant = save.enemyCombatants[i].ToGameObject();
 
-            if(deadCombatant != null){
-                Debug.Log("Load-killing " + deadCombatant);
-                Destroy(deadCombatant);
-            } else {
-                Debug.LogWarning("Unable to restore dead combatant");
-            }
-        }
-
-        // Regardless of mode, try to destroy tanks
-        for(int i = 0; i < save.destroyedTankCount; ++i){
-            GameObject tank = save.destroyedTanks[i].ToGameObject();
-
-            if(tank != null){
-                Debug.Log("Load-destroying tank " + tank);
-                Destroy(tank);
-            }
-        }
+        // Apply operations that happen regardless of mode go here
 
         if(mode == SaveApplicationMode.Full){
-            // Only spawn bodies when fully applying, since they'll live in the global gamespace
+            // Apply operations that happen only when fully loading the game state here
 
-            // Spawn enemy dead bodies
-            for(int i = 0; i < save.enemyIndex; ++i){
-                GameObject foundEnemyPrefab = save.enemyBodyPrefabs[i].ToGameObject();
-
-                if(foundEnemyPrefab != null){
-                    GameObject newBody = GameObject.Instantiate(foundEnemyPrefab);
-                    newBody.transform.position = save.enemyBodyPositions[i].ToVector3();
-                    newBody.transform.rotation = save.enemyBodyOrientations[i].ToQuaternion();
-                } else {
-                    Debug.LogWarning("Unable to restore body prefab");
-                }
-            }
-
-            // Spawn companion dead bodies
-            for(int i = 0; i < save.demonIndex; ++i){
-                GameObject foundCompanionPrefab = save.demonBodyPrefabs[i].ToGameObject();
-
-                if(foundCompanionPrefab != null){
-                    GameObject newBody = GameObject.Instantiate(foundCompanionPrefab);
-                    newBody.transform.position = save.demonBodyPositions[i].ToVector3();
-                    newBody.transform.rotation = save.demonBodyOrientations[i].ToQuaternion();
-                } else {
-                    Debug.LogWarning("Unable to restore body prefab");
-                }
-            }
-        }
-
-        // Unlock all respawn volumes possible, regardless of mode
-        for(int i = 0; i < save.unlockedSpawnPointCount; ++i){
-            GameObject spawnPoint = save.unlockedSpawnPoints[i].ToGameObject();
-            if(spawnPoint){
-                PlayerRespawnVolumeComponent respawnComponent = spawnPoint.GetComponent<PlayerRespawnVolumeComponent>();
-
-                if(respawnComponent){
-                    respawnComponent.SetDroppedImmediately();
-                } else {
-                    Debug.LogError("GameObject " + spawnPoint + " was marked as saved, but doesn't have PlayerRespawnVolumeComponent");
-                }
-            }
-        }
-
-        if(mode == SaveApplicationMode.Full){
-            // Only create keys when fully loading
-            for(int i = 0; i < save.spawnedKeyCount; ++i){
-                GameObject newKey = GameObject.Instantiate(globalKeyPrefab);
-                newKey.transform.position = save.spawnedKeyPositions[i].ToVector3();
-            }
-
-            // Only delete runes when fully loading
-            for(int i = 0; i < save.runesPickedUpCount; ++i){
-                GameObject rune = save.pickedUpRunes[i].ToGameObject();
-                if(rune != null){
-                    Destroy(rune);
-                }
-            }
-        }
-
-        // Restore players properties, only in full apply mode
-        if(mode == SaveApplicationMode.Full){
             if(save.currentRespawn != null){
                 GameObject loadedRespawn = save.currentRespawn.ToGameObject();
 
@@ -413,146 +302,32 @@ public class SaveLoadManagerComponent : MonoBehaviour {
                     PlayerRespawnVolumeComponent.SetCurrentRespawn(loadedRespawn);
                 }
             }
+
+            // Finishing our example, get the player's position back out of the savedata, and
+            // apply it. Only do this for a full load, so we don't teleport the player around every
+            // time a level loads.
+            GameObject player = save.playerGameObject.ToGameObject();
+
+            if(player != null){
+                player.transform.position = save.playerPosition.ToVector3();
+            }
+
+        } else if(mode == SaveApplicationMode.PerLevel){
+            // Apply operations that happen only after a level is loaded go here
         }
     }
 
-    // #########################################################################
-    // Static Methods
-    // #########################################################################
-    static void SetupInstance(){
-        if(SaveLoadManagerComponent.instance == null){
-            GameObject saveload = GameObject.FindWithTag("SaveLoad Manager");
-            SaveLoadManagerComponent.instance = saveload.GetComponent<SaveLoadManagerComponent>();
+    //##############################################################################################
+    //
+    //##############################################################################################
+    public static void VerifySingleton(){
+        if(instance == null){
+            Debug.LogError("No SaveLoadManagerComponent was found in the game. Consider adding a GameObject to your scene with a SaveLoadManagerComponent on it.");
         }
     }
 
     public static SaveLoadManagerComponent Instance(){
-        SetupInstance();
+        VerifySingleton();
         return instance;
-    }
-
-    public static void RegisterBody(GameObject deadCombatant, GameObject prefab, Vector3 position, Quaternion orientation){
-        SetupInstance();
-        instance.RegisterBodyInternal(deadCombatant, prefab, position, orientation);
-    }
-
-    public static void RegisterGateUnlocked(GameObject gate){
-        SetupInstance();
-        instance.RegisterGateUnlockedInternal(gate);
-    }
-
-    public static void RegisterSpawnPointUnlocked(GameObject spawnPoint){
-        SetupInstance();
-        instance.RegisterSpawnPointUnlockedInternal(spawnPoint);
-    }
-
-    public static void RegisterKeyManagerCompleted(GameObject keyManager){
-        SetupInstance();
-        instance.RegisterKeyManagerCompletedInternal(keyManager);
-    }
-
-    public static void RegisterRunePickedUp(GameObject rune){
-        SetupInstance();
-        instance.RegisterRunePickedUpInternal(rune);
-    }
-
-    public static void RegisterTankDestroyed(GameObject tank){
-        SetupInstance();
-        instance.RegisterTankDestroyedInternal(tank);
-    }
-
-    // #########################################################################
-    // Instance Methods
-    // #########################################################################
-    void RegisterBodyInternal(GameObject deadCombatant, GameObject prefab, Vector3 position, Quaternion orientation){
-        bool isPlayer = deadCombatant.GetComponent<PlayerComponent>();
-        // bool isCompanion = deadCombatant.GetComponent<CompanionBehavior>();
-        bool isCompanion = false;
-
-        if(isPlayer || isCompanion){
-            if(save.demonIndex >= MAX_COMPANIONS){
-                Debug.LogError("Bump MAX_COMPANIONS in SaveLoadManagerComponent");
-
-                // Emergency wraparound
-                save.demonIndex = 0;
-            }
-
-            try {
-                save.demonBodyPrefabs[save.demonIndex].FromGameObject(prefab);
-                save.demonBodyPositions[save.demonIndex].FromVector3(position);
-                save.demonBodyOrientations[save.demonIndex].FromQuaternion(orientation);
-            } catch {
-                // Emergency wraparound to fix existing bug in build
-                // Where MAX_COMPANIONS is 128 and those arrays' size are already allocated
-                save.demonIndex = 0;
-            }
-
-            save.demonIndex++;
-        } else {
-            if(save.enemyIndex >= MAX_ENEMIES){
-                Debug.LogError("Bump MAX_ENEMIES in SaveLoadManagerComponent");
-
-                // Emergency wraparound
-                save.enemyIndex = 0;
-            }
-
-            try {
-                save.enemyCombatants[save.enemyIndex].FromGameObject(deadCombatant);
-                save.enemyBodyPrefabs[save.enemyIndex].FromGameObject(prefab);
-                save.enemyBodyPositions[save.enemyIndex].FromVector3(position);
-                save.enemyBodyOrientations[save.enemyIndex].FromQuaternion(orientation);
-            } catch {
-                // Emergency wraparound to fix existing bug in build
-                // Where MAX_ENEMIES is 128 and those arrays' size are already allocated
-                save.enemyIndex = 0;
-            }
-
-            save.enemyIndex++;
-        }
-    }
-
-    void RegisterGateUnlockedInternal(GameObject gate){
-        save.openedGates[save.openedGateCount].FromGameObject(gate);
-        save.openedGateCount++;
-
-        if(save.openedGateCount > MAX_GATES){
-            Debug.LogError("Bump MAX_GATES in SaveLoadManagerComponent");
-        }
-    }
-
-    void RegisterSpawnPointUnlockedInternal(GameObject spawnPoint){
-        save.unlockedSpawnPoints[save.unlockedSpawnPointCount].FromGameObject(spawnPoint);
-        save.unlockedSpawnPointCount++;
-
-        if(save.unlockedSpawnPointCount > MAX_SPAWN_POINTS){
-            Debug.LogError("Bump MAX_SPAWN_POINTS in SaveLoadManagerComponent");
-        }
-    }
-
-    void RegisterKeyManagerCompletedInternal(GameObject keyManager){
-        save.completedKeyManagers[save.completedKeyManagerCount].FromGameObject(keyManager);
-        save.completedKeyManagerCount++;
-
-        if(save.completedKeyManagerCount > MAX_KEY_MANAGERS){
-            Debug.LogError("Bump MAX_KEY_MANAGERS in SaveLoadManagerComponent");
-        }
-    }
-
-    void RegisterRunePickedUpInternal(GameObject rune){
-        save.pickedUpRunes[save.runesPickedUpCount].FromGameObject(rune);
-        save.runesPickedUpCount++;
-
-        if(save.runesPickedUpCount > MAX_RUNES){
-            Debug.LogError("Bump MAX_KEY_MANAGERS in SaveLoadManagerComponent");
-        }
-    }
-
-    void RegisterTankDestroyedInternal(GameObject tank){
-        save.destroyedTanks[save.destroyedTankCount].FromGameObject(tank);
-        save.destroyedTankCount++;
-
-        if(save.destroyedTankCount > MAX_TANKS){
-            Debug.LogError("Bump MAX_TANKS in SaveLoadManagerComponent");
-        }
     }
 }

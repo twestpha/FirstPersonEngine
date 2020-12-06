@@ -65,11 +65,11 @@ public class MovementBehavior : MonoBehaviour {
 
     void Update(){
         if(playerNearby){
-            playerNearby = (transform.position - PlayerComponent.player.transform.position).sqrMagnitude <= LOD_DISTANCE_SQUARED;
+            playerNearby = (transform.position - FirstPersonPlayerComponent.player.transform.position).sqrMagnitude <= LOD_DISTANCE_SQUARED;
         } else {
             if(lodTimer.Finished()){
                 lodTimer.Start();
-                playerNearby = (transform.position - PlayerComponent.player.transform.position).sqrMagnitude <= LOD_DISTANCE_SQUARED;
+                playerNearby = (transform.position - FirstPersonPlayerComponent.player.transform.position).sqrMagnitude <= LOD_DISTANCE_SQUARED;
             }
 
             if(!playerNearby){

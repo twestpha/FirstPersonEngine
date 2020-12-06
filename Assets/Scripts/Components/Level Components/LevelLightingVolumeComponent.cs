@@ -81,7 +81,7 @@ public class LevelLightingVolumeComponent : MonoBehaviour {
             float t = CustomMath.EaseInOut(fadeTimer.Parameterized(), 0.5f);
 
             // If player is dead, fastforward and kill fading
-            if(PlayerComponent.player.Dead()){
+            if(FirstPersonPlayerComponent.player.Dead()){
                 t = 1.0f;
 
                 fadeTimer.SetParameterized(1.0f);

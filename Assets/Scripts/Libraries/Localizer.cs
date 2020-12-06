@@ -67,6 +67,10 @@ public class Localizer : MonoBehaviour {
     // Set up the language dictionaries, then parse and add localization keys and values to those.
     //##############################################################################################
     private void SetupLookup(){
+        if(localization == null){
+            return;
+        }
+
         localizationLookup = new Dictionary<Language, Dictionary<string, string>>();
 
         for(int i = 0, languageCount = (int)(Language.Count); i < languageCount; ++i){
@@ -120,7 +124,7 @@ public class Localizer : MonoBehaviour {
     // the issue
     //##############################################################################################
     public string LocalizeInternal(string key){
-        if(localizationLookup[currentLanguage].TryGetValue(key, out string value)){
+        if(localization != null && localizationLookup[currentLanguage].TryGetValue(key, out string value)){
             return value;
         } else {
             return (MISSING_LOCALIZATION + key);

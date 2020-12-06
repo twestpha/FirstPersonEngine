@@ -319,7 +319,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4891807089415746351}
   - component: {fileID: 193512522}
-  - component: {fileID: 4891807089415746348}
+  - component: {fileID: 8792055853283334921}
   - component: {fileID: 7960176447092203934}
   - component: {fileID: 4891807089415746336}
   - component: {fileID: 7426984374958026225}
@@ -367,7 +367,7 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.875, z: 0}
---- !u!114 &4891807089415746348
+--- !u!114 &8792055853283334921
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -376,27 +376,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 4891807089415746347}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe3f8d4e683b8b94e999f5564b817735, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d4d64f2314bf0a46b8efac5615b1f1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 8805142647528595552}
   cameraFadeLayer: {fileID: 926934536745443610}
   xSensitivity: 1.5
-  ySensitivity: -1
+  ySensitivity: -1.5
   accelTime: 0.2
   maxWalkSpeed: 10
   respawnTime: 6
-  respawnSpeedTime: 20
+  respawnSpeedTime: 10
   damagedInvulnerabilityTime: 1.5
   hudOverlay: {fileID: 8372026921362142281}
   footStepSounds:
-  - {fileID: 8300000, guid: 84ce32f09da322b4ea5d9c4edda7ae0b, type: 3}
-  - {fileID: 8300000, guid: 5aa95b10dce840e419556e455688146d, type: 3}
-  - {fileID: 8300000, guid: aa6f626d2efb4e147943a7f752043fc0, type: 3}
-  - {fileID: 8300000, guid: ba7923250e1afa5479afdac0b28cd8b4, type: 3}
-  - {fileID: 8300000, guid: 37b2c5ba27b20ed4090dde3f5c7a115a, type: 3}
-  - {fileID: 8300000, guid: 7a0f4d9ed491aea47b24b3ef21200d16, type: 3}
+  - {fileID: 0}
   footStepVolume: 0.3
+  shakeAmount: 0
 --- !u!114 &7960176447092203934
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -662,7 +658,6 @@ GameObject:
   - component: {fileID: 156909532984263342}
   - component: {fileID: 8118486971543315907}
   - component: {fileID: 9152880082300284006}
-  - component: {fileID: 1176819671971648200}
   - component: {fileID: 1730448342}
   m_Layer: 8
   m_Name: Camera
@@ -738,22 +733,6 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8805142647528595552}
   m_Enabled: 1
---- !u!114 &1176819671971648200
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8805142647528595552}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41fd27c45f23fe14c87af1b2bffe7de0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lookTarget: {fileID: 0}
-  lookTime: 0
-  layerCullClipDistance: 100
-  shakeAmount: 0
 --- !u!114 &1730448342
 MonoBehaviour:
   m_ObjectHideFlags: 0
