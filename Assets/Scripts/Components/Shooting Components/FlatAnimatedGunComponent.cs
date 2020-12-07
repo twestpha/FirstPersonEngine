@@ -92,6 +92,8 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
             if(base.Shoot()){
                 currentFrame = 0;
 
+                player.AddGunRecoil(this);
+
                 if(reloading){
                     reloadingTimer.Start();
                     state = AnimatedGunState.Reloading;

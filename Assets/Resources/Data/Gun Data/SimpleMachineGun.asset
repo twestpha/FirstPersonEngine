@@ -17,10 +17,15 @@ MonoBehaviour:
   coolDown: 0.15
   spread: 0.5
   shots: 1
+  automaticAction: 1
   useAmmo: 1
   ammoCount: 25
   reloadTime: 2
-  momentumRecoil: 0.1
+  useZoom: 0
+  zoomTime: 0.15
+  zoomedFieldOfView: 15
+  zoomMovementModifier: 1
+  momentumRecoil: 0.3
   aimRecoil: 0.1
   muzzleVelocity: 50
   bulletPrefab: {fileID: 1552996330619193922, guid: 61614e4c9eb07364fbad373e5993ef00,

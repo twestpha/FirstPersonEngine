@@ -20,6 +20,10 @@ using UnityEngine.UI;
 // Zoomable Gun Component
 // This is an inheritable class for player guns that zoom in and have a reticle. This makes the
 // assumption that we have an overlay image that should be made more or less opaque when zooming.
+// This class descends from GunComponent
+//
+// TODO add alternate (centered) muzzle to use while zoomed
+// TODO modify player look sensitivity while zoomed
 //##################################################################################################
 public class ZoomableGunComponent : GunComponent {
     private const float ZOOM_IN = 1.0f;
@@ -65,7 +69,7 @@ public class ZoomableGunComponent : GunComponent {
         base.Update();
 
         if(currentGunData.useZoom){
-            // TODO add a setting for toggling versus hold-to-zoom
+            // TODO add a player setting for toggling versus hold-to-zoom
             bool zooming = Input.GetMouseButton(1);
 
             // Smooth damp towards the target zoom

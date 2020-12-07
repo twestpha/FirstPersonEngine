@@ -20,7 +20,7 @@ Shooting Components, used for shooting a bullet and dealing damage to damageable
 * Gun
 * Gun Data
 * Zoomable Gun
-* FlatAnimatedGun
+* Flat Animated Gun
 * Gun Selection
 
 Player Components, for managing the first person player
