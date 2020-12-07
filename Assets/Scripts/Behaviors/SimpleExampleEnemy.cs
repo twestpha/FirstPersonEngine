@@ -23,6 +23,7 @@ using UnityEngine;
 // relationships between existing components, to get novel and interesting behavior.
 //
 // TODO add animations
+// TODO use attack tokens
 //##################################################################################################
 public class SimpleExampleEnemy : SpriteEnemyBehavior {
     // These are usually significantly larger than the trigger radius, so that player can try to

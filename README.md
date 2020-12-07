@@ -13,7 +13,7 @@ Components represent a systemic, predictable API for interacting with the framew
 
 Behaviors are less restrictive, and represent the open ended nature of video game scripting. They are meant to be a bridge between the more rigid, systemic components, and the variety of actions that occur in games. For example, an Enemy Behavior might be responsible for playing animations, making sounds, and firing a gun (All of which are components, and therefore systemic). Behaviors often make a variety of calls to components to accomplish their tasks. Usually, only one of these is added to a given GameObject, and the naming of these behaviors is relevant to the specific behavior it implements. For example, a Sniper Enemy might have a SniperEnemyBehavior, and it's only used for them.
 
-# Feature List
+# Current Feature List
 Shooting Components, used for shooting a bullet and dealing damage to damageables
 * Bullet
 * Damageable
@@ -53,3 +53,11 @@ Libraries, for helping with general tasks
 * Custom Math
 * Localizer
 * Timer
+
+# Future Work
+* Clean up the TODOs
+* Implement 3D variants for all the sprite-based components (flat animated gun, and example 3d enemy)
+* Settings Manager system
+* Save slots
+* Enemy Corpses and Barks
+* Player footsteps and Barks
