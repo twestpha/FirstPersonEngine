@@ -228,7 +228,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 021bd28cce953fa4fbb665db2f53ba43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: 6
+  primaryLevel: 6
 --- !u!65 &393046057
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -355,7 +355,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 021bd28cce953fa4fbb665db2f53ba43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: 1
+  primaryLevel: 1
 --- !u!65 &461605527
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -517,7 +517,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 021bd28cce953fa4fbb665db2f53ba43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: 3
+  primaryLevel: 3
 --- !u!65 &803432934
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -565,16 +565,18 @@ MonoBehaviour:
   - selfLevelLabel: 0
     neighborLevels: 
   - selfLevelLabel: 1
-    neighborLevels: 02000000030000000500000006000000
+    neighborLevels: 0200000003000000050000000600000007000000
   - selfLevelLabel: 2
     neighborLevels: 01000000
   - selfLevelLabel: 3
     neighborLevels: 0100000004000000
   - selfLevelLabel: 4
-    neighborLevels: 
+    neighborLevels: 03000000
   - selfLevelLabel: 5
     neighborLevels: 01000000
   - selfLevelLabel: 6
+    neighborLevels: 01000000
+  - selfLevelLabel: 7
     neighborLevels: 01000000
   levelIsLoaded: 
 --- !u!4 &810066810
@@ -594,6 +596,7 @@ Transform:
   - {fileID: 1758039430}
   - {fileID: 1052147014}
   - {fileID: 393046055}
+  - {fileID: 1682483205}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -733,7 +736,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 021bd28cce953fa4fbb665db2f53ba43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: 2
+  primaryLevel: 2
 --- !u!65 &1005857558
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -791,7 +794,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 021bd28cce953fa4fbb665db2f53ba43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: 5
+  primaryLevel: 5
 --- !u!65 &1052147016
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -883,6 +886,64 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1682483204
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1682483205}
+  - component: {fileID: 1682483207}
+  - component: {fileID: 1682483206}
+  m_Layer: 0
+  m_Name: enemy_level_trigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1682483205
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682483204}
+  m_LocalRotation: {x: -0, y: -0.99990803, z: -0, w: -0.013561584}
+  m_LocalPosition: {x: -77.6, y: 0, z: -17.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 810066810}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: -181.554, z: 0}
+--- !u!114 &1682483206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682483204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 021bd28cce953fa4fbb665db2f53ba43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  primaryLevel: 7
+--- !u!65 &1682483207
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682483204}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 50, y: 20, z: 50}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1758039429
 GameObject:
   m_ObjectHideFlags: 0
@@ -927,7 +988,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 021bd28cce953fa4fbb665db2f53ba43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: 4
+  primaryLevel: 4
 --- !u!65 &1758039432
 BoxCollider:
   m_ObjectHideFlags: 0

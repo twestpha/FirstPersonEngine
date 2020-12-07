@@ -117,15 +117,15 @@ public class RotatableComponent : MonoBehaviour {
             return;
         }
 
-        // First, get direction from this to target
-        Vector3 toTarget = targetTransform.position - transform.position;
+        // First, get direction from target to here
+        Vector3 fromTarget = transform.position - targetTransform.position;
 
-        toTarget.y = 0.0f;
-        toTarget.Normalize();
+        fromTarget.y = 0.0f;
+        fromTarget.Normalize();
 
-        // Then, get the angle between our forward and that toTarget, in degrees
-        float cross = Vector3.Cross(toTarget, transform.forward * -1.0f).y;
-        float angle = Mathf.Acos(Vector3.Dot(toTarget, transform.forward * -1.0f));
+        // Then, get the angle between our forward and that fromTarget, in degrees
+        float cross = Vector3.Cross(fromTarget, transform.forward * -1.0f).y;
+        float angle = Mathf.Acos(Vector3.Dot(fromTarget, transform.forward * -1.0f));
         angle *= Mathf.Rad2Deg;
 
         // Use the cross product and mirroring to set x scale to -x (thus flipping the sprite)

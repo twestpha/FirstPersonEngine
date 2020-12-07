@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Sub Components Scene.unity
     guid: 6c384f71949df2541acd9b6a5a858d92
+  - enabled: 1
+    path: Assets/Scenes/Enemy Scene.unity
+    guid: efbf77c33aed3b44491431eaf17f18f8
   m_configObjects: {}

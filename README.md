@@ -35,6 +35,7 @@ Billboard Sprites Components, used for 2D sprites in 3d space, much like Doom or
 Enemy Components, used for managing enemies and their actions
 * Enemy Manager
 * Enemy Behavior
+* Sprite Enemy Behavior
 * Attack Token
 * Bark
 

@@ -27,7 +27,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class LevelTriggerComponent : MonoBehaviour {
 
-    public LevelManagerComponent.Level level;
+    public LevelManagerComponent.Level primaryLevel;
 
     //##############################################################################################
     // Do a quick error check to catch non-trigger collider
@@ -51,7 +51,7 @@ public class LevelTriggerComponent : MonoBehaviour {
                 return;
             }
 
-            manager.SetPrimaryLevel(level);
+            manager.SetPrimaryLevel(primaryLevel);
         }
     }
 }
