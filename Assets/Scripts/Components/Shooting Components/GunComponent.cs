@@ -196,4 +196,11 @@ public class GunComponent : MonoBehaviour {
     public float GetMuzzleVelocity(){
         return currentGunData.muzzleVelocity;
     }
+
+    //##############################################################################################
+    // Getter for the current gun's cooldown
+    //##############################################################################################
+    public float GetCooldown(){
+        return currentGunData.coolDown;
+    }
 }
