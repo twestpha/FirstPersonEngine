@@ -61,4 +61,5 @@ Libraries, for helping with general tasks
 * Save slots
 * Enemy Corpses and Barks
 * Player footsteps and Barks
+* Add option for bullet pooling
 * STRETCH GOAL: WAD file importing
