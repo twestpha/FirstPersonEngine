@@ -62,4 +62,5 @@ Libraries, for helping with general tasks
 * Enemy Corpses and Barks
 * Player footsteps and Barks
 * Add option for bullet pooling
+* Improved Test Level graphics more representative of the style of game this framework would be used for
 * STRETCH GOAL: WAD file importing
