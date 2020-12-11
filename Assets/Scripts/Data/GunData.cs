@@ -40,6 +40,8 @@ public class GunData : ScriptableObject {
     public int ammoCount = 1;
     public float reloadTime = 1.0f;
 
+    // TODO add manual reloading and progressive reloads
+
     [Header("Zoom Characteristics")]
     public bool useZoom;
     public float zoomTime = 0.15f;

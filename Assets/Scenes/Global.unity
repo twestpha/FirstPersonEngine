@@ -956,6 +956,7 @@ GameObject:
   - component: {fileID: 1742872160}
   - component: {fileID: 1742872163}
   - component: {fileID: 1742872162}
+  - component: {fileID: 1742872161}
   m_Layer: 0
   m_Name: lava
   m_TagString: Untagged
@@ -977,6 +978,22 @@ Transform:
   m_Father: {fileID: 1491386113}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!114 &1742872161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1742872159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc70413420267714fb9e7a4d842c244f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: ed34efe2492c0e148a42c0427f5d229c, type: 2}
+  linearVelocity: {x: 0.1, y: 0.1}
+  amplitude: {x: 0.5, y: 0.5}
+  frequency: {x: 0.1, y: 0.07}
 --- !u!23 &1742872162
 MeshRenderer:
   m_ObjectHideFlags: 0
