@@ -51,14 +51,12 @@ public class ZoomableGunComponent : GunComponent {
                 Debug.LogError("Player Camera on " + gameObject.name + "'s ZoomableGunComponent cannot be null");
             }
 
-            if(reticleOverlayImage == null){
-                Debug.LogError("Reticle Overlay Image on " + gameObject.name + "'s ZoomableGunComponent cannot be null");
-            }
-
             defaultFieldOfView = playerCamera.fieldOfView;
 
-            tintColor = new Color(1.0f, 1.0f, 1.0f, 0.0f);
-            reticleOverlayImage.color = tintColor;
+            if(reticleOverlayImage != null){
+                tintColor = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+                reticleOverlayImage.color = tintColor;
+            }
         }
     }
 
@@ -85,8 +83,10 @@ public class ZoomableGunComponent : GunComponent {
             float speedModifierParameter = Mathf.Lerp(1.0f, currentGunData.zoomMovementModifier, zoomParameter);
             FirstPersonPlayerComponent.player.AddSpeedModifier(gameObject, speedModifierParameter);
 
-            tintColor.a = parameterSquared;
-            reticleOverlayImage.color = tintColor;
+            if(reticleOverlayImage != null){
+                tintColor.a = parameterSquared;
+                reticleOverlayImage.color = tintColor;
+            }
         }
     }
 
@@ -99,8 +99,10 @@ public class ZoomableGunComponent : GunComponent {
 
             playerCamera.fieldOfView = defaultFieldOfView;
 
-            tintColor.a = 0.0f;
-            reticleOverlayImage.color = tintColor;
+            if(reticleOverlayImage != null){
+                tintColor.a = 0.0f;
+                reticleOverlayImage.color = tintColor;
+            }
         }
     }
 }
