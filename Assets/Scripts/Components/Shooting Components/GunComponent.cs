@@ -34,8 +34,8 @@ public class GunComponent : MonoBehaviour {
     protected bool reloading = false;
     protected int currentAmmoCount = 0;
 
-    private Timer gunTimer;
-    private Timer reloadTimer;
+    protected Timer gunTimer;
+    protected Timer reloadTimer;
 
     protected FirstPersonPlayerComponent player;
 
@@ -66,9 +66,22 @@ public class GunComponent : MonoBehaviour {
     //##############################################################################################
     protected void Update(){
         if(currentGunData.useAmmo && reloading){
-            if(reloadTimer.Finished()){
-                reloading = false;
-                currentAmmoCount = currentGunData.ammoCount;
+            // If we're doing a progressive reload, add one ammo per timer finished
+            if(currentGunData.manualReload && currentGunData.progressiveReloadInterruption){
+                if(reloadTimer.Finished()){
+                    reloadTimer.Start();
+
+                    currentAmmoCount++;
+                    if(currentAmmoCount ==  currentGunData.ammoCount){
+                        reloading = false;
+                    }
+                }
+            // If it's just one big reload, wait for that.
+            } else {
+                if(reloadTimer.Finished()){
+                    reloading = false;
+                    currentAmmoCount = currentGunData.ammoCount;
+                }
             }
         }
     }

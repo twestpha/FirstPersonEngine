@@ -18,8 +18,9 @@ using UnityEngine.UI;
 
 //##################################################################################################
 // Zoomable Gun Component
-// This is an inheritable class for player guns that zoom in and have a reticle. This makes the
-// assumption that we have an overlay image that should be made more or less opaque when zooming.
+// This is an inheritable class for player guns that zoom in and have a reticle. This gun zooms
+// using the camera field-of-view (fov). Also, it can have an overlay image that will be made more
+// or less opaque when zooming.
 // This class descends from GunComponent
 //
 // TODO add alternate (centered) muzzle to use while zoomed

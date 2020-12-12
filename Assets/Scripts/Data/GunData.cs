@@ -40,7 +40,14 @@ public class GunData : ScriptableObject {
     public int ammoCount = 1;
     public float reloadTime = 1.0f;
 
-    // TODO add manual reloading and progressive reloads
+    // Allows player to manually reload using input
+    // useAmmo must be set true for this to have an effect
+    public bool manualReload;
+
+    // First, makes reloading progressive (one bullet at a time) and uses reloadTime as that time
+    // Then, it allows shooting to interrupt the reloading (possible resulting in a non-full reload)
+    // useAmmo and manualReload must be set true for this to have an effect
+    public bool progressiveReloadInterruption;
 
     [Header("Zoom Characteristics")]
     public bool useZoom;

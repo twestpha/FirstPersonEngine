@@ -20,7 +20,9 @@ MonoBehaviour:
   automaticAction: 0
   useAmmo: 1
   ammoCount: 7
-  reloadTime: 2
+  reloadTime: 0.25
+  manualReload: 1
+  progressiveReloadInterruption: 1
   useZoom: 0
   zoomTime: 0.15
   zoomedFieldOfView: 15

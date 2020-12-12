@@ -45,8 +45,8 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
     private AnimatedGunState state;
     private int currentFrame;
 
-    private Timer firingTimer;
-    private Timer reloadingTimer;
+    private Timer firingAnimationTimer;
+    private Timer reloadingAnimationTimer;
 
     private DamageableComponent damage;
 
@@ -63,8 +63,8 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
     protected new void Start(){
         base.Start();
 
-        firingTimer = new Timer(1.0f / firingFramerate);
-        reloadingTimer = new Timer(1.0f / reloadingFramerate);
+        firingAnimationTimer = new Timer(1.0f / firingFramerate);
+        reloadingAnimationTimer = new Timer(1.0f / reloadingFramerate);
 
         if(gunSpriteImage == null){
             Debug.LogError("Gun Sprite Image on " + gameObject.name + "'s FlatAnimatedGunComponent cannot be null on start");
@@ -89,27 +89,42 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
         bool inputTriggerPulled = currentGunData.automaticAction ? Input.GetMouseButton(0) : Input.GetMouseButtonDown(0);
 
         if(inputTriggerPulled){
+            // If we are a manual reload and it's a progressive, interruptible load, do the interrupt
+            if(reloading && currentGunData.manualReload && currentGunData.progressiveReloadInterruption){
+                reloading = false;
+            }
+
             if(base.Shoot()){
                 currentFrame = 0;
 
                 player.AddGunRecoil(this);
 
                 if(reloading){
-                    reloadingTimer.Start();
+                    reloadingAnimationTimer.Start();
                     state = AnimatedGunState.Reloading;
                     gunSpriteImage.sprite = reloadingSprites[0];
                 } else {
-                    firingTimer.Start();
+                    firingAnimationTimer.Start();
                     state = AnimatedGunState.Shooting;
                     gunSpriteImage.sprite = firingSprites[0];
                 }
             }
         }
 
+        bool reloadInput = Input.GetKeyDown(KeyCode.R);
+        if(!reloading && reloadInput && currentGunData.useAmmo && currentGunData.manualReload){
+            reloading = true;
+            reloadTimer.Start();
+
+            reloadingAnimationTimer.Start();
+            state = AnimatedGunState.Reloading;
+            gunSpriteImage.sprite = reloadingSprites[0];
+        }
+
         // Animating the Gun
         if(state == AnimatedGunState.Shooting){
-            if(firingTimer.Finished()){
-                firingTimer.Start();
+            if(firingAnimationTimer.Finished()){
+                firingAnimationTimer.Start();
 
                 currentFrame++;
 
@@ -121,8 +136,8 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
                 }
             }
         } else if(state == AnimatedGunState.Reloading){
-            if(reloadingTimer.Finished()){
-                reloadingTimer.Start();
+            if(reloadingAnimationTimer.Finished()){
+                reloadingAnimationTimer.Start();
 
                 currentFrame++;
 
