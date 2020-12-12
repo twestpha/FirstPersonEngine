@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 0.06
   m_LinearFogStart: 0
   m_LinearFogEnd: 50
-  m_AmbientSkyColor: {r: 0.5943396, g: 0.18698324, b: 0, a: 1}
+  m_AmbientSkyColor: {r: 0.11921501, g: 0.19125515, b: 0.4433962, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 0.5
@@ -498,13 +498,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 803432931}
-  m_LocalRotation: {x: -0, y: -0.94245344, z: -0, w: 0.33433747}
-  m_LocalPosition: {x: 79.5, y: 0, z: 43.6}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 61.96, y: 0, z: 39.85}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 810066810}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: -140.935, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &803432933
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -529,7 +529,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 60, y: 20, z: 50}
+  m_Size: {x: 20, y: 10, z: 20}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &810066808
 GameObject:
@@ -628,8 +628,8 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 0.2971698, g: 0.65974087, b: 1, a: 1}
-  m_Intensity: 0.6
+  m_Color: {r: 1, g: 0.66434556, b: 0.11792451, a: 1}
+  m_Intensity: 0.4
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -991,7 +991,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: ed34efe2492c0e148a42c0427f5d229c, type: 2}
-  linearVelocity: {x: 0.1, y: 0.1}
+  linearVelocity: {x: 0.05, y: 0.05}
   amplitude: {x: 0.5, y: 0.5}
   frequency: {x: 0.1, y: 0.07}
 --- !u!23 &1742872162
