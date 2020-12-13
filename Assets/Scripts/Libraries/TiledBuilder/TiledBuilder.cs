@@ -17,7 +17,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+
+#if UNITY_EDITOR
 using UnityEditor;
+#endif // UNITY_EDITOR
 
 //##################################################################################################
 // Tiled Builder
@@ -54,9 +57,9 @@ using UnityEditor;
 //
 // TODO more error checking and handling
 //##################################################################################################
+#if UNITY_EDITOR
 [ExecuteInEditMode]
 public class TiledBuilder : MonoBehaviour {
-#if UNITY_EDITOR
     public float tileUnitScale = 2.0f;
 
     public TextAsset mapFile;
@@ -109,5 +112,5 @@ public class TiledBuilder : MonoBehaviour {
             }
         }
     }
-#endif // UNITY_EDITOR
 }
+#endif // UNITY_EDITOR
