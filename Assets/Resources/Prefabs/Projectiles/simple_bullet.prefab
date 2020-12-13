@@ -100,6 +100,8 @@ MonoBehaviour:
     type: 3}
   impactSound: {fileID: 8300000, guid: 187ed637aa603654ab49f0f65e3cb4df, type: 3}
   impactSoundVolume: 1
+  optionalDecalObject: {fileID: 1090225071650906485, guid: 31b5fd4cfd8f38a4388b3674c412063b,
+    type: 3}
 --- !u!114 &-3476637287864309528
 MonoBehaviour:
   m_ObjectHideFlags: 0

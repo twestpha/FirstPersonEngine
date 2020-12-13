@@ -19,17 +19,21 @@ using UnityEngine;
 //##################################################################################################
 // Bullet Component
 // This class is responsible for managing a single bullet, and moving it and destroying it when it
-// collides, spawning the appropriate effects
+// collides, spawning the appropriate effects or decals
 //##################################################################################################
 public class BulletComponent : MonoBehaviour {
     public const int NO_BULLET_COLLIDE_LAYER = 1 << 11;
+
     public const float BULLET_EFFECTS_OFFSET = 0.1f;
+    public const float BULLET_DECAL_OFFSET = 0.001f;
 
     [HeaderAttribute("Bullet Component")]
     public float maxDistance = 100.0f;
     public GameObject optionalImpactEffects;
     public AudioClip impactSound;
     public float impactSoundVolume = 1.0f;
+
+    public GameObject optionalDecalObject;
 
     private bool fired;
     private bool shouldKill;
@@ -129,6 +133,18 @@ public class BulletComponent : MonoBehaviour {
 
                     // Scoot fx back away from collision a little
                     fx.transform.position = transform.position + (-move).normalized * BULLET_EFFECTS_OFFSET;
+                }
+
+                if(optionalDecalObject != null){
+                    // Fade these out at some point?
+
+                    GameObject decalInstance = GameObject.Instantiate(optionalDecalObject);
+
+                    // Add random offset to prevent z-fighting
+                    float randomOffset = (Random.value * BULLET_EFFECTS_OFFSET);
+
+                    decalInstance.transform.position = hit.point + (hit.normal * (BULLET_DECAL_OFFSET + randomOffset));
+                    decalInstance.transform.rotation = Quaternion.LookRotation(hit.normal);
                 }
 
                 // Play impact sound if needed
