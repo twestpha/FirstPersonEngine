@@ -172,15 +172,20 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
                     PlayerRespawnVolumeComponent currentRespawn = PlayerRespawnVolumeComponent.GetCurrentRespawn();
                     if(currentRespawn){
                         transform.position = currentRespawn.respawnPosition.transform.position;
+
+                        playerCamera.transform.localRotation = currentRespawn.transform.rotation;
+                        playerInputLookRotation = currentRespawn.transform.rotation;
                     } else {
                         // In case there's no respawn point, teleport the player up a bunch.
                         transform.position = new Vector3(0.0f, transform.position.y + PLAYER_RESPAWN_HEIGHT_OFFSET, 0.0f);
+
+                        playerCamera.transform.localRotation = Quaternion.identity;
+                        playerInputLookRotation = Quaternion.identity;
                     }
 
                     transform.rotation = Quaternion.identity;
 
                     // TODO orient the camera the direction of the respawn transform forward
-                    playerCamera.transform.localRotation = Quaternion.identity;
 
                     // This is not ideal, but since CharacterController requires being grounded to set
                     // velocity - something that can't be guaranteed on death - We have to destroy and

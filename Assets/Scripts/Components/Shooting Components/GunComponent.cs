@@ -26,13 +26,15 @@ public class GunComponent : MonoBehaviour {
     public const bool BULLET_FIRED = true;
     public const bool BULLET_NOT_FIRED = false;
 
+    private static PooledGameObjectManager pooledManager;
+
     [HeaderAttribute("Gun Component Data")]
     public GunData currentGunData;
     public Transform muzzleTransform;
     public ParticleSystem optionalCasingParticle;
 
     protected bool reloading = false;
-    
+
     // For viewing ammo count in editor
     [SerializeField]
     protected int currentAmmoCount = 0;
@@ -62,6 +64,13 @@ public class GunComponent : MonoBehaviour {
         }
 
         player = GetComponent<FirstPersonPlayerComponent>();
+
+        if(currentGunData.usePooledBullets){
+            if(!PooledGameObjectManager.HasPoolForIdentifier(currentGunData.poolIdentifier)){
+                PooledGameObjectManager.SetupPool(currentGunData.poolIdentifier, currentGunData.poolSize, currentGunData.bulletPrefab);
+            }
+        }
+
 	}
 
     //##############################################################################################
@@ -128,8 +137,20 @@ public class GunComponent : MonoBehaviour {
 
             // This is for shotgun-type weapons. It spawns several bullets in a random cone
             for(int i = 0; i < currentGunData.shots; ++i){
-                GameObject bulletInstance = GameObject.Instantiate(currentGunData.bulletPrefab);
+
+                GameObject bulletInstance = null;
+
+                if(currentGunData.usePooledBullets){
+                    bulletInstance = PooledGameObjectManager.GetInstanceFromPool(currentGunData.poolIdentifier);
+                } else {
+                    bulletInstance = GameObject.Instantiate(currentGunData.bulletPrefab);
+                }
+
                 BulletComponent bullet = bulletInstance.GetComponent<BulletComponent>();
+
+                if(currentGunData.usePooledBullets){
+                    bullet.SetAsPooled(currentGunData.poolIdentifier);
+                }
 
                 if(bullet == null){
                     Debug.LogError("Bullet Prefab " + currentGunData.bulletPrefab.name + " must have a bullet component");

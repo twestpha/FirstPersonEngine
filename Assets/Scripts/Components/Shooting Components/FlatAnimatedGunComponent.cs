@@ -54,7 +54,6 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
     // Always set the idle sprite on enable
     //##############################################################################################
     private void OnEnable(){
-        Debug.Log(idleSprite);
         gunSpriteImage.sprite = idleSprite;
     }
 

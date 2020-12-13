@@ -42,3 +42,6 @@ MonoBehaviour:
   reloadSound: {fileID: 8300000, guid: 983660341a200394fa519d2292b22f29, type: 3}
   reloadSoundVolume: 1
   reloadSoundPitchBend: 0
+  usePooledBullets: 1
+  poolIdentifier: machinegun
+  poolSize: 30

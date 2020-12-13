@@ -1,8 +1,8 @@
 # First Person Engine
 This project is an open-source, first-person shooter framework, written in C# for Unity.
-The repository is structured as a Unity project, and there are example levels included for demonstrating the gameplay components. This is a framework applicable for many different types of shooter games, but it's especially suited for retro or "boomer" shooters, with code for 2d guns and sprite enemies. 
+The repository is structured as a Unity project, and there are example levels included for demonstrating the gameplay components. This is a framework applicable for many different types of shooter games, but it's especially suited for retro or "boomer" shooters, with code for 2d guns and sprite enemies.
 
-![example scene](https://i.imgur.com/a5XjBO8.png)
+![example scene](https://i.imgur.com/mDLxd9D.png)
 
 # Installation and Setup
 Setup should be minimal. Clone this repo and place it in a folder of your choosing. You will need Unity 2020.1.5f1 or newer.
@@ -14,6 +14,8 @@ The code is structured in the \Assets\Scripts folder. There are two major groups
 Components represent a systemic, predictable API for interacting with the framework. These are meant to be added to Unity GameObjects, and to have functions called on them to perform behavior. A gameobject might have many different components on it. For example, a Gun Component might have a Shoot() function, and when called, will shoot a bullet into the world. These components also have data on them.
 
 Behaviors are less restrictive, and represent the open ended nature of video game scripting. They are meant to be a bridge between the more rigid, systemic components, and the variety of actions that occur in games. For example, an Enemy Behavior might be responsible for playing animations, making sounds, and firing a gun (All of which are components, and therefore systemic). Behaviors often make a variety of calls to components to accomplish their tasks. Usually, only one of these is added to a given GameObject, and the naming of these behaviors is relevant to the specific behavior it implements. For example, a Sniper Enemy might have a SniperEnemyBehavior, and it's only used for them.
+
+A good rule of thumb: Components can talk to other components, but components should have no knowledge of behaviors.
 
 # Current Feature List
 Shooting Components, used for shooting a bullet and dealing damage to damageables

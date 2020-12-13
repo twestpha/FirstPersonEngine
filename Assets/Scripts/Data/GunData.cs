@@ -76,4 +76,9 @@ public class GunData : ScriptableObject {
     public AudioClip reloadSound;
     public float reloadSoundVolume = 1.0f;
     public float reloadSoundPitchBend = 0.0f;
+
+    [Header("Meta Characteristics")]
+    public bool usePooledBullets;
+    public string poolIdentifier;
+    public int poolSize;
 }

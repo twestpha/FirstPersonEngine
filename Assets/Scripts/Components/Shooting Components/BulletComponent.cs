@@ -33,6 +33,7 @@ public class BulletComponent : MonoBehaviour {
 
     private bool fired;
     private bool shouldKill;
+    private string poolIdentifier; // Register as 'free' with this thing if we're a pooled bullet
 
     private float damage;
     private DamageType type;
@@ -92,7 +93,13 @@ public class BulletComponent : MonoBehaviour {
                 }
             }
 
-            Destroy(gameObject);
+            // Destroy if not pooled, otherwise mark this bullet as freed
+            if(poolIdentifier == null){
+                Destroy(gameObject);
+            } else {
+                PooledGameObjectManager.FreeInstanceToPool(poolIdentifier, gameObject);
+            }
+
             return;
         }
 
@@ -170,5 +177,13 @@ public class BulletComponent : MonoBehaviour {
             GameObject fx = GameObject.Instantiate(optionalImpactEffects);
             fx.transform.position = transform.position;
         }
+    }
+
+    //##############################################################################################
+    // Mark the bullet as being a pooled bullet instance, and give it the identifier for pool
+    // operations
+    //##############################################################################################
+    public void SetAsPooled(string identifier){
+        poolIdentifier = identifier;
     }
 }
