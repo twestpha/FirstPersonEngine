@@ -119,4 +119,5 @@ MonoBehaviour:
   pitchBend: 0
   clip: {fileID: 8300000, guid: b61be84fb154de44fa9749a2c372e80a, type: 3}
   playOnStartup: 1
+  stopOnDisable: 1
   stopOnDestroy: 1

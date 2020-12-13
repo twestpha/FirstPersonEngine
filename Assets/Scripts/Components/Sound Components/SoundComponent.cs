@@ -32,9 +32,10 @@ public class SoundComponent : MonoBehaviour {
     public AudioClip clip;
 
     public bool playOnStartup;
+    public bool stopOnDisable;
     public bool stopOnDestroy;
 
-    private int id;
+    private int id = SoundManagerComponent.INVALID_SOUND;
 
     //##############################################################################################
     // If marked to do so, play on start
@@ -61,10 +62,19 @@ public class SoundComponent : MonoBehaviour {
     }
 
     //##############################################################################################
+    // If marked to, stop the sound on disable
+    //##############################################################################################
+    void OnDisable(){
+        if(stopOnDisable && id != SoundManagerComponent.INVALID_SOUND){
+            SoundManagerComponent.StopSound(id);
+        }
+    }
+
+    //##############################################################################################
     // If marked to, stop the sound on destroy
     //##############################################################################################
     void OnDestroy(){
-        if(stopOnDestroy){
+        if(stopOnDestroy && id != SoundManagerComponent.INVALID_SOUND){
             SoundManagerComponent.StopSound(id);
         }
     }
