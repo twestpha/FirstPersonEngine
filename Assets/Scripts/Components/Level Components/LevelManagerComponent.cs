@@ -62,6 +62,8 @@ public class LevelManagerComponent : MonoBehaviour {
         BuildLevel5,
         BuildLevel6,
         BuildLevel7,
+        BuildLevel8,
+        BuildLevel9,
         // ...
 
         Invalid,

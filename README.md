@@ -8,15 +8,6 @@ The repository is structured as a Unity project, and there are example levels in
 Setup should be minimal. Clone this repo and place it in a folder of your choosing. You will need Unity 2020.1.5f1 or newer.
 Then, add the project in Unity Hub, and import the project.
 
-# Code Overview
-The code is structured in the \Assets\Scripts folder. There are two major groups of code structure; "Components" and "Behaviors". These are contained in their respective folders.
-
-Components represent a systemic, predictable API for interacting with the framework. These are meant to be added to Unity GameObjects, and to have functions called on them to perform behavior. A gameobject might have many different components on it. For example, a Gun Component might have a Shoot() function, and when called, will shoot a bullet into the world. These components also have data on them.
-
-Behaviors are less restrictive, and represent the open ended nature of video game scripting. They are meant to be a bridge between the more rigid, systemic components, and the variety of actions that occur in games. For example, an Enemy Behavior might be responsible for playing animations, making sounds, and firing a gun (All of which are components, and therefore systemic). Behaviors often make a variety of calls to components to accomplish their tasks. Usually, only one of these is added to a given GameObject, and the naming of these behaviors is relevant to the specific behavior it implements. For example, a Sniper Enemy might have a SniperEnemyBehavior, and it's only used for them.
-
-A good rule of thumb: Components can talk to other components, but components should have no knowledge of behaviors.
-
 # Current Feature List
 Shooting Components, used for shooting a bullet and dealing damage to damageables
 * Bullet
@@ -43,7 +34,8 @@ Enemy Components, used for managing enemies and their actions
 * Attack Token
 * Bark
 
-Level Components, used for level loading and lighting changes
+Level Components, used for generating levels from common level editor programs, level loading, and lighting changes
+* Tiled Builder (Import *.csv files from Tiled)
 * Level Manager
 * Level Trigger
 * Level Lighting Volume
@@ -57,6 +49,16 @@ Libraries, for helping with general tasks
 * Custom Math
 * Localizer
 * Timer
+* Pooled GameObject Manager
+
+# Code Overview
+The code is structured in the \Assets\Scripts folder. There are two major groups of code structure; "Components" and "Behaviors". These are contained in their respective folders.
+
+Components represent a systemic, predictable API for interacting with the framework. These are meant to be added to Unity GameObjects, and to have functions called on them to perform behavior. A gameobject might have many different components on it. For example, a Gun Component might have a Shoot() function, and when called, will shoot a bullet into the world. These components also have data on them.
+
+Behaviors are less restrictive, and represent the open ended nature of video game scripting. They are meant to be a bridge between the more rigid, systemic components, and the variety of actions that occur in games. For example, an Enemy Behavior might be responsible for playing animations, making sounds, and firing a gun (All of which are components, and therefore systemic). Behaviors often make a variety of calls to components to accomplish their tasks. Usually, only one of these is added to a given GameObject, and the naming of these behaviors is relevant to the specific behavior it implements. For example, a Sniper Enemy might have a SniperEnemyBehavior, and it's only used for them.
+
+A good rule of thumb: Components can talk to other components, but components should have no knowledge of behaviors.
 
 # Future Work
 * Clean up the TODOs
@@ -65,6 +67,5 @@ Libraries, for helping with general tasks
 * Save slots
 * Enemy Corpses and Barks
 * Player footsteps and Barks
-* Add option for bullet pooling
-* Improved Test Level graphics more representative of the style of game this framework would be used for
+* Improved graphics that are more representative of the style of game this framework would be used for.
 * STRETCH GOAL: WAD file importing

@@ -29,4 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Enemy Scene.unity
     guid: efbf77c33aed3b44491431eaf17f18f8
+  - enabled: 1
+    path: Assets/Scenes/Tiled Import Scene.unity
+    guid: c28e7938724f91a4db137a9906c5e629
   m_configObjects: {}
