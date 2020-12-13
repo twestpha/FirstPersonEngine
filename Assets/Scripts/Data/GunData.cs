@@ -65,7 +65,8 @@ public class GunData : ScriptableObject {
     public Vector3 muzzleOffset;
 
     [Header("Effects")]
-    public GameObject effectsPrefab;
+    public GameObject firingEffectsPrefab;
+    public Vector3 firingEffectsOffset;
 
     [Header("Sounds")]
     public AudioClip fireSound;

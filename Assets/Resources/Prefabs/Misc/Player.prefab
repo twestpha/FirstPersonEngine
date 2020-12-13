@@ -215,7 +215,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 585032169b31217478adca43cde905c2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e6da56c21a87f6c4880fdbe62f95e804, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -468,19 +468,20 @@ MonoBehaviour:
   currentGunData: {fileID: 11400000, guid: 29178a9aae8b75241aede82c28617586, type: 2}
   muzzleTransform: {fileID: 1812113762654171952}
   optionalCasingParticle: {fileID: 0}
+  currentAmmoCount: 0
   playerCamera: {fileID: 0}
   reticleOverlayImage: {fileID: 0}
   gunSpriteImage: {fileID: 5636234756753477762}
-  idleSprite: {fileID: 21300000, guid: 585032169b31217478adca43cde905c2, type: 3}
+  idleSprite: {fileID: 21300000, guid: e6da56c21a87f6c4880fdbe62f95e804, type: 3}
   firingFramerate: 16
   firingSprites:
-  - {fileID: 21300000, guid: 5117e30f06ca4c14ca353efec249e100, type: 3}
-  - {fileID: 21300000, guid: c381bfa395dfa8a4c933cf33341da9bf, type: 3}
+  - {fileID: 21300000, guid: 0a628881ba8d1db48b0a7c930661503a, type: 3}
+  - {fileID: 21300000, guid: 298f874fe6f01ae46bda8cfea5b67718, type: 3}
   reloadingFramerate: 1.5
   reloadingSprites:
-  - {fileID: 21300000, guid: a3c56f2ae45f75e459f114fadc83b303, type: 3}
-  - {fileID: 21300000, guid: fe1fbf0440843b243ae9af496b688cf2, type: 3}
-  - {fileID: 21300000, guid: a3c56f2ae45f75e459f114fadc83b303, type: 3}
+  - {fileID: 21300000, guid: a2b8ef561108c53468fc21dae1a37512, type: 3}
+  - {fileID: 21300000, guid: 2b0dc85ea6a8c164d94bbd52870f7ddc, type: 3}
+  - {fileID: 21300000, guid: a2b8ef561108c53468fc21dae1a37512, type: 3}
 --- !u!114 &8118323696756032106
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -496,19 +497,36 @@ MonoBehaviour:
   currentGunData: {fileID: 11400000, guid: 9081d7abf25f1384fa8eb1170ccbe820, type: 2}
   muzzleTransform: {fileID: 1812113762654171952}
   optionalCasingParticle: {fileID: 0}
+  currentAmmoCount: 0
   playerCamera: {fileID: 0}
   reticleOverlayImage: {fileID: 0}
   gunSpriteImage: {fileID: 5636234756753477762}
-  idleSprite: {fileID: 21300000, guid: 585032169b31217478adca43cde905c2, type: 3}
-  firingFramerate: 16
+  idleSprite: {fileID: 21300000, guid: 2739533c4ee2fb942aa98453bfeed4e8, type: 3}
+  firingFramerate: 12
   firingSprites:
-  - {fileID: 21300000, guid: 5117e30f06ca4c14ca353efec249e100, type: 3}
-  - {fileID: 21300000, guid: c381bfa395dfa8a4c933cf33341da9bf, type: 3}
-  reloadingFramerate: 1.5
+  - {fileID: 21300000, guid: 3b2679c3321e8124a86d83880872a4cd, type: 3}
+  - {fileID: 21300000, guid: fcb69f864bc64ba48baf3ca8887698c6, type: 3}
+  - {fileID: 21300000, guid: 2739533c4ee2fb942aa98453bfeed4e8, type: 3}
+  - {fileID: 21300000, guid: bc6b2c51f4dd23145aba6c141a124c3d, type: 3}
+  - {fileID: 21300000, guid: 75ea75504aee1a146b1f04dac65cf91a, type: 3}
+  - {fileID: 21300000, guid: 356216a877c12874fb8a10fed37c27d4, type: 3}
+  - {fileID: 21300000, guid: 2739533c4ee2fb942aa98453bfeed4e8, type: 3}
+  reloadingFramerate: 5.72
   reloadingSprites:
-  - {fileID: 21300000, guid: a3c56f2ae45f75e459f114fadc83b303, type: 3}
-  - {fileID: 21300000, guid: fe1fbf0440843b243ae9af496b688cf2, type: 3}
-  - {fileID: 21300000, guid: a3c56f2ae45f75e459f114fadc83b303, type: 3}
+  - {fileID: 21300000, guid: 9f88be92a4cbdb0448860c72d4b33d0d, type: 3}
+  - {fileID: 21300000, guid: 2e2d89c96358e334dbcf38e12724161e, type: 3}
+  - {fileID: 21300000, guid: 9f88be92a4cbdb0448860c72d4b33d0d, type: 3}
+  - {fileID: 21300000, guid: 2e2d89c96358e334dbcf38e12724161e, type: 3}
+  - {fileID: 21300000, guid: 9f88be92a4cbdb0448860c72d4b33d0d, type: 3}
+  - {fileID: 21300000, guid: 2e2d89c96358e334dbcf38e12724161e, type: 3}
+  - {fileID: 21300000, guid: 9f88be92a4cbdb0448860c72d4b33d0d, type: 3}
+  - {fileID: 21300000, guid: 2e2d89c96358e334dbcf38e12724161e, type: 3}
+  - {fileID: 21300000, guid: 9f88be92a4cbdb0448860c72d4b33d0d, type: 3}
+  - {fileID: 21300000, guid: 2e2d89c96358e334dbcf38e12724161e, type: 3}
+  - {fileID: 21300000, guid: 9f88be92a4cbdb0448860c72d4b33d0d, type: 3}
+  - {fileID: 21300000, guid: 2e2d89c96358e334dbcf38e12724161e, type: 3}
+  - {fileID: 21300000, guid: 9f88be92a4cbdb0448860c72d4b33d0d, type: 3}
+  - {fileID: 21300000, guid: 2e2d89c96358e334dbcf38e12724161e, type: 3}
 --- !u!114 &1562805683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -524,6 +542,7 @@ MonoBehaviour:
   currentGunData: {fileID: 11400000, guid: 89964396264716d4d9cb9b69bf4bfe59, type: 2}
   muzzleTransform: {fileID: 1812113762654171952}
   optionalCasingParticle: {fileID: 0}
+  currentAmmoCount: 0
   playerCamera: {fileID: 8118486971543315907}
   reticleOverlayImage: {fileID: 5173020964325208669}
   gunSpriteImage: {fileID: 5636234756753477762}

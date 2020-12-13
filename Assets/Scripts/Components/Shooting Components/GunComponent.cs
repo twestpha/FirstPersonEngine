@@ -32,6 +32,9 @@ public class GunComponent : MonoBehaviour {
     public ParticleSystem optionalCasingParticle;
 
     protected bool reloading = false;
+    
+    // For viewing ammo count in editor
+    [SerializeField]
     protected int currentAmmoCount = 0;
 
     protected Timer gunTimer;
@@ -159,10 +162,10 @@ public class GunComponent : MonoBehaviour {
             }
 
             // Spawn effects if available, outside the loop, so there's only ever one
-            if(currentGunData.effectsPrefab != null){
-                GameObject effectsInstance = GameObject.Instantiate(currentGunData.effectsPrefab);
+            if(currentGunData.firingEffectsPrefab != null){
+                GameObject effectsInstance = GameObject.Instantiate(currentGunData.firingEffectsPrefab);
                 effectsInstance.transform.parent = muzzleTransform;
-                effectsInstance.transform.localPosition = Vector3.zero;
+                effectsInstance.transform.localPosition = currentGunData.firingEffectsOffset;
             }
 
             // If there's a casing particle, emit 1

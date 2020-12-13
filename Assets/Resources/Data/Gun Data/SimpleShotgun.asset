@@ -20,7 +20,7 @@ MonoBehaviour:
   automaticAction: 0
   useAmmo: 1
   ammoCount: 7
-  reloadTime: 0.25
+  reloadTime: 0.35
   manualReload: 1
   progressiveReloadInterruption: 1
   useZoom: 0
@@ -33,8 +33,9 @@ MonoBehaviour:
   bulletPrefab: {fileID: 1552996330619193922, guid: 61614e4c9eb07364fbad373e5993ef00,
     type: 3}
   muzzleOffset: {x: 0, y: 0, z: 0}
-  effectsPrefab: {fileID: 5381237789843640210, guid: 8e8b419cca0449744b8099af1bac32f0,
+  firingEffectsPrefab: {fileID: 5381237789843640210, guid: 8e8b419cca0449744b8099af1bac32f0,
     type: 3}
+  firingEffectsOffset: {x: -0.1, y: 0.065, z: 0}
   fireSound: {fileID: 8300000, guid: 9ce8ae02598843e44b2bd1c34f3dea78, type: 3}
   fireSoundVolume: 1
   fireSoundPitchBend: 0

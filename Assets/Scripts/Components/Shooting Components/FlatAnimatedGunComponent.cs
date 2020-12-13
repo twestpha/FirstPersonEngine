@@ -53,7 +53,8 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
     //##############################################################################################
     // Always set the idle sprite on enable
     //##############################################################################################
-    private void OnEnabled(){
+    private void OnEnable(){
+        Debug.Log(idleSprite);
         gunSpriteImage.sprite = idleSprite;
     }
 
@@ -111,14 +112,15 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
             }
         }
 
-        bool reloadInput = Input.GetKeyDown(KeyCode.R);
-        if(!reloading && reloadInput && currentGunData.useAmmo && currentGunData.manualReload){
+        bool reloadInput = Input.GetKeyDown(KeyCode.R); // TODO make this a setting
+        if(!reloading && reloadInput && currentGunData.useAmmo && currentGunData.manualReload && currentAmmoCount < currentGunData.ammoCount){
             reloading = true;
             reloadTimer.Start();
 
             reloadingAnimationTimer.Start();
             state = AnimatedGunState.Reloading;
             gunSpriteImage.sprite = reloadingSprites[0];
+            currentFrame = 0;
         }
 
         // Animating the Gun
@@ -141,7 +143,7 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
 
                 currentFrame++;
 
-                if(currentFrame >= reloadingSprites.Length){
+                if(currentFrame >= reloadingSprites.Length || !reloading){
                     state = AnimatedGunState.Idle;
                     gunSpriteImage.sprite = idleSprite;
                 } else {
