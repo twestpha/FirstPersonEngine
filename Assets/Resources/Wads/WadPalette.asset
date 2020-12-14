@@ -25,3 +25,8 @@ MonoBehaviour:
   - type: 4
     prefab: {fileID: 8233705629959543382, guid: 143e332315c05ad46a1608675eba3b91,
       type: 3}
+  textureData:
+  - type: FLOOR4_8
+    material: {fileID: 0}
+  - type: 
+    material: {fileID: 0}

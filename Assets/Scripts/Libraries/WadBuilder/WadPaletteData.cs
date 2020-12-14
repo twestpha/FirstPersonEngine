@@ -20,9 +20,7 @@ using UnityEngine;
 // Wad Palette Data
 // This is a list of all the Unity assets that need to correlate with WAD file data, whether by
 // index, name, type, or id number.
-//
-// TODO add support for more than just 'things'
-//##################################################################################################
+///##################################################################################################
 [CreateAssetMenu(fileName = "WadPaletteData", menuName = "Shooter/Wad Palette Data", order = 2)]
 public class WadPaletteData : ScriptableObject {
 
@@ -32,5 +30,15 @@ public class WadPaletteData : ScriptableObject {
         public GameObject prefab;
     }
 
+    [HeaderAttribute("Thing Lookup Data")]
     public ThingData[] thingsData;
+
+    [System.Serializable]
+    public class MaterialData {
+        public string type;
+        public Material material;
+    }
+
+    [HeaderAttribute("Material (Texture) Lookup Data")]
+    public MaterialData[] textureData;
 }
