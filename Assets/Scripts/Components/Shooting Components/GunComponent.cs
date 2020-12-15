@@ -44,6 +44,8 @@ public class GunComponent : MonoBehaviour {
 
     protected FirstPersonPlayerComponent player;
 
+    protected int reloadSoundId;
+
     //##############################################################################################
     // Check for required data, then setup the gun
     //##############################################################################################
@@ -118,21 +120,7 @@ public class GunComponent : MonoBehaviour {
 
             currentAmmoCount--;
             if(currentAmmoCount == 0){
-                reloading = true;
-                reloadTimer.Start();
-
-                // Play reloading sound if it exists
-                if(currentGunData.reloadSound != null){
-                    SoundManagerComponent.PlaySound(
-                        currentGunData.reloadSound,
-                        SoundCount.Single,
-                        SoundType.ThreeDimensional,
-                        SoundPriority.Medium,
-                        currentGunData.reloadSoundVolume,
-                        currentGunData.reloadSoundPitchBend,
-                        muzzleTransform.gameObject
-                    );
-                }
+                ReloadGun();
             }
 
             // This is for shotgun-type weapons. It spawns several bullets in a random cone
@@ -210,6 +198,27 @@ public class GunComponent : MonoBehaviour {
             return BULLET_FIRED;
         } else {
             return BULLET_NOT_FIRED;
+        }
+    }
+
+    //##############################################################################################
+    // Used to reload the gun, whether manually in a subclass, or from running out of bullets
+    //##############################################################################################
+    protected void ReloadGun(){
+        reloading = true;
+        reloadTimer.Start();
+
+        // Play reloading sound if it exists
+        if(currentGunData.reloadSound != null){
+            reloadSoundId = SoundManagerComponent.PlaySound(
+                currentGunData.reloadSound,
+                SoundCount.Single,
+                SoundType.ThreeDimensional,
+                SoundPriority.Medium,
+                currentGunData.reloadSoundVolume,
+                currentGunData.reloadSoundPitchBend,
+                muzzleTransform.gameObject
+            );
         }
     }
 

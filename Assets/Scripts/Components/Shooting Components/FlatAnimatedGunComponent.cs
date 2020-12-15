@@ -92,6 +92,11 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
             // If we are a manual reload and it's a progressive, interruptible load, do the interrupt
             if(reloading && currentGunData.manualReload && currentGunData.progressiveReloadInterruption){
                 reloading = false;
+
+                // If playing a reload sound, try to stop it.
+                if(reloadSoundId != SoundManagerComponent.INVALID_SOUND){
+                    SoundManagerComponent.StopSound(reloadSoundId);
+                }
             }
 
             if(base.Shoot()){
@@ -113,8 +118,7 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
 
         bool reloadInput = Input.GetKeyDown(KeyCode.R); // TODO make this a setting
         if(!reloading && reloadInput && currentGunData.useAmmo && currentGunData.manualReload && currentAmmoCount < currentGunData.ammoCount){
-            reloading = true;
-            reloadTimer.Start();
+            ReloadGun();
 
             reloadingAnimationTimer.Start();
             state = AnimatedGunState.Reloading;
