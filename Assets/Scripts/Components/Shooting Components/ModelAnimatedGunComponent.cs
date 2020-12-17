@@ -17,65 +17,57 @@ using UnityEngine;
 using UnityEngine.UI;
 
 //##################################################################################################
-// Flat Animated Gun Component
-// This class is a subclass to handle 2D (flat) animated guns, and displaying that ui to the player
+// Model Animated Gun Component
+// This class is used with the Unity Animator to play animations on a 3d model of a gun
 //
-// The player could potentially have multiple FlatAnimatedGunComponents on it, getting enabled and
+// The player could potentially have multiple ModelAnimatedGunComponents on it, getting enabled and
 // disabled based on which weapon is selected.
 //
 // This class descends from ZoomableGunComponent, which descends from GunComponent
 //##################################################################################################
 [RequireComponent(typeof(FirstPersonPlayerComponent))]
-public class FlatAnimatedGunComponent : ZoomableGunComponent {
+public class ModelAnimatedGunComponent : ZoomableGunComponent {
 
-    private enum AnimatedGunState {
-        Idle,
-        Shooting,
-        Reloading,
-    }
-
-    [HeaderAttribute("Flat Animated Gun Component")]
-    public Image gunSpriteImage;
-    public Sprite idleSprite;
-    public float firingFramerate = 1.0f;
-    public Sprite[] firingSprites;
-    public float reloadingFramerate = 1.0f;
-    public Sprite[] reloadingSprites;
-
-    private AnimatedGunState state;
-    private int currentFrame;
-
-    private Timer firingAnimationTimer;
-    private Timer reloadingAnimationTimer;
+    [HeaderAttribute("Model Animated Gun Component")]
+    public MeshRenderer gunModel;
+    public Animator gunAnimator;
+    public string idleAnimationName;
+    public string shootAnimationName;
+    public string reloadAnimationName;
+    public string scopeAnimationName;
 
     private DamageableComponent damage;
 
     //##############################################################################################
-    // Always set the sprite enabled, and to the idle sprite
+    // Always enable the model and animator, and trigger idle
     //##############################################################################################
     private void OnEnable(){
-        gunSpriteImage.enabled = true;
-        gunSpriteImage.sprite = idleSprite;
+        gunModel.enabled = true;
+        gunAnimator.enabled = true;
+
+        gunAnimator.SetTrigger(idleAnimationName);
     }
 
     //##############################################################################################
-    // Disable the sprite on the way out
+    // Disable the model and animator on the way out
     //##############################################################################################
     private void OnDisable(){
-        gunSpriteImage.enabled = false;
+        gunModel.enabled = false;
+        gunAnimator.enabled = false;
     }
 
     //##############################################################################################
-    // Setup the timers and check for required data
+    // Check for required data
     //##############################################################################################
     protected new void Start(){
         base.Start();
 
-        firingAnimationTimer = new Timer(1.0f / firingFramerate);
-        reloadingAnimationTimer = new Timer(1.0f / reloadingFramerate);
+        if(gunModel == null){
+            Debug.LogError("Gun Model on " + gameObject.name + "'s ModelAnimatedGunComponent cannot be null on start");
+        }
 
-        if(gunSpriteImage == null){
-            Debug.LogError("Gun Sprite Image on " + gameObject.name + "'s FlatAnimatedGunComponent cannot be null on start");
+        if(gunAnimator == null){
+            Debug.LogError("Gun Animator on " + gameObject.name + "'s ModelAnimatedGunComponent cannot be null on start");
         }
 
         damage = GetComponent<DamageableComponent>();
@@ -108,59 +100,18 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
             }
 
             if(base.Shoot()){
-                currentFrame = 0;
-
                 player.AddGunRecoil(this);
 
-                if(reloading){
-                    reloadingAnimationTimer.Start();
-                    state = AnimatedGunState.Reloading;
-                    gunSpriteImage.sprite = reloadingSprites[0];
-                } else {
-                    firingAnimationTimer.Start();
-                    state = AnimatedGunState.Shooting;
-                    gunSpriteImage.sprite = firingSprites[0];
-                }
+                gunAnimator.SetTrigger(shootAnimationName);
             }
         }
 
         bool reloadInput = Input.GetKeyDown(KeyCode.R); // TODO make this a setting
         if(!reloading && reloadInput && currentGunData.useAmmo && currentGunData.manualReload && currentAmmoCount < currentGunData.ammoCount){
             ReloadGun();
-
-            reloadingAnimationTimer.Start();
-            state = AnimatedGunState.Reloading;
-            gunSpriteImage.sprite = reloadingSprites[0];
-            currentFrame = 0;
         }
 
-        // Animating the Gun
-        if(state == AnimatedGunState.Shooting){
-            if(firingAnimationTimer.Finished()){
-                firingAnimationTimer.Start();
-
-                currentFrame++;
-
-                if(currentFrame >= firingSprites.Length){
-                    state = AnimatedGunState.Idle;
-                    gunSpriteImage.sprite = idleSprite;
-                } else {
-                    gunSpriteImage.sprite = firingSprites[currentFrame];
-                }
-            }
-        } else if(state == AnimatedGunState.Reloading){
-            if(reloadingAnimationTimer.Finished()){
-                reloadingAnimationTimer.Start();
-
-                currentFrame++;
-
-                if(currentFrame >= reloadingSprites.Length || !reloading){
-                    state = AnimatedGunState.Idle;
-                    gunSpriteImage.sprite = idleSprite;
-                } else {
-                    gunSpriteImage.sprite = reloadingSprites[currentFrame];
-                }
-            }
-        }
+        gunAnimator.SetBool(reloadAnimationName, reloading);
+        gunAnimator.SetBool(scopeAnimationName, Zooming());
     }
 }

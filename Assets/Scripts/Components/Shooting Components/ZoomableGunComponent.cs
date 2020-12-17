@@ -38,6 +38,7 @@ public class ZoomableGunComponent : GunComponent {
     private Color tintColor;
 
     // Used for smooth damping the transition
+    private bool currentlyZooming;
     private float zoomParameter;
     private float zoomVelocity;
 
@@ -69,10 +70,10 @@ public class ZoomableGunComponent : GunComponent {
 
         if(currentGunData.useZoom){
             // TODO add a player setting for toggling versus hold-to-zoom
-            bool zooming = Input.GetMouseButton(1);
+            currentlyZooming = Input.GetMouseButton(1);
 
             // Smooth damp towards the target zoom
-            zoomParameter = Mathf.SmoothDamp(zoomParameter, zooming ? ZOOM_IN : ZOOM_OUT, ref zoomVelocity, currentGunData.zoomTime);
+            zoomParameter = Mathf.SmoothDamp(zoomParameter, currentlyZooming ? ZOOM_IN : ZOOM_OUT, ref zoomVelocity, currentGunData.zoomTime);
 
             // Square the result; this gives the fading and zooming a nice ramp-up feel
             float parameterSquared = zoomParameter * zoomParameter;
@@ -105,5 +106,12 @@ public class ZoomableGunComponent : GunComponent {
                 reticleOverlayImage.color = tintColor;
             }
         }
+    }
+
+    //##############################################################################################
+    // Return if the zoomable gun is currently zooming
+    //##############################################################################################
+    protected bool Zooming(){
+        return currentlyZooming;
     }
 }

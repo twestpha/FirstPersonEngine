@@ -10,13 +10,9 @@ Then, add the project in Unity Hub, and import the project.
 
 # Current Feature List
 Shooting Components, used for shooting a bullet and dealing damage to damageables
-* Bullet
-* Damageable
-* Gun
-* Gun Data
-* Zoomable Gun
-* Flat Animated Gun
-* Gun Selection
+* 2D and 3D animated gun components
+* Gun, Bullet, and Damageable Components
+* Simple Gun Selection
 
 Player Components, for managing the first person player
 * First Person Player
@@ -62,7 +58,7 @@ A good rule of thumb: Components can talk to other components, but components sh
 
 # Future Work
 * Clean up the TODOs
-* Implement 3D variants for all the sprite-based components (flat animated gun, and example 3d enemy)
+* Implement 3D variants for all the sprite-based components (example 3d enemy)
 * Settings Manager system
 * Save slots
 * Enemy Corpses and Barks

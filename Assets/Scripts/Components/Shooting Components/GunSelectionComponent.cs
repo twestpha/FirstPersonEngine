@@ -53,13 +53,13 @@ public class GunSelectionComponent : MonoBehaviour {
             GunSelection gunSelection = selections[i];
 
             if(Input.GetKeyDown(gunSelection.selectionKey) && i != previouslySelectedIndex){
-                // Enable the current gun
-                gunSelection.gun.enabled = true;
-
                 // Disable the previous gun
                 if(previouslySelectedIndex != INVALID_SELECTION){
                     selections[previouslySelectedIndex].gun.enabled = false;
                 }
+
+                // Enable the current gun
+                gunSelection.gun.enabled = true;
 
                 previouslySelectedIndex = i;
 
