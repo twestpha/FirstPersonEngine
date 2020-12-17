@@ -106,6 +106,7 @@ public class SimpleExampleEnemy : SpriteEnemyBehavior {
 
             if(shootTimer.Finished()){
                 Vector3 toPlayer = FirstPersonPlayerComponent.player.transform.position - transform.position;
+                toPlayer.y = 0.0f;
                 transform.rotation = Quaternion.LookRotation(toPlayer);
 
                 gun.Shoot();

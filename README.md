@@ -67,5 +67,4 @@ A good rule of thumb: Components can talk to other components, but components sh
 * Save slots
 * Enemy Corpses and Barks
 * Player footsteps and Barks
-* Improved graphics that are more representative of the style of game this framework would be used for.
 * STRETCH GOAL: WAD file importing

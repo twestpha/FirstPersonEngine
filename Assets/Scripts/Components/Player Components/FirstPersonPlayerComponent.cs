@@ -185,8 +185,6 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
 
                     transform.rotation = Quaternion.identity;
 
-                    // TODO orient the camera the direction of the respawn transform forward
-
                     // This is not ideal, but since CharacterController requires being grounded to set
                     // velocity - something that can't be guaranteed on death - We have to destroy and
                     // recreate the component to trigger a re-initialize, which zeroes out the velocity.
