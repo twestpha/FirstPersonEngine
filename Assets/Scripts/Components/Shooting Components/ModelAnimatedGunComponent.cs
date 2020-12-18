@@ -101,8 +101,6 @@ public class ModelAnimatedGunComponent : ZoomableGunComponent {
 
             if(base.Shoot()){
                 player.AddGunRecoil(this);
-
-                gunAnimator.SetTrigger(shootAnimationName);
             }
         }
 
@@ -111,7 +109,11 @@ public class ModelAnimatedGunComponent : ZoomableGunComponent {
             ReloadGun();
         }
 
-        gunAnimator.SetBool(reloadAnimationName, reloading);
-        gunAnimator.SetBool(scopeAnimationName, Zooming());
+        bool zooming = Zooming();
+
+        gunAnimator.SetBool(idleAnimationName, !shooting && !reloading && !zooming);
+        gunAnimator.SetBool(shootAnimationName, shooting && !zooming);
+        gunAnimator.SetBool(reloadAnimationName, reloading && !zooming);
+        gunAnimator.SetBool(scopeAnimationName, zooming);
     }
 }

@@ -33,6 +33,7 @@ public class GunComponent : MonoBehaviour {
     public Transform muzzleTransform;
     public ParticleSystem optionalCasingParticle;
 
+    protected bool shooting = false;
     protected bool reloading = false;
 
     // For viewing ammo count in editor
@@ -79,6 +80,10 @@ public class GunComponent : MonoBehaviour {
     // Update the reloading state
     //##############################################################################################
     protected void Update(){
+        if(shooting && gunTimer.Finished()){
+            shooting = false;
+        }
+
         if(currentGunData.useAmmo && reloading){
             // If we're doing a progressive reload, add one ammo per timer finished
             if(currentGunData.manualReload && currentGunData.progressiveReloadInterruption){
@@ -117,6 +122,7 @@ public class GunComponent : MonoBehaviour {
     public bool Shoot(float damage){
         if(gunTimer.Finished() && !reloading){
             gunTimer.Start();
+            shooting = true;
 
             currentAmmoCount--;
             if(currentAmmoCount == 0){
