@@ -154,11 +154,14 @@ public class SaveLoadManagerComponent : MonoBehaviour {
     private static SaveLoadManagerComponent instance;
 
     // Edit this to be your games name
-    private const string SAVE_NAME = "/GAME_NAME.save";
+    private static string SAVE_NAME = "{0}_{1}.save";
 
     // This allows older, invalid saves to be rejected. Bump this whenever making major changes to
     // the Save class that cannot be reconciled on a load.
     public const int SAVE_VERSION = 0;
+
+    // Set this before saving and loading to get different slots
+    public static int saveSlot = 0;
 
     // Serialized just for viewing in editor, don't edit this
     [SerializeField]
@@ -209,7 +212,7 @@ public class SaveLoadManagerComponent : MonoBehaviour {
 
       try {
           BinaryFormatter bf = new BinaryFormatter();
-          FileStream file = File.Open(Application.persistentDataPath + SAVE_NAME, FileMode.Open);
+          FileStream file = File.Open(Application.persistentDataPath + GetCurrentSaveName(), FileMode.Open);
           temp = (Save) bf.Deserialize(file);
           file.Close();
       } catch {
@@ -228,7 +231,7 @@ public class SaveLoadManagerComponent : MonoBehaviour {
         UpdateSave();
 
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + SAVE_NAME);
+        FileStream file = File.Create(Application.persistentDataPath + GetCurrentSaveName());
         bf.Serialize(file, save);
         file.Close();
     }
@@ -243,7 +246,7 @@ public class SaveLoadManagerComponent : MonoBehaviour {
 
         try {
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + SAVE_NAME, FileMode.Open);
+            FileStream file = File.Open(Application.persistentDataPath + GetCurrentSaveName(), FileMode.Open);
             save = (Save) bf.Deserialize(file);
             file.Close();
         } catch {
@@ -318,7 +321,7 @@ public class SaveLoadManagerComponent : MonoBehaviour {
     }
 
     //##############################################################################################
-    //
+    // Singleton operations
     //##############################################################################################
     public static void VerifySingleton(){
         if(instance == null){
@@ -329,5 +332,16 @@ public class SaveLoadManagerComponent : MonoBehaviour {
     public static SaveLoadManagerComponent Instance(){
         VerifySingleton();
         return instance;
+    }
+
+    //##############################################################################################
+    // Replace the placeholders in the save name with the product name and save slot
+    //##############################################################################################
+    public static string GetCurrentSaveName(){
+        string saveName = SAVE_NAME;
+        saveName = saveName.Replace("{0}", Application.productName).Replace("{1}", saveSlot.ToString());
+
+        return "/" + saveName;
+
     }
 }

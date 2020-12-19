@@ -1,6 +1,6 @@
 # First Person Engine
 This project is an open-source, first-person shooter framework, written in C# for Unity.
-The repository is structured as a Unity project, and there are example levels included for demonstrating the gameplay components. This is a framework applicable for many different types of shooter games, but it's especially suited for retro or "boomer" shooters, including code for 2d guns and sprite enemies.
+The repository is structured as a Unity project, and there are example levels included for demonstrating the gameplay components. This is a framework applicable for many different types of shooter games, but it's especially suited for retro or "boomer" shooters, including code for 2d guns, sprite enemies, and various map import options.
 
 ![example scene](https://i.imgur.com/mDLxd9D.png)
 
@@ -60,7 +60,6 @@ A good rule of thumb: Components can talk to other components, but components sh
 * Clean up the TODOs
 * Implement 3D variants for all the sprite-based components (example 3d enemy)
 * Settings Manager system
-* Save slots
 * Enemy Corpses and Barks
 * Player footsteps and Barks
 * STRETCH GOAL: WAD file importing
