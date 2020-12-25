@@ -35,10 +35,10 @@ public class WadPaletteData : ScriptableObject {
 
     [System.Serializable]
     public class MaterialData {
-        public string type;
+        public string name;
         public Material material;
     }
 
     [HeaderAttribute("Material (Texture) Lookup Data")]
-    public MaterialData[] textureData;
+    public MaterialData[] materialData;
 }

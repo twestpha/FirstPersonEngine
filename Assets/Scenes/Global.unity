@@ -241,6 +241,64 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 500, y: 2, z: 500}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &338496165
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 338496166}
+  - component: {fileID: 338496168}
+  - component: {fileID: 338496167}
+  m_Layer: 0
+  m_Name: wad_level_trigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &338496166
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338496165}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -42.5, y: 0, z: -90.8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 810066810}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &338496167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338496165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 021bd28cce953fa4fbb665db2f53ba43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  primaryLevel: 9
+--- !u!65 &338496168
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338496165}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 49.80783, y: 20, z: 51.196983}
+  m_Center: {x: 19.779953, y: 0, z: 9.401508}
 --- !u!1 &393046054
 GameObject:
   m_ObjectHideFlags: 0
@@ -719,7 +777,7 @@ MonoBehaviour:
   - selfLevelLabel: 0
     neighborLevels: 
   - selfLevelLabel: 1
-    neighborLevels: 020000000300000005000000060000000700000008000000
+    neighborLevels: 02000000030000000500000006000000070000000800000009000000
   - selfLevelLabel: 2
     neighborLevels: 01000000
   - selfLevelLabel: 3
@@ -733,7 +791,9 @@ MonoBehaviour:
   - selfLevelLabel: 7
     neighborLevels: 01000000
   - selfLevelLabel: 8
-    neighborLevels: 01000000
+    neighborLevels: 0100000009000000
+  - selfLevelLabel: 9
+    neighborLevels: 0100000009000000
   levelIsLoaded: 
 --- !u!4 &810066810
 Transform:
@@ -755,6 +815,7 @@ Transform:
   - {fileID: 393046055}
   - {fileID: 1682483205}
   - {fileID: 72776698}
+  - {fileID: 338496166}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

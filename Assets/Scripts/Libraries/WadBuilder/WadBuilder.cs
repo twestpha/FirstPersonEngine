@@ -18,13 +18,10 @@ using System.Collections.Generic;
 
 #if UNITY_EDITOR
 using UnityEditor;
-#endif // UNITY_EDITOR
-
 
 //##################################################################################################
 // TODO document me... a lot
 //##################################################################################################
-
 
 //##################################################################################################
 // Wad Map
@@ -95,8 +92,8 @@ public class WadLineDef {
     public const int FLAGS_INDEX = 4;
     public const int SPECIAL_TYPE_INDEX = 6;
     public const int SECTOR_TAG_INDEX = 8;
-    public const int FRONT_SIDEDEF_INDEX = 8;
-    public const int BACK_SIDEDEF_INDEX = 8;
+    public const int FRONT_SIDEDEF_INDEX = 10;
+    public const int BACK_SIDEDEF_INDEX = 12;
 
     public int startVertex;
     public int endVertex;
@@ -134,7 +131,7 @@ public class WadSideDef {
 // This is a helper struct for a 'vertex' expressed in WAD files. It is 4 bytes long.
 //##################################################################################################
 public class WadVertex {
-    public const int SIDEDEF_SIZE = 4;
+    public const int VERTEX_SIZE = 4;
 
     public const int X_OFFSET_INDEX = 0;
     public const int Y_OFFSET_INDEX = 2;
@@ -173,7 +170,7 @@ public class WadSSector {
     public const int SSECTOR_SIZE = 4;
 
     public const int SEG_COUNT_INDEX = 0;
-    public const int FIRST_SEG_NUMBER_INDEX = 0;
+    public const int FIRST_SEG_NUMBER_INDEX = 2;
 
     public int segCount;
     public int firstSegNumber;
@@ -246,6 +243,23 @@ public class WadSector {
 }
 
 //##################################################################################################
+// Wad Triangle
+// This is a helper struct for a triangular polygon. This is used as an intermediate to store data
+// before building actual mesh data in the unity scene.
+//##################################################################################################
+public class WadTriangle {
+    public Vector3 A;
+    public Vector3 B;
+    public Vector3 C;
+
+    public string textureName;
+
+    // TODO what even are these? Offsets...?
+    public Vector2 U;
+    public Vector2 V;
+}
+
+//##################################################################################################
 // Wad Builder
 // https://doomwiki.org/wiki/WAD
 //##################################################################################################
@@ -258,10 +272,13 @@ public class WadBuilder : MonoBehaviour {
     private const int LUMP_FILESIZE_OFFSET = 4;
     private const int LUMP_FILENAME_OFFSET = 8;
 
+    private const int INVALID_SIDEDEF_INDEX = -1;
     private const int LUMP_INFO_SIZE = 16;
 
+    private const int WALL_TRIANGLE_COUNT = 6; // each wall has 3 quads (upper, middle, lower) and 2 tris per quad.
+
     public TextAsset wadAsset;
-    public float mapScale = 0.1f;
+    public float mapScale = 0.05f; // Using Doom maps, this looks about right
     public string mapToBuildName;
     public WadPaletteData wadPalette;
 
@@ -306,7 +323,7 @@ public class WadBuilder : MonoBehaviour {
             // If we're still looking for the map, check the name
             if(!foundMap){
                 if(lumpFileName.Contains(mapName.ToUpper())){
-                    Debug.Log("Found " + lumpFileName + "!!!");
+                    Debug.Log("Found map in WAD as " + lumpFileName);
                     map.valid = true;
                     foundMap = true;
                 }
@@ -362,11 +379,37 @@ public class WadBuilder : MonoBehaviour {
             DestroyImmediate(transform.GetChild(0).gameObject);
         }
 
+        // Mark this as dirty so the save asterisk appears
+        EditorUtility.SetDirty(gameObject);
+
         // Parse the maps lumps into more workable data
         List<WadThing> thingList = ParseThings(bytes, map);
         List<WadLineDef> lineDefList = ParseLineDefs(bytes, map);
+        List<WadSideDef> sideDefList = ParseSideDefs(bytes, map);
+        List<WadVertex> vertexList = ParseVertexes(bytes, map);
+        List<WadSeg> segList = ParseSegs(bytes, map);
+        List<WadSSector> sSectorList = ParseSSectors(bytes, map);
+        List<WadNode> nodeList = ParseNodes(bytes, map);
+        List<WadSector> sectorList = ParseSectors(bytes, map);
 
-        // TODO parse all the other properties
+        // Debug print all the stats from parsing for verifying things loaded correctly
+        Debug.Log("Parsed " + thingList.Count + " things (THINGS)");
+        Debug.Log("Parsed " + lineDefList.Count + " line definitions (LINEDEFS)");
+        Debug.Log("Parsed " + sideDefList.Count + " side definitions (SIDEDEFS)");
+        Debug.Log("Parsed " + vertexList.Count + " vertexes (VERTEXES)");
+        Debug.Log("Parsed " + segList.Count + " line segments (SEGS)");
+        Debug.Log("Parsed " + sSectorList.Count + " sub-sectors (SSECTORS)");
+        Debug.Log("Parsed " + nodeList.Count + " nodes (NODES)");
+        Debug.Log("Parsed " + sectorList.Count + " sectors (SECTORS)");
+
+        List<WadTriangle> wallTriangles      = new List<WadTriangle>();
+        List<WadTriangle> floorTriangles     = new List<WadTriangle>();
+        List<WadTriangle> ceilingTriangles   = new List<WadTriangle>();
+
+        BuildTriangles(lineDefList, sideDefList, vertexList, sectorList,
+                       ref wallTriangles, ref floorTriangles, ref ceilingTriangles);
+
+        // Then we'll make those polygons into unity shit later
 
         // Build raw geo while sorting into material groups
         // Also add them to floor, ceiling, and wall groups
@@ -378,6 +421,8 @@ public class WadBuilder : MonoBehaviour {
 
         // Might have to instatiate things after map is built, to get y height for placement
         InstantiateThings(thingList);
+
+        InstantiateWalls(wallTriangles);
 
         // Apply collision meshes (walls and ceilings)
     }
@@ -404,6 +449,470 @@ public class WadBuilder : MonoBehaviour {
     }
 
     //##############################################################################################
+    // Parse the linedef lump in the wad, and return the constructed list of linedefs
+    //##############################################################################################
+    private List<WadLineDef> ParseLineDefs(byte[] bytes, WadMap map){
+        List<WadLineDef> wadLineDefs = new List<WadLineDef>();
+
+        for(int i = map.LineDefsIndex; i < map.LineDefsIndex + map.LineDefsSize; i += WadLineDef.LINEDEF_SIZE){
+            WadLineDef newLineDef = new WadLineDef();
+
+            newLineDef.startVertex  = Read2(bytes, i + WadLineDef.START_VERTEX_INDEX);
+            newLineDef.endVertex    = Read2(bytes, i + WadLineDef.END_VERTEX_INDEX);
+            newLineDef.flags        = Read2(bytes, i + WadLineDef.FLAGS_INDEX);
+            newLineDef.specialType  = Read2(bytes, i + WadLineDef.SPECIAL_TYPE_INDEX);
+            newLineDef.sectorTag    = Read2(bytes, i + WadLineDef.SECTOR_TAG_INDEX);
+            newLineDef.frontSideDef = Read2(bytes, i + WadLineDef.FRONT_SIDEDEF_INDEX);
+            newLineDef.backSideDef  = Read2(bytes, i + WadLineDef.BACK_SIDEDEF_INDEX);
+
+            wadLineDefs.Add(newLineDef);
+        }
+
+        return wadLineDefs;
+    }
+
+    //##############################################################################################
+    // Parse the sidedef lump in the wad, and return the constructed list of sidedefs
+    //##############################################################################################
+    private List<WadSideDef> ParseSideDefs(byte[] bytes, WadMap map){
+        List<WadSideDef> wadSideDefs = new List<WadSideDef>();
+
+        for(int i = map.SideDefsIndex; i < map.SideDefsIndex + map.SideDefsSize; i += WadSideDef.SIDEDEF_SIZE){
+            WadSideDef newSideDef = new WadSideDef();
+
+            newSideDef.xOffset            = Read2(bytes, i + WadSideDef.X_OFFSET_INDEX);
+            newSideDef.yOffset            = Read2(bytes, i + WadSideDef.Y_OFFSET_INDEX);
+            newSideDef.upperTextureName   = Read8Name(bytes, i + WadSideDef.UPPER_TEXTURE_NAME_INDEX);
+            newSideDef.lowerTextureName   = Read8Name(bytes, i + WadSideDef.LOWER_TEXTURE_NAME_INDEX);
+            newSideDef.middleTextureName  = Read8Name(bytes, i + WadSideDef.MIDDLE_TEXTURE_NAME_INDEX);
+            newSideDef.sectorNumberFacing = Read2(bytes, i + WadSideDef.SECTOR_NUMBER_FACING_INDEX);
+
+            wadSideDefs.Add(newSideDef);
+        }
+
+        return wadSideDefs;
+    }
+
+    //##############################################################################################
+    // Parse the vertex lump in the wad, and return the constructed list of vertexes
+    //##############################################################################################
+    private List<WadVertex> ParseVertexes(byte[] bytes, WadMap map){
+        List<WadVertex> wadVertexes = new List<WadVertex>();
+
+        for(int i = map.VertexesIndex; i < map.VertexesIndex + map.VertexesSize; i += WadVertex.VERTEX_SIZE){
+            WadVertex newVertex = new WadVertex();
+
+            newVertex.xPosition = Read2(bytes, i + WadVertex.X_OFFSET_INDEX);
+            newVertex.yPosition = Read2(bytes, i + WadVertex.Y_OFFSET_INDEX);
+
+            wadVertexes.Add(newVertex);
+        }
+
+        return wadVertexes;
+    }
+
+    //##############################################################################################
+    // Parse the seg lump in the wad, and return the constructed list of segs
+    //##############################################################################################
+    private List<WadSeg> ParseSegs(byte[] bytes, WadMap map){
+        List<WadSeg> wadSegs = new List<WadSeg>();
+
+        for(int i = map.SegsIndex; i < map.SegsIndex + map.SegsSize; i += WadSeg.SEG_SIZE){
+            WadSeg newSeg = new WadSeg();
+
+            newSeg.startVertexNumber = Read2(bytes, i + WadSeg.START_VERTEX_NUMBER_INDEX);
+            newSeg.endVertexNumber   = Read2(bytes, i + WadSeg.END_VERTEX_NUMBER_INDEX);
+            newSeg.angle             = Read2(bytes, i + WadSeg.ANGLE_INDEX);
+            newSeg.lineDefNumber     = Read2(bytes, i + WadSeg.LINEDEF_NUMBER_INDEX);
+            newSeg.direction         = Read2(bytes, i + WadSeg.DIRECTION_INDEX) > 0; // Simple bool cast
+            newSeg.distance          = Read2(bytes, i + WadSeg.DISTANCE_INDEX);
+
+            wadSegs.Add(newSeg);
+        }
+
+        return wadSegs;
+    }
+
+    //##############################################################################################
+    // Parse the ssector lump in the wad, and return the constructed list of ssectors
+    //##############################################################################################
+    private List<WadSSector> ParseSSectors(byte[] bytes, WadMap map){
+        List<WadSSector> wadSSectors = new List<WadSSector>();
+
+        for(int i = map.SSectorsIndex; i < map.SSectorsIndex + map.SSectorsSize; i += WadSSector.SSECTOR_SIZE){
+            WadSSector newSSector = new WadSSector();
+
+            newSSector.segCount       = Read2(bytes, i + WadSSector.SEG_COUNT_INDEX);
+            newSSector.firstSegNumber = Read2(bytes, i + WadSSector.FIRST_SEG_NUMBER_INDEX);
+
+            wadSSectors.Add(newSSector);
+        }
+
+        return wadSSectors;
+    }
+
+    //##############################################################################################
+    // Parse the node lump in the wad, and return the constructed list of nodes
+    //##############################################################################################
+    private List<WadNode> ParseNodes(byte[] bytes, WadMap map){
+        List<WadNode> wadNodes = new List<WadNode>();
+
+        for(int i = map.NodesIndex; i < map.NodesIndex + map.NodesSize; i += WadNode.NODE_SIZE){
+            WadNode newNode = new WadNode();
+
+            newNode.partitionLineXCoordinate = Read2(bytes, i + WadNode.PARTITION_LINE_X_COORDINATE_INDEX);
+            newNode.partitionLineYCoordinate = Read2(bytes, i + WadNode.PARTITION_LINE_Y_COORDINATE_INDEX);
+            newNode.partitionDeltaX          = Read2(bytes, i + WadNode.PARTITION_DELTA_X_INDEX);
+            newNode.partitionDeltaY          = Read2(bytes, i + WadNode.PARTITION_DELTA_Y_INDEX);
+            newNode.rightBoundingBox         = ReadBoundingBox(bytes, i + WadNode.RIGHT_BOUNDING_BOX_INDEX);
+            newNode.leftBoundingBox          = ReadBoundingBox(bytes, i + WadNode.LEFT_BOUNDING_BOX_INDEX);
+            newNode.rightChild               = Read2(bytes, i + WadNode.RIGHT_CHILD_INDEX);
+            newNode.leftChild                = Read2(bytes, i + WadNode.LEFT_CHILD_INDEX);
+
+            wadNodes.Add(newNode);
+        }
+
+        return wadNodes;
+    }
+
+    //##############################################################################################
+    // Parse the sector lump in the wad, and return the constructed list of sectors
+    //##############################################################################################
+    private List<WadSector> ParseSectors(byte[] bytes, WadMap map){
+        List<WadSector> wadSectors = new List<WadSector>();
+
+        for(int i = map.SectorsIndex; i < map.SectorsIndex + map.SectorsSize; i += WadSector.SECTOR_SIZE){
+            WadSector newSector = new WadSector();
+
+            newSector.floorHeight        = Read2(bytes, i + WadSector.FLOOR_HEIGHT_INDEX);
+            newSector.ceilingHeight      = Read2(bytes, i + WadSector.CEILING_HEIGHT_INDEX);
+            newSector.floorTextureName   = Read8Name(bytes, i + WadSector.FLOOR_TEXTURE_NAME_INDEX);
+            newSector.ceilingTextureName = Read8Name(bytes, i + WadSector.CEILING_TEXTURE_NAME_INDEX);
+            newSector.lightLevel         = Read2(bytes, i + WadSector.LIGHT_LEVEL_INDEX);
+            newSector.specialType        = Read2(bytes, i + WadSector.SPECIAL_TYPE_INDEX);
+            newSector.tagNumber          = Read2(bytes, i + WadSector.TAG_NUMBER_INDEX);
+
+            wadSectors.Add(newSector);
+        }
+
+        return wadSectors;
+    }
+
+    //##############################################################################################
+    // Built the triangles based on line, side, vertex, and sector definitions, and output them
+    // into the appropriate buffers
+    //##############################################################################################
+    private void BuildTriangles(List<WadLineDef> lineDefs, List<WadSideDef> sideDefs, List<WadVertex> vertexList, List<WadSector> sectorList,
+                                ref List<WadTriangle> wallTriangles, ref List<WadTriangle> floorTriangles, ref List<WadTriangle> ceilingTriangles){
+
+        // Iterate over all the line definitions, building the walls
+        for(int i = 0, count = lineDefs.Count; i < count; ++i){
+            WadLineDef lineDef = lineDefs[i];
+
+            WadSideDef frontSideDef = sideDefs[lineDef.frontSideDef];
+            WadSideDef backSideDef  = lineDef.backSideDef == INVALID_SIDEDEF_INDEX ? null : sideDefs[lineDef.backSideDef];
+
+            WadSector frontSideSector = sectorList[frontSideDef.sectorNumberFacing];
+            WadSector backSideSector  = backSideDef == null ? null : sectorList[backSideDef.sectorNumberFacing];
+
+            Vector3 startVertexFlat = VertexInScaled3D(vertexList[lineDef.startVertex]);
+            Vector3 endVertexFlat   = VertexInScaled3D(vertexList[lineDef.endVertex]);
+
+            // Each wall can have up to 3 quads associated with it; lower, middle, and upper
+            // Each of these has four vertexes, in the pattern below:
+            // B-----C
+            // |     |
+            // A-----D
+            // Where ABD and DAC form the two triangles of that quad, and A and B correspond vertically
+            // with the start vertex, and C and D with the end vertex
+
+            // Simple case, we are a one-sided sidedef
+            if(backSideSector == null){
+                // Don't add triangles if there's no texture
+                if(!string.IsNullOrEmpty(frontSideDef.middleTextureName)){
+                    Vector3 wallA = startVertexFlat + (Vector3.up * ConvertToScaled(frontSideSector.floorHeight));
+                    Vector3 wallB = startVertexFlat + (Vector3.up * ConvertToScaled(frontSideSector.ceilingHeight));
+                    Vector3 wallC = endVertexFlat + (Vector3.up * ConvertToScaled(frontSideSector.ceilingHeight));
+                    Vector3 wallD = endVertexFlat + (Vector3.up * ConvertToScaled(frontSideSector.floorHeight));
+
+                    WadTriangle simpleWallTriangleA = new WadTriangle();
+                    simpleWallTriangleA.A = wallA;
+                    simpleWallTriangleA.B = wallB;
+                    simpleWallTriangleA.C = wallC;
+                    simpleWallTriangleA.textureName = frontSideDef.middleTextureName;
+                    // TODO UVs
+
+                    WadTriangle simpleWallTriangleB = new WadTriangle();
+                    simpleWallTriangleB.A = wallD;
+                    simpleWallTriangleB.B = wallA;
+                    simpleWallTriangleB.C = wallC;
+                    simpleWallTriangleB.textureName = frontSideDef.middleTextureName;
+                    // TODO UVs
+
+                    wallTriangles.Add(simpleWallTriangleA);
+                    wallTriangles.Add(simpleWallTriangleB);
+
+                    // Debug.DrawLine(wallA, wallB, Color.red, 10.0f);
+                    // Debug.DrawLine(wallB, wallC, Color.red, 10.0f);
+                    // Debug.DrawLine(wallC, wallD, Color.red, 10.0f);
+                    // Debug.DrawLine(wallD, wallA, Color.red, 10.0f);
+                }
+            } else {
+                // Get the lower of the back/front side floor heights
+                int lowFloor = 0;
+                int middleFloor = 0;
+                bool frontSideLow = false;
+                bool floorDeltaZero = false;
+
+                if(frontSideSector.floorHeight > backSideSector.floorHeight){
+                    lowFloor = backSideSector.floorHeight;
+                    middleFloor = frontSideSector.floorHeight;
+                    frontSideLow = false;
+                } else {
+                    lowFloor = frontSideSector.floorHeight;
+                    middleFloor = backSideSector.floorHeight;
+                    frontSideLow = true;
+                }
+
+                floorDeltaZero = (frontSideSector.floorHeight - backSideSector.floorHeight) == 0;
+
+                // Get the higher of the back/front side ceiling heights
+                int middleCeiling = 0;
+                int highCeiling = 0;
+                bool frontSideHigh = false;
+                bool ceilingDeltaZero = false;
+
+                if(frontSideSector.ceilingHeight > backSideSector.ceilingHeight){
+                    middleCeiling = backSideSector.ceilingHeight;
+                    highCeiling = frontSideSector.ceilingHeight;
+                    frontSideHigh = false;
+                } else {
+                    middleCeiling = frontSideSector.ceilingHeight;
+                    highCeiling = backSideSector.ceilingHeight;
+                    frontSideHigh = true;
+                }
+
+                ceilingDeltaZero = (frontSideSector.ceilingHeight - backSideSector.ceilingHeight) == 0;
+
+                bool middleDeltaZero = (middleCeiling - middleFloor) == 0;
+
+                // Get all the vertices set up based on lower, middle, and upper quads
+                Vector3 lowerA = startVertexFlat + (Vector3.up * ConvertToScaled(lowFloor));
+                Vector3 lowerB = startVertexFlat + (Vector3.up * ConvertToScaled(middleFloor));
+                Vector3 lowerC = endVertexFlat + (Vector3.up * ConvertToScaled(middleFloor));
+                Vector3 lowerD = endVertexFlat + (Vector3.up * ConvertToScaled(lowFloor));
+
+                // Debug.DrawLine(lowerA, lowerB, Color.blue, 10.0f);
+                // Debug.DrawLine(lowerB, lowerC, Color.blue, 10.0f);
+                // Debug.DrawLine(lowerC, lowerD, Color.blue, 10.0f);
+                // Debug.DrawLine(lowerD, lowerA, Color.blue, 10.0f);
+
+                Vector3 middleA = startVertexFlat + (Vector3.up * ConvertToScaled(middleFloor));
+                Vector3 middleB = startVertexFlat + (Vector3.up * ConvertToScaled(middleCeiling));
+                Vector3 middleC = endVertexFlat + (Vector3.up * ConvertToScaled(middleCeiling));
+                Vector3 middleD = endVertexFlat + (Vector3.up * ConvertToScaled(middleFloor));
+
+                // Debug.DrawLine(middleA, middleB, Color.green, 10.0f);
+                // Debug.DrawLine(middleB, middleC, Color.green, 10.0f);
+                // Debug.DrawLine(middleC, middleD, Color.green, 10.0f);
+                // Debug.DrawLine(middleD, middleA, Color.green, 10.0f);
+
+                Vector3 upperA = startVertexFlat + (Vector3.up * ConvertToScaled(middleCeiling));
+                Vector3 upperB = startVertexFlat + (Vector3.up * ConvertToScaled(highCeiling));
+                Vector3 upperC = endVertexFlat + (Vector3.up * ConvertToScaled(highCeiling));
+                Vector3 upperD = endVertexFlat + (Vector3.up * ConvertToScaled(middleCeiling));
+
+                // Debug.DrawLine(upperA, upperB, Color.white, 10.0f);
+                // Debug.DrawLine(upperB, upperC, Color.white, 10.0f);
+                // Debug.DrawLine(upperC, upperD, Color.white, 10.0f);
+                // Debug.DrawLine(upperD, upperA, Color.white, 10.0f);
+
+                // Something is fucky here...
+
+                if(!floorDeltaZero){
+                    // figure out which wall (front or back) is the low wall, then create the quad for that
+                    WadTriangle lowerWallTriangleA = new WadTriangle();
+                    WadTriangle lowerWallTriangleB = new WadTriangle();
+
+                    if(frontSideLow){
+                        lowerWallTriangleA.A = lowerA;
+                        lowerWallTriangleA.B = lowerB;
+                        lowerWallTriangleA.C = lowerC;
+                        lowerWallTriangleA.textureName = frontSideDef.lowerTextureName;
+                        // TODO UVs
+
+                        lowerWallTriangleB.A = lowerD;
+                        lowerWallTriangleB.B = lowerA;
+                        lowerWallTriangleB.C = lowerC;
+                        lowerWallTriangleB.textureName = frontSideDef.lowerTextureName;
+                        // TODO UVs
+                    } else {
+                        lowerWallTriangleA.A = lowerD;
+                        lowerWallTriangleA.B = lowerC;
+                        lowerWallTriangleA.C = lowerB;
+                        lowerWallTriangleA.textureName = backSideDef.lowerTextureName;
+                        // TODO UVs
+
+                        lowerWallTriangleB.A = lowerB;
+                        lowerWallTriangleB.B = lowerA;
+                        lowerWallTriangleB.C = lowerD;
+                        lowerWallTriangleB.textureName = backSideDef.lowerTextureName;
+                        // TODO UVs
+                    }
+
+                    if(!string.IsNullOrEmpty(lowerWallTriangleA.textureName)){
+                        wallTriangles.Add(lowerWallTriangleA);
+                    }
+
+                    if(!string.IsNullOrEmpty(lowerWallTriangleB.textureName)){
+                        wallTriangles.Add(lowerWallTriangleB);
+                    }
+                }
+
+                /*if(!ceilingDeltaZero){
+                    // figure out which wall (front or back) is the low wall, then create the quad for that
+                    WadTriangle middleWallTriangleA = new WadTriangle();
+                    WadTriangle middleWallTriangleB = new WadTriangle();
+
+                    if(frontSideLow){
+                        middleWallTriangleA.A = middleA;
+                        middleWallTriangleA.B = middleB;
+                        middleWallTriangleA.C = middleC;
+                        middleWallTriangleA.textureName = frontSideDef.middleTextureName;
+                        // TODO UVs
+
+                        middleWallTriangleB.A = middleD;
+                        middleWallTriangleB.B = middleA;
+                        middleWallTriangleB.C = middleC;
+                        middleWallTriangleB.textureName = frontSideDef.middleTextureName;
+                        // TODO UVs
+                    } else {
+                        middleWallTriangleA.A = middleD;
+                        middleWallTriangleA.B = middleC;
+                        middleWallTriangleA.C = middleB;
+                        middleWallTriangleA.textureName = backSideDef.middleTextureName;
+                        // TODO UVs
+
+                        middleWallTriangleB.A = middleB;
+                        middleWallTriangleB.B = middleA;
+                        middleWallTriangleB.C = middleD;
+                        middleWallTriangleB.textureName = backSideDef.middleTextureName;
+                        // TODO UVs
+                    }
+
+                    if(!string.IsNullOrEmpty(middleWallTriangleA.textureName)){
+                        wallTriangles.Add(middleWallTriangleA);
+                    }
+
+                    if(!string.IsNullOrEmpty(middleWallTriangleB.textureName)){
+                        wallTriangles.Add(middleWallTriangleB);
+                    }
+                }*/
+
+                if(!ceilingDeltaZero){
+                    // figure out which wall (front or back) is the low wall, then create the quad for that
+                    WadTriangle upperWallTriangleA = new WadTriangle();
+                    WadTriangle upperWallTriangleB = new WadTriangle();
+
+                    if(frontSideHigh){
+                        upperWallTriangleA.A = upperA;
+                        upperWallTriangleA.B = upperB;
+                        upperWallTriangleA.C = upperC;
+                        upperWallTriangleA.textureName = frontSideDef.upperTextureName;
+                        // TODO UVs
+
+                        upperWallTriangleB.A = upperD;
+                        upperWallTriangleB.B = upperA;
+                        upperWallTriangleB.C = upperC;
+                        upperWallTriangleB.textureName = frontSideDef.upperTextureName;
+                        // TODO UVs
+                    } else {
+                        upperWallTriangleA.A = upperD;
+                        upperWallTriangleA.B = upperC;
+                        upperWallTriangleA.C = upperB;
+                        upperWallTriangleA.textureName = backSideDef.upperTextureName;
+                        // TODO UVs
+
+                        upperWallTriangleB.A = upperB;
+                        upperWallTriangleB.B = upperA;
+                        upperWallTriangleB.C = upperD;
+                        upperWallTriangleB.textureName = backSideDef.upperTextureName;
+                        // TODO UVs
+                    }
+
+                    if(!string.IsNullOrEmpty(upperWallTriangleA.textureName)){
+                        wallTriangles.Add(upperWallTriangleA);
+                    }
+
+                    if(!string.IsNullOrEmpty(upperWallTriangleB.textureName)){
+                        wallTriangles.Add(upperWallTriangleB);
+                    }
+                }
+            }
+        }
+
+        // For the sectors, we need to map sector to linedef to get the vertexes
+        Dictionary<WadSector, List<WadLineDef>> sectorToLineLookup = new Dictionary<WadSector, List<WadLineDef>>();
+
+        for(int i = 0, count = lineDefs.Count; i < count; ++i){
+            WadLineDef lineDef = lineDefs[i];
+
+            WadSideDef frontSideDef = sideDefs[lineDef.frontSideDef];
+            WadSideDef backSideDef  = lineDef.backSideDef == INVALID_SIDEDEF_INDEX ? null : sideDefs[lineDef.backSideDef];
+
+            WadSector frontSideSector = sectorList[frontSideDef.sectorNumberFacing];
+            WadSector backSideSector  = backSideDef == null ? null : sectorList[backSideDef.sectorNumberFacing];
+
+            // Add the line for the front (and back, if it exists) sector
+            if(!sectorToLineLookup.ContainsKey(frontSideSector)){
+                sectorToLineLookup[frontSideSector] = new List<WadLineDef>();
+            }
+
+            sectorToLineLookup[frontSideSector].Add(lineDef);
+
+            if(backSideSector != null){
+                if(!sectorToLineLookup.ContainsKey(backSideSector)){
+                    sectorToLineLookup[backSideSector] = new List<WadLineDef>();
+                }
+
+                sectorToLineLookup[backSideSector].Add(lineDef);
+            }
+        }
+
+        // sectorToLineLookup
+        int iterations = 0;
+        while(true){
+
+            // Greedily (using just distance) try to build triangles
+            List<WadLineDef> testSectorLines = new List<List<WadLineDef>>(sectorToLineLookup.Values)[0];
+
+
+
+            break;
+
+
+            if(iterations > 1000){
+                break;
+            }
+        }
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+    //##############################################################################################
     // Instantiate a list of things using the palette and place them in the Unity scene
     //##############################################################################################
     private void InstantiateThings(List<WadThing> thingList){
@@ -411,6 +920,7 @@ public class WadBuilder : MonoBehaviour {
         GameObject thingParentObject = new GameObject();
         thingParentObject.name = WadMap.THINGS_NAME;
         thingParentObject.transform.parent = transform;
+        thingParentObject.transform.localPosition = Vector3.zero;
 
         // Build a dictionary for looking up the things with the type
         Dictionary<int, GameObject> thingTypeToPrefabLookup = new Dictionary<int, GameObject>();
@@ -435,7 +945,7 @@ public class WadBuilder : MonoBehaviour {
                 newThingGameObject.name =  "type_" + wadThingToInstantiate.type + "_thing_" + i;
 
                 // Move and orient to correct place
-                newThingGameObject.transform.position = new Vector3(
+                newThingGameObject.transform.localPosition = new Vector3(
                     mapScale * (float)(wadThingToInstantiate.xPosition),
                     0.0f /* how to get height...? */,
                     mapScale * (float)(wadThingToInstantiate.yPosition)
@@ -445,42 +955,111 @@ public class WadBuilder : MonoBehaviour {
 
                 newThingGameObject.transform.parent = thingParentObject.transform;
             } else {
-                Debug.LogWarning("WadThing with type " + wadThingToInstantiate.type + " was not found, skipping instantiation.");
+                Debug.LogWarning("WadThing with type '" + wadThingToInstantiate.type + "' was not found, skipping instantiation.");
             }
         }
     }
 
     //##############################################################################################
-    // Parse the linedef lump in the wad, and return the constructed list of linedefs
+    // Instantiate a list of walls as geometry, using the palette and place them in the Unity scene
     //##############################################################################################
-    private List<WadLineDef> ParseLineDefs(byte[] bytes, WadMap map){
-        List<WadLineDef> wadLineDefs = new List<WadLineDef>();
+    private void InstantiateWalls(List<WadTriangle> wallTriangles){
+        // Create a gameobject to parent the walls under
+        GameObject thingParentObject = new GameObject();
+        thingParentObject.name = "WALLS";
+        thingParentObject.transform.parent = transform;
+        thingParentObject.transform.localPosition = Vector3.zero;
 
-        for(int i = map.LineDefsIndex; i < map.LineDefsIndex + map.LineDefsSize; i += WadLineDef.LINEDEF_SIZE){
-            WadLineDef newLineDef = new WadLineDef();
+        // Group the triangles by texture
+        Dictionary<string, List<WadTriangle>> textureNameToTrianglesLookup = new Dictionary<string, List<WadTriangle>>();
+        for(int i = 0, count = wallTriangles.Count; i < count; ++i){
+            WadTriangle tri = wallTriangles[i];
 
-            newLineDef.startVertex  = Read2(bytes, i + WadLineDef.START_VERTEX_INDEX);
-            newLineDef.endVertex    = Read2(bytes, i + WadLineDef.END_VERTEX_INDEX);
-            newLineDef.flags        = Read2(bytes, i + WadLineDef.FLAGS_INDEX);
-            newLineDef.specialType  = Read2(bytes, i + WadLineDef.SPECIAL_TYPE_INDEX);
-            newLineDef.sectorTag    = Read2(bytes, i + WadLineDef.SECTOR_TAG_INDEX);
-            newLineDef.frontSideDef = Read2(bytes, i + WadLineDef.FRONT_SIDEDEF_INDEX);
-            newLineDef.backSideDef  = Read2(bytes, i + WadLineDef.BACK_SIDEDEF_INDEX);
+            if(!textureNameToTrianglesLookup.ContainsKey(tri.textureName)){
+                textureNameToTrianglesLookup[tri.textureName] = new List<WadTriangle>();
+            }
 
-            wadLineDefs.Add(newLineDef);
+            textureNameToTrianglesLookup[tri.textureName].Add(tri);
         }
 
-        return wadLineDefs;
+        // Then, build vertice, uv, and triangle lists as per the unity format,
+        // and then add them to instantiated meshes on a gameobject with an appropriate material
+        // from the palette
+        foreach(var textureNameAndTriangles in textureNameToTrianglesLookup){
+
+            // First, format the wad triangles as unity verts and triangle indices
+            List<Vector3> vertices = new List<Vector3>();
+            List<Vector3> normals  = new List<Vector3>();
+            List<Vector2> uvs      = new List<Vector2>();
+            List<int> triangles    = new List<int>();
+
+            string textureName = textureNameAndTriangles.Key.Trim((char)(0)).ToUpper();
+            List<WadTriangle> trianglesOfThisTexture = textureNameAndTriangles.Value;
+
+            int triangleIndex = 0;
+            foreach(var triangle in trianglesOfThisTexture){
+                vertices.Add(triangle.A);
+                vertices.Add(triangle.B);
+                vertices.Add(triangle.C);
+
+                // Calculate a normal for the face based on winding order
+                Vector3 flatNormal = Vector3.Cross(triangle.B - triangle.A, triangle.C - triangle.A);
+                normals.Add(flatNormal);
+                normals.Add(flatNormal);
+                normals.Add(flatNormal);
+
+                // TODO uvs
+                uvs.Add(new Vector2(0.0f, 0.0f));
+                uvs.Add(new Vector2(1.0f, 0.0f));
+                uvs.Add(new Vector2(1.0f, 1.0f));
+
+                triangles.Add(triangleIndex + 0);
+                triangles.Add(triangleIndex + 1);
+                triangles.Add(triangleIndex + 2);
+                triangleIndex += 3;
+            }
+
+            // Then, setup the gameObject and apply the triangles to it's mesh
+            GameObject meshGameObject = new GameObject();
+            meshGameObject.name = textureName;
+            meshGameObject.transform.parent = thingParentObject.transform;
+            meshGameObject.transform.localPosition = Vector3.zero;
+
+            // It's possible some sector flags make this not true, for moving sectors, but we're not supporting that yet
+            meshGameObject.isStatic = true;
+
+            // Add all the necessary components
+            MeshFilter meshFilter     = meshGameObject.AddComponent(typeof(MeshFilter)) as MeshFilter;
+            MeshRenderer meshRenderer = meshGameObject.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
+            MeshCollider collider     = meshGameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+
+            // Add the mesh in the proper format
+            Mesh mesh = new Mesh();
+            mesh.SetVertices(vertices);
+            mesh.SetNormals(normals);
+            mesh.SetUVs(0, uvs);
+            mesh.SetTriangles(triangles, 0);
+
+            meshFilter.mesh = mesh;
+
+            // Add the material looked up in the palette data. This isn't ideal, but we need to use
+            // the contains() call for partial matches
+            // for(int i = 0, count = wadPalette.materialData.Length; i < count; ++i){
+            //     WadPaletteData.MaterialData materialData = wadPalette.materialData[i];
+            //
+            //     if(textureName == materialData.name){
+            //         meshRenderer.sharedMaterial = materialData.material;
+            //         break;
+            //     }
+            // }
+
+            meshRenderer.sharedMaterial = wadPalette.materialData[0].material;
+
+            if(meshRenderer.sharedMaterial == null){
+                Debug.LogWarning("WadTriangle with texture '" + textureName + "' was not found, skipping applying material.");
+            }
+        }
     }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -518,6 +1097,7 @@ public class WadBuilder : MonoBehaviour {
     //##############################################################################################
     // Read 8 bytes, interpreted as a left-aligned string with null-padding.
     // The ""+ is necessary because a char + a char in c# is an int... thanks, c#.
+    // Trim the null bytes for readability
     //##############################################################################################
     private string Read8Name(byte[] bytes, int index){
         return "" + ((char)(bytes[index + 0]))
@@ -529,4 +1109,34 @@ public class WadBuilder : MonoBehaviour {
                   + ((char)(bytes[index + 6]))
                   + ((char)(bytes[index + 7]));
     }
+
+    //##############################################################################################
+    // Read a bounding box starting at index
+    //##############################################################################################
+    private WadNode.WadBoundingBox ReadBoundingBox(byte[] bytes, int index){
+        WadNode.WadBoundingBox newBoundingBox = new WadNode.WadBoundingBox();
+
+        newBoundingBox.maxY = Read2(bytes, index + WadNode.WadBoundingBox.MAX_Y_INDEX);
+        newBoundingBox.minY = Read2(bytes, index + WadNode.WadBoundingBox.MIN_Y_INDEX);
+        newBoundingBox.minX = Read2(bytes, index + WadNode.WadBoundingBox.MIN_X_INDEX);
+        newBoundingBox.maxX = Read2(bytes, index + WadNode.WadBoundingBox.MAX_X_INDEX);
+
+        return newBoundingBox;
+    }
+
+    //##############################################################################################
+    // Small helper function to convert vertex to unity 3d
+    //##############################################################################################
+    private Vector3 VertexInScaled3D(WadVertex vertex){
+        return new Vector3(ConvertToScaled(vertex.xPosition), 0.0f /* assume 0 */, ConvertToScaled(vertex.yPosition));
+    }
+
+    //##############################################################################################
+    // Small helper function to convert integer representation to scaled value
+    //##############################################################################################
+    private float ConvertToScaled(int value){
+        return mapScale * (float)(value);
+    }
 }
+
+#endif // UNITY_EDITOR

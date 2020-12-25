@@ -32,4 +32,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Tiled Import Scene.unity
     guid: c28e7938724f91a4db137a9906c5e629
+  - enabled: 1
+    path: Assets/Scenes/Wad Import Scene.unity
+    guid: 890ff4ddb162e9848b81ceedfa632ee5
   m_configObjects: {}

@@ -25,8 +25,6 @@ MonoBehaviour:
   - type: 4
     prefab: {fileID: 8233705629959543382, guid: 143e332315c05ad46a1608675eba3b91,
       type: 3}
-  textureData:
-  - type: FLOOR4_8
-    material: {fileID: 0}
-  - type: 
-    material: {fileID: 0}
+  materialData:
+  - name: BROWN1
+    material: {fileID: 2100000, guid: 23bead06e0609704b93f43fddc041210, type: 2}
