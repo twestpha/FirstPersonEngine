@@ -44,6 +44,8 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
     public const float SAFE_TIME = 2.0f;
     public const float PLAYER_RESPAWN_HEIGHT_OFFSET = 50.0f;
 
+    public const float FOOTSTEP_TIME = 0.4f;
+
     [Header("Camera References")]
     public GameObject playerCamera;
     public Image fade;
@@ -94,6 +96,8 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
 
     private Timer recoilDecayTimer;
     private float recoilAmount;
+
+    private float footstepTimeRemaining = FOOTSTEP_TIME;
 
     //##############################################################################################
     // Setup the player, and collect the different components that will get used.
@@ -356,6 +360,16 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
 
         if(!Dead()){
             character.SimpleMove(velocity * totalModifier);
+
+            if(character.isGrounded && playerFootstepBarkComponent != null){
+                float footstepMultiplier = velocity.magnitude / maxWalkSpeed;
+                footstepTimeRemaining -= (footstepMultiplier * Time.deltaTime);
+
+                if(footstepTimeRemaining < 0.0f){
+                    playerFootstepBarkComponent.Bark();
+                    footstepTimeRemaining = FOOTSTEP_TIME;
+                }
+            }
         }
     }
 

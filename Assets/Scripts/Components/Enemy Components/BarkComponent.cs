@@ -26,6 +26,7 @@ using UnityEngine;
 //##################################################################################################
 public class BarkComponent : MonoBehaviour {
 
+    [System.Serializable]
     public class AudioBark {
         public AudioClip clip;
         public float volume;
@@ -55,8 +56,10 @@ public class BarkComponent : MonoBehaviour {
         int newPickedBark = previousPickedBark;
 
         if(barks.Length != 1){
-            while(newPickedBark == previousPickedBark){
-                newPickedBark = (int)(Random.value * (barks.Length - 1));
+            newPickedBark = Random.Range(0, barks.Length);
+
+            if(newPickedBark == previousPickedBark){
+                newPickedBark = (newPickedBark + 1) % barks.Length;
             }
         } else {
             newPickedBark = 0;

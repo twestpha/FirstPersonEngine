@@ -15,13 +15,10 @@ Shooting Components, used for shooting a bullet and dealing damage to damageable
 * Simple Gun Selection
 
 Player Components, for managing the first person player
-* First Person Player
-* Player Respawn Volume
+* First Person Player, with movement, aiming, player sounds, and death/respawning
 
 Billboard Sprites Components, used for 2D sprites in 3d space, much like Doom or Wolfenstein 3D.
-* Material Animation
-* Rotatable
-* Mesh Bounds
+* Rotatable, with Animation
 
 Enemy Components, used for managing enemies and their actions
 * Enemy Manager
@@ -37,9 +34,7 @@ Level Components, used for generating levels from common level editor programs, 
 * Level Lighting Volume
 
 Sound Components, used for managing the sounds within the game
-* Sound Manager
-* Sound
-* Ambient Sound
+* Sound Manager, with Sound Component and Ambient Sound Manager
 
 Libraries, for helping with general tasks
 * Custom Math
@@ -61,5 +56,4 @@ A good rule of thumb: Components can talk to other components, but components sh
 * Implement 3D variants for all the sprite-based components (example 3d enemy)
 * Settings Manager system
 * Enemy Corpses and Barks
-* Player footsteps and Barks
 * STRETCH GOAL: WAD file importing
