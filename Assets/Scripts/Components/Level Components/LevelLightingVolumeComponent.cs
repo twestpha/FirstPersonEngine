@@ -57,7 +57,7 @@ public class LevelLightingVolumeComponent : MonoBehaviour {
         mainCamera = Camera.main;
 
         if(!GetComponent<Collider>().isTrigger){
-            Debug.LogError("Collider on " + gameObject.name + "'s LevelLightingVolumeComponent must be a trigger");
+            Logger.Error("Collider on " + gameObject.name + "'s LevelLightingVolumeComponent must be a trigger");
         }
     }
 
@@ -109,7 +109,7 @@ public class LevelLightingVolumeComponent : MonoBehaviour {
             fading = true;
             fadeTimer.Start();
 
-            Debug.Log("Applying Level Lighting Volume " + gameObject.name);
+            Logger.Info("Applying Level Lighting Volume " + gameObject.name);
 
             oldSunColor = sun.color;
             oldSunIntensity = sun.intensity;

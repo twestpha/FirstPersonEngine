@@ -45,12 +45,12 @@ public class PlayerRespawnVolumeComponent : MonoBehaviour {
     //##############################################################################################
     void Start(){
         if(!GetComponent<Collider>().isTrigger){
-            Debug.LogError("Collider on " + gameObject.name + "'s PlayerRespawnVolumeComponent must be a trigger");
+            Logger.Error("Collider on " + gameObject.name + "'s PlayerRespawnVolumeComponent must be a trigger");
         }
 
         if(defaultGameRespawn){
             if(currentRespawn != null){
-                Debug.LogError("Multiple PlayerRespawnVolumeComponents are marked as the default Game Respawn");
+                Logger.Error("Multiple PlayerRespawnVolumeComponents are marked as the default Game Respawn");
             } else {
                 SetCurrentRespawn(gameObject);
             }
@@ -72,10 +72,10 @@ public class PlayerRespawnVolumeComponent : MonoBehaviour {
         PlayerRespawnVolumeComponent respawnVolume = respawnObject.GetComponent<PlayerRespawnVolumeComponent>();
 
         if(respawnVolume){
-            Debug.Log("Player respawn set: " + respawnObject.name  + ", position: " + respawnVolume.respawnPosition.position);
+            Logger.Info("Player respawn set: " + respawnObject.name  + ", position: " + respawnVolume.respawnPosition.position);
             currentRespawn = respawnVolume;
         } else {
-            Debug.Log("Invalid actor passed into SetCurrentRespawn: " + respawnObject);
+            Logger.Info("Invalid actor passed into SetCurrentRespawn: " + respawnObject);
         }
     }
 

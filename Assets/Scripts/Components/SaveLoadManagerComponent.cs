@@ -83,7 +83,7 @@ public class SerializableSpawnedPrefab {
         GameObject foundAsset = Resources.Load<GameObject>(PREFAB_PATH + assetName);
 
         if(!foundAsset){
-            Debug.LogError("Error finding asset '" + PREFAB_PATH + assetName + "' for SerializableSpawnedPrefab instantiation.");
+            Logger.Error("Error finding asset '" + PREFAB_PATH + assetName + "' for SerializableSpawnedPrefab instantiation.");
         }
 
         return foundAsset;
@@ -116,7 +116,7 @@ public class SerializableGameObjectReference {
             }
         }
 
-        Debug.LogError("Error referencing gameobject '" + name + "' (Level " + owningLevel + ") for SerializableGameObjectReference connection.");
+        Logger.Error("Error referencing gameobject '" + name + "' (Level " + owningLevel + ") for SerializableGameObjectReference connection.");
         return null;
     }
 }
@@ -226,7 +226,7 @@ public class SaveLoadManagerComponent : MonoBehaviour {
     // First, update the save with data, then write that out to disk.
     //##############################################################################################
     public void Save(){
-        Debug.Log("Saving Game...");
+        Logger.Info("Saving Game...");
 
         UpdateSave();
 
@@ -240,7 +240,7 @@ public class SaveLoadManagerComponent : MonoBehaviour {
     // Load the data from disk if possible, then apply the save if it's valid.
     //##############################################################################################
     public void Load(){
-        Debug.Log("Loading Game...");
+        Logger.Info("Loading Game...");
 
         bool fileLoaded = true;
 
@@ -255,12 +255,12 @@ public class SaveLoadManagerComponent : MonoBehaviour {
 
         if(fileLoaded && save.version == SAVE_VERSION){
             ApplySave(SaveApplicationMode.Full);
-            Debug.Log("Game loaded successfully");
+            Logger.Info("Game loaded successfully");
         } else {
             if(fileLoaded){
-                Debug.LogError("Invalid save version " + save.version + ", cannot apply save");
+                Logger.Error("Invalid save version " + save.version + ", cannot apply save");
             } else {
-                Debug.LogError("Save file not found.");
+                Logger.Error("Save file not found.");
             }
         }
     }
@@ -325,7 +325,7 @@ public class SaveLoadManagerComponent : MonoBehaviour {
     //##############################################################################################
     public static void VerifySingleton(){
         if(instance == null){
-            Debug.LogError("No SaveLoadManagerComponent was found in the game. Consider adding a GameObject to your scene with a SaveLoadManagerComponent on it.");
+            Logger.Error("No SaveLoadManagerComponent was found in the game. Consider adding a GameObject to your scene with a SaveLoadManagerComponent on it.");
         }
     }
 

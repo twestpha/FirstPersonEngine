@@ -34,7 +34,7 @@ public class LevelTriggerComponent : MonoBehaviour {
     //##############################################################################################
     void Start(){
         if(!GetComponent<Collider>().isTrigger){
-            Debug.LogError("Collider on " + gameObject.name + "'s LevelTriggerComponent must be a trigger");
+            Logger.Error("Collider on " + gameObject.name + "'s LevelTriggerComponent must be a trigger");
         }
     }
 
@@ -47,7 +47,7 @@ public class LevelTriggerComponent : MonoBehaviour {
             LevelManagerComponent manager = GetComponentInParent<LevelManagerComponent>();
 
             if(!manager){
-                Debug.LogError("LevelTriggerComponent " + name + " not parented under LevelManagerComponent correctly");
+                Logger.Error("LevelTriggerComponent " + name + " not parented under LevelManagerComponent correctly");
                 return;
             }
 

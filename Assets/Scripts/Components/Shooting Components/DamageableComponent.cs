@@ -81,11 +81,11 @@ public class DamageableComponent : MonoBehaviour {
     //##############################################################################################
 	void Start(){
         if(maxHealth <= 0.0f){
-            Debug.LogError("Max Health on " + gameObject.name + "'s DamageableComponent cannot be less than or equal zero");
+            Logger.Error("Max Health on " + gameObject.name + "'s DamageableComponent cannot be less than or equal zero");
         }
 
         if(!TryGetComponent(out Collider coll)){
-            Debug.LogWarning("Collider not found on " + gameObject.name + " for DamageableComponent. It is not required, but note that the damageable can therefore not be shot with bullets");
+            Logger.Warning("Collider not found on " + gameObject.name + " for DamageableComponent. It is not required, but note that the damageable can therefore not be shot with bullets");
         }
 
         currentHealth = maxHealth;
@@ -208,7 +208,7 @@ public class DamageableComponent : MonoBehaviour {
             }
         }
 
-        Debug.LogWarning("No resistance exists for " + type + " on " + gameObject.name);
+        Logger.Warning("No resistance exists for " + type + " on " + gameObject.name);
     }
 
     //##############################################################################################

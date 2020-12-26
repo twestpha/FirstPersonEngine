@@ -466,7 +466,7 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
         lookingEnabled = false;
 
         // Log this for debugging and data
-        Debug.Log("=== PLAYER DEATH === at position " + transform.position + " from " + damage.GetDamager());
+        Logger.Info("=== PLAYER DEATH === at position " + transform.position + " from " + damage.GetDamager());
     }
 
     //##############################################################################################
@@ -513,7 +513,7 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
         if(speedModifiers.ContainsKey(id)){
             speedModifiers.Remove(id);
         } else {
-            Debug.LogError("Trying to remove modifier " + id + ", but does not exist");
+            Logger.Error("Trying to remove modifier " + id + ", but does not exist");
         }
     }
 }

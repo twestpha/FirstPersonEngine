@@ -46,7 +46,7 @@ public class AmbientSoundComponent : MonoBehaviour {
         fadeTimer = new Timer(fadeTime);
 
         if(!GetComponent<Collider>().isTrigger){
-            Debug.LogError("Collider on " + gameObject.name + "'s AmbientSoundComponent must be a trigger");
+            Logger.Error("Collider on " + gameObject.name + "'s AmbientSoundComponent must be a trigger");
         }
     }
 

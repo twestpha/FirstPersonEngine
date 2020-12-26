@@ -292,7 +292,7 @@ public class WadBuilder : MonoBehaviour {
         if(map.valid){
             BuildMap(wadBytes, map);
         } else {
-            Debug.LogError("Could not find map '" + mapToBuildName + "' in Wad.");
+            Logger.Error("Could not find map '" + mapToBuildName + "' in Wad.");
         }
     }
 
@@ -323,7 +323,7 @@ public class WadBuilder : MonoBehaviour {
             // If we're still looking for the map, check the name
             if(!foundMap){
                 if(lumpFileName.Contains(mapName.ToUpper())){
-                    Debug.Log("Found map in WAD as " + lumpFileName);
+                    Logger.Info("Found map in WAD as " + lumpFileName);
                     map.valid = true;
                     foundMap = true;
                 }
@@ -393,14 +393,14 @@ public class WadBuilder : MonoBehaviour {
         List<WadSector> sectorList = ParseSectors(bytes, map);
 
         // Debug print all the stats from parsing for verifying things loaded correctly
-        Debug.Log("Parsed " + thingList.Count + " things (THINGS)");
-        Debug.Log("Parsed " + lineDefList.Count + " line definitions (LINEDEFS)");
-        Debug.Log("Parsed " + sideDefList.Count + " side definitions (SIDEDEFS)");
-        Debug.Log("Parsed " + vertexList.Count + " vertexes (VERTEXES)");
-        Debug.Log("Parsed " + segList.Count + " line segments (SEGS)");
-        Debug.Log("Parsed " + sSectorList.Count + " sub-sectors (SSECTORS)");
-        Debug.Log("Parsed " + nodeList.Count + " nodes (NODES)");
-        Debug.Log("Parsed " + sectorList.Count + " sectors (SECTORS)");
+        Logger.Info("Parsed " + thingList.Count + " things (THINGS)");
+        Logger.Info("Parsed " + lineDefList.Count + " line definitions (LINEDEFS)");
+        Logger.Info("Parsed " + sideDefList.Count + " side definitions (SIDEDEFS)");
+        Logger.Info("Parsed " + vertexList.Count + " vertexes (VERTEXES)");
+        Logger.Info("Parsed " + segList.Count + " line segments (SEGS)");
+        Logger.Info("Parsed " + sSectorList.Count + " sub-sectors (SSECTORS)");
+        Logger.Info("Parsed " + nodeList.Count + " nodes (NODES)");
+        Logger.Info("Parsed " + sectorList.Count + " sectors (SECTORS)");
 
         List<WadTriangle> wallTriangles      = new List<WadTriangle>();
         List<WadTriangle> floorTriangles     = new List<WadTriangle>();
@@ -955,7 +955,7 @@ public class WadBuilder : MonoBehaviour {
 
                 newThingGameObject.transform.parent = thingParentObject.transform;
             } else {
-                Debug.LogWarning("WadThing with type '" + wadThingToInstantiate.type + "' was not found, skipping instantiation.");
+                Logger.Warning("WadThing with type '" + wadThingToInstantiate.type + "' was not found, skipping instantiation.");
             }
         }
     }
@@ -1056,7 +1056,7 @@ public class WadBuilder : MonoBehaviour {
             meshRenderer.sharedMaterial = wadPalette.materialData[0].material;
 
             if(meshRenderer.sharedMaterial == null){
-                Debug.LogWarning("WadTriangle with texture '" + textureName + "' was not found, skipping applying material.");
+                Logger.Warning("WadTriangle with texture '" + textureName + "' was not found, skipping applying material.");
             }
         }
     }

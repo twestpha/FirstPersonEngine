@@ -66,7 +66,7 @@ public class Timer {
         if(pausedElapsed < 0.0f){
             pausedElapsed = Elapsed();
         } else {
-            Debug.LogError("Timer is already paused");
+            Logger.Error("Timer is already paused");
         }
     }
 

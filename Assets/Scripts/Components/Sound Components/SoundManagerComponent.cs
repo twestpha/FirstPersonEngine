@@ -251,7 +251,7 @@ public class SoundManagerComponent : MonoBehaviour {
         listener = audioListener.gameObject;
 
         if(1 << listener.layer != LISTENER_COLLISION_LAYER){
-            Debug.LogError("Listener " + listener + " has incorrect layer " + (1 << listener.layer) + ", should be " + LISTENER_COLLISION_LAYER);
+            Logger.Error("Listener " + listener + " has incorrect layer " + (1 << listener.layer) + ", should be " + LISTENER_COLLISION_LAYER);
         }
     }
 
@@ -300,7 +300,7 @@ public class SoundManagerComponent : MonoBehaviour {
     //##############################################################################################
     public static void VerifySingleton(){
         if(instance == null){
-            Debug.LogError("No SoundManagerComponent was found in the game. Consider adding a GameObject to your scene with a SoundManagerComponent on it.");
+            Logger.Error("No SoundManagerComponent was found in the game. Consider adding a GameObject to your scene with a SoundManagerComponent on it.");
         }
     }
 
@@ -489,7 +489,7 @@ public class SoundManagerComponent : MonoBehaviour {
 
             return records[index].id;
         } else {
-            Debug.LogWarning("Failed to play " + type + " " + clip + " with priority " + priority);
+            Logger.Warning("Failed to play " + type + " " + clip + " with priority " + priority);
             return INVALID_SOUND;
         }
     }

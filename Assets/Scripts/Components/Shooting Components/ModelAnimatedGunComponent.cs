@@ -63,11 +63,11 @@ public class ModelAnimatedGunComponent : ZoomableGunComponent {
         base.Start();
 
         if(gunModel == null){
-            Debug.LogError("Gun Model on " + gameObject.name + "'s ModelAnimatedGunComponent cannot be null on start");
+            Logger.Error("Gun Model on " + gameObject.name + "'s ModelAnimatedGunComponent cannot be null on start");
         }
 
         if(gunAnimator == null){
-            Debug.LogError("Gun Animator on " + gameObject.name + "'s ModelAnimatedGunComponent cannot be null on start");
+            Logger.Error("Gun Animator on " + gameObject.name + "'s ModelAnimatedGunComponent cannot be null on start");
         }
 
         damage = GetComponent<DamageableComponent>();

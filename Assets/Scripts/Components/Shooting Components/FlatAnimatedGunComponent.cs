@@ -75,7 +75,7 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
         reloadingAnimationTimer = new Timer(1.0f / reloadingFramerate);
 
         if(gunSpriteImage == null){
-            Debug.LogError("Gun Sprite Image on " + gameObject.name + "'s FlatAnimatedGunComponent cannot be null on start");
+            Logger.Error("Gun Sprite Image on " + gameObject.name + "'s FlatAnimatedGunComponent cannot be null on start");
         }
 
         damage = GetComponent<DamageableComponent>();

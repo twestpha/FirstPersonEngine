@@ -43,7 +43,7 @@ public class BarkComponent : MonoBehaviour {
         previousPickedBark = -1;
 
         if(barks.Length < 1){
-            Debug.LogError("Barks on " + gameObject.name + "'s BarkComponent cannot have less than one entry");
+            Logger.Error("Barks on " + gameObject.name + "'s BarkComponent cannot have less than one entry");
         }
     }
 

@@ -105,7 +105,7 @@ public class Localizer : MonoBehaviour {
                     if(!localizationLookup[(Language)(i)].ContainsKey(key)){
                         localizationLookup[(Language)(i)].Add(key, token);
                     } else {
-                        Debug.LogError("Error adding loc key '" + key + "'");
+                        Logger.Error("Error adding loc key '" + key + "'");
                     }
                 }
             }

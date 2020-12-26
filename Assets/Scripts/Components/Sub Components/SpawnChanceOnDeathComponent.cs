@@ -51,7 +51,7 @@ public class SpawnChanceOnDeathComponent : MonoBehaviour {
 
             float delta = Mathf.Abs(1.0f - totalChance);
             if(delta >= 0.01f){
-                Debug.LogError(gameObject.name + "'s SpawnChanceOnDeathComponent chances do not add up to 1.0 (actual value was " + totalChance + ")");
+                Logger.Error(gameObject.name + "'s SpawnChanceOnDeathComponent chances do not add up to 1.0 (actual value was " + totalChance + ")");
             }
         #endif
     }

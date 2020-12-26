@@ -50,7 +50,7 @@ public class ZoomableGunComponent : GunComponent {
 
         if(currentGunData.useZoom){
             if(playerCamera == null){
-                Debug.LogError("Player Camera on " + gameObject.name + "'s ZoomableGunComponent cannot be null");
+                Logger.Error("Player Camera on " + gameObject.name + "'s ZoomableGunComponent cannot be null");
             }
 
             defaultFieldOfView = playerCamera.fieldOfView;

@@ -83,7 +83,7 @@ public class RotatableComponent : MonoBehaviour {
         #if UNITY_EDITOR
             for(int i = 1, count = anims.Length; i < count; ++i){
                 if(anims[i].rots.Length != rotationIncrementCount){
-                    Debug.LogError("Invalid rotation length in RotatableComponent on " + gameObject.name + " for animation at index " + i + ", is length " + anims[i].rots.Length + ", should be " + rotationIncrementCount);
+                    Logger.Error("Invalid rotation length in RotatableComponent on " + gameObject.name + " for animation at index " + i + ", is length " + anims[i].rots.Length + ", should be " + rotationIncrementCount);
                 }
             }
         #endif // UNITY_EDITOR

@@ -52,11 +52,11 @@ public class GunComponent : MonoBehaviour {
     //##############################################################################################
 	protected void Start(){
         if(currentGunData == null){
-            Debug.LogError("Gun Data on " + gameObject.name + "'s GunComponent cannot be null");
+            Logger.Error("Gun Data on " + gameObject.name + "'s GunComponent cannot be null");
         }
 
         if(muzzleTransform == null){
-            Debug.LogError("Muzzle Actor on " + gameObject.name + "'s GunComponent cannot be null");
+            Logger.Error("Muzzle Actor on " + gameObject.name + "'s GunComponent cannot be null");
         }
 
         gunTimer = new Timer(currentGunData.coolDown);
@@ -147,7 +147,7 @@ public class GunComponent : MonoBehaviour {
                 }
 
                 if(bullet == null){
-                    Debug.LogError("Bullet Prefab " + currentGunData.bulletPrefab.name + " must have a bullet component");
+                    Logger.Error("Bullet Prefab " + currentGunData.bulletPrefab.name + " must have a bullet component");
                     return BULLET_NOT_FIRED;
                 }
 

@@ -98,7 +98,7 @@ public class LevelManagerComponent : MonoBehaviour {
 
         for(int i = 0; i < levelLoads.Length; ++i){
             if(levelLoads[i].selfLevelLabel != (Level)(i)){
-                Debug.LogError("Level load at index " + i + " is out of order. Is " + levelLoads[i].selfLevelLabel + ", but should be " + (Level)(i));
+                Logger.Error("Level load at index " + i + " is out of order. Is " + levelLoads[i].selfLevelLabel + ", but should be " + (Level)(i));
             }
         }
     }
@@ -175,7 +175,7 @@ public class LevelManagerComponent : MonoBehaviour {
 
             if(saveLoadQueued == 0){
                 // Only partially apply save
-                Debug.Log("=== Applying Save ===");
+                Logger.Info("=== Applying Save ===");
                 SaveLoadManagerComponent.Instance().ApplySave(SaveLoadManagerComponent.SaveApplicationMode.PerLevel);
             }
         }
@@ -230,21 +230,21 @@ public class LevelManagerComponent : MonoBehaviour {
         // as neighbors, then as primaries as the player reaches them.
         // This is most useful from starting new games, or loading from saves.
         if(!newPrimaryInCurrentLevels){
-            Debug.Log("=== Current Level Emergency Loading ===");
-            Debug.Log(primaryLevel);
+            Logger.Info("=== Current Level Emergency Loading ===");
+            Logger.Info(primaryLevel.ToString());
             SceneManager.LoadScene((int)(primaryLevel), LoadSceneMode.Additive);
         }
 
-        Debug.Log("=== Levels Loading ===");
+        Logger.Info("=== Levels Loading ===");
         Level[] load = loadQueue.ToArray();
         for(int i = 0; i < load.Length; ++i){
-            Debug.Log(load[i]);
+            Logger.Info(load[i].ToString());
         }
 
-        Debug.Log("=== Levels Unloading ===");
+        Logger.Info("=== Levels Unloading ===");
         Level[] unload = unloadQueue.ToArray();
         for(int i = 0; i < unload.Length; ++i){
-            Debug.Log(unload[i]);
+            Logger.Info(unload[i].ToString());
         }
 
         finishedLoading = false;
@@ -258,24 +258,24 @@ public class LevelManagerComponent : MonoBehaviour {
         // This happens immediately because the game isn't running, therefore framerate doesn't matter
         primaryLevel = Level.Invalid;
 
-        Debug.Log("=== Levels Unloading ===");
+        Logger.Info("=== Levels Unloading ===");
         for(int i = 1; i < SceneManager.sceneCount; ++i){
             Level currentlyLoadedLevel = (Level)(SceneManager.GetSceneAt(i).buildIndex);
 
             if(currentlyLoadedLevel != Level.Global){
-                Debug.Log(currentlyLoadedLevel);
+                Logger.Info(currentlyLoadedLevel.ToString());
                 SceneManager.UnloadSceneAsync((int)(currentlyLoadedLevel));
             }
         }
 
         // Destroy all objects marked with a 'spawned' tags. This cleans up wayward effects,
         // bullets, etc.
-        Debug.Log("=== Spawned Objects Deleted ===");
+        Logger.Info("=== Spawned Objects Deleted ===");
         GameObject[] spawnedObjects = GameObject.FindGameObjectsWithTag("Spawned");
         int spawnedCount = spawnedObjects.Length;
         for(int i = 0; i < spawnedCount; ++i){
             Destroy(spawnedObjects[i]);
         }
-        Debug.Log("Deleted " + spawnedCount + " spawned objects");
+        Logger.Info("Deleted " + spawnedCount + " spawned objects");
     }
 }

@@ -41,6 +41,7 @@ Libraries, for helping with general tasks
 * Localizer
 * Timer
 * Pooled GameObject Manager
+* Console output to game with tilde key
 
 # Code Overview
 The code is structured in the \Assets\Scripts folder. There are two major groups of code structure; "Components" and "Behaviors". These are contained in their respective folders.

@@ -49,7 +49,7 @@ public class PooledGameObjectManager {
 
             poolLookup.Add(poolIdentifier, poolQueue);
         } else {
-            Debug.LogWarning("The pool identifier '" + poolIdentifier + "' already has a queue setup.");
+            Logger.Warning("The pool identifier '" + poolIdentifier + "' already has a queue setup.");
         }
     }
 
@@ -67,11 +67,11 @@ public class PooledGameObjectManager {
 
                 return instance;
             } else {
-                Debug.LogError("The GameObject pool with identifier '" + poolIdentifier + "' ran out of instances. Consider bumping the maximum it was set up with.");
+                Logger.Error("The GameObject pool with identifier '" + poolIdentifier + "' ran out of instances. Consider bumping the maximum it was set up with.");
                 return null;
             }
         } else {
-            Debug.LogWarning("A pool with the identifier '" + poolIdentifier + "' doesn't exist.");
+            Logger.Warning("A pool with the identifier '" + poolIdentifier + "' doesn't exist.");
             return null;
         }
     }
@@ -85,7 +85,7 @@ public class PooledGameObjectManager {
             instance.SetActive(false);
             poolLookup[poolIdentifier].Enqueue(instance);
         } else {
-            Debug.LogWarning("A pool with the identifier '" + poolIdentifier + "' doesn't exist.");
+            Logger.Warning("A pool with the identifier '" + poolIdentifier + "' doesn't exist.");
         }
     }
 }
