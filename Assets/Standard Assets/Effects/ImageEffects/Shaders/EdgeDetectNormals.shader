@@ -1,18 +1,18 @@
 
-Shader "Hidden/EdgeDetect" { 
+Shader "Hidden/EdgeDetect" {
 	Properties {
 		_MainTex ("Base (RGB)", 2D) = "" {}
 	}
 
 	CGINCLUDE
-	
+
 	#include "UnityCG.cginc"
-	
+
 	struct v2f {
 		float4 pos : SV_POSITION;
 		float2 uv[5] : TEXCOORD0;
 	};
-	
+
 	struct v2fd {
 		float4 pos : SV_POSITION;
 		float2 uv[2] : TEXCOORD0;
@@ -28,7 +28,7 @@ Shader "Hidden/EdgeDetect" {
 	sampler2D_float _CameraDepthTexture;
 	half4 _CameraDepthTexture_ST;
 
-	uniform half4 _Sensitivity; 
+	uniform half4 _Sensitivity;
 	uniform half4 _BgColor;
 	uniform half _BgFade;
 	uniform half _SampleDistance;
@@ -62,16 +62,16 @@ Shader "Hidden/EdgeDetect" {
 		half3 p1 = original.rgb;
 		half3 p2 = tex2D(_MainTex, i.uv[1]).rgb;
 		half3 p3 = tex2D(_MainTex, i.uv[2]).rgb;
-		
+
 		half3 diff = p1 * 2 - p2 - p3;
 		half len = dot(diff, diff);
 		len = step(len, _Threshold);
 		//if(len >= _Threshold)
 		//	original.rgb = 0;
 
-		return len * lerp(original, _BgColor, _BgFade);			
-	}	
-	
+		return len * lerp(original, _BgColor, _BgFade);
+	}
+
 	inline half CheckSame (half2 centerNormal, float centerDepth, half4 theSample)
 	{
 		// difference in normals
@@ -83,81 +83,80 @@ Shader "Hidden/EdgeDetect" {
 		float zdiff = abs(centerDepth-sampleDepth);
 		// scale the required threshold by the distance
 		int isSameDepth = zdiff * _Sensitivity.x < 0.09 * centerDepth;
-	
+
 		// return:
 		// 1 - if normals and depth are similar enough
 		// 0 - otherwise
-		
+
 		return isSameNormal * isSameDepth ? 1.0 : 0.0;
-	}	
-		
-	v2f vertRobert( appdata_img v ) 
+	}
+
+	v2f vertRobert( appdata_img v )
 	{
 		v2f o;
 		o.pos = UnityObjectToClipPos(v.vertex);
-		
+
 		float2 uv = v.texcoord.xy;
 		o.uv[0] = UnityStereoScreenSpaceUVAdjust(uv, _MainTex_ST);
-		
+
 		#if UNITY_UV_STARTS_AT_TOP
 		if (_MainTex_TexelSize.y < 0)
 			uv.y = 1-uv.y;
 		#endif
-				
+
 		// calc coord for the X pattern
-		// maybe nicer TODO for the future: 'rotated triangles'
 		
 		o.uv[1] = UnityStereoScreenSpaceUVAdjust(uv + _MainTex_TexelSize.xy * half2(1,1) * _SampleDistance, _MainTex_ST);
 		o.uv[2] = UnityStereoScreenSpaceUVAdjust(uv + _MainTex_TexelSize.xy * half2(-1,-1) * _SampleDistance, _MainTex_ST);
 		o.uv[3] = UnityStereoScreenSpaceUVAdjust(uv + _MainTex_TexelSize.xy * half2(-1,1) * _SampleDistance, _MainTex_ST);
 		o.uv[4] = UnityStereoScreenSpaceUVAdjust(uv + _MainTex_TexelSize.xy * half2(1,-1) * _SampleDistance, _MainTex_ST);
-				 
+
 		return o;
-	} 
-	
+	}
+
 	v2f vertThin( appdata_img v )
 	{
 		v2f o;
 		o.pos = UnityObjectToClipPos(v.vertex);
-		
+
 		float2 uv = v.texcoord.xy;
 		o.uv[0] = UnityStereoScreenSpaceUVAdjust(uv, _MainTex_ST);
-		
+
 		#if UNITY_UV_STARTS_AT_TOP
 		if (_MainTex_TexelSize.y < 0)
 			uv.y = 1-uv.y;
 		#endif
-		
+
 		o.uv[1] = UnityStereoScreenSpaceUVAdjust(uv, _MainTex_ST);
 		o.uv[4] = UnityStereoScreenSpaceUVAdjust(uv, _MainTex_ST);
-				
+
 		// offsets for two additional samples
 		o.uv[2] = UnityStereoScreenSpaceUVAdjust(uv + float2(-_MainTex_TexelSize.x, -_MainTex_TexelSize.y) * _SampleDistance, _MainTex_ST);
 		o.uv[3] = UnityStereoScreenSpaceUVAdjust(uv + float2(+_MainTex_TexelSize.x, -_MainTex_TexelSize.y) * _SampleDistance, _MainTex_ST);
-		
+
 		return o;
-	}	  
-	 
+	}
+
 	v2fd vertD( appdata_img v )
 	{
 		v2fd o;
 		o.pos = UnityObjectToClipPos(v.vertex);
-		
+
 		float2 uv = v.texcoord.xy;
 		o.uv[0] = uv;
-		
+
 		#if UNITY_UV_STARTS_AT_TOP
 		if (_MainTex_TexelSize.y < 0)
 			uv.y = 1-uv.y;
 		#endif
-		
+
 		o.uv[1] = uv;
-		
+
 		return o;
 	}
 
-	float4 fragDCheap(v2fd i) : SV_Target 
-	{	
+	float4 fragDCheap(v2fd i) : SV_Target
+	{
 		// inspired by borderlands implementation of popular "sobel filter"
 
 		float centerDepth = Linear01Depth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv[1]));
@@ -198,8 +197,8 @@ Shader "Hidden/EdgeDetect" {
 	// pretty much also just a sobel filter, except for that edges "outside" the silhouette get discarded
 	//  which makes it compatible with other depth based post fx
 
-	float4 fragD(v2fd i) : SV_Target 
-	{	
+	float4 fragD(v2fd i) : SV_Target
+	{
 		// inspired by borderlands implementation of popular "sobel filter"
 
 		float centerDepth = Linear01Depth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, UnityStereoScreenSpaceUVAdjust(i.uv[1], _CameraDepthTexture_ST)));
@@ -241,43 +240,43 @@ Shader "Hidden/EdgeDetect" {
 		return Sobel * lerp(tex2D(_MainTex, UnityStereoScreenSpaceUVAdjust(i.uv[0].xy, _MainTex_ST)), _BgColor, _BgFade);
 	}
 
-	half4 fragRobert(v2f i) : SV_Target {				
+	half4 fragRobert(v2f i) : SV_Target {
 		half4 sample1 = tex2D(_CameraDepthNormalsTexture, i.uv[1].xy);
 		half4 sample2 = tex2D(_CameraDepthNormalsTexture, i.uv[2].xy);
 		half4 sample3 = tex2D(_CameraDepthNormalsTexture, i.uv[3].xy);
 		half4 sample4 = tex2D(_CameraDepthNormalsTexture, i.uv[4].xy);
 
 		half edge = 1.0;
-		
+
 		edge *= CheckSame(sample1.xy, DecodeFloatRG(sample1.zw), sample2);
 		edge *= CheckSame(sample3.xy, DecodeFloatRG(sample3.zw), sample4);
 
 		return edge * lerp(tex2D(_MainTex, i.uv[0]), _BgColor, _BgFade);
 	}
-	
+
 	half4 fragThin (v2f i) : SV_Target
 	{
 		half4 original = tex2D(_MainTex, i.uv[0]);
-		
+
 		half4 center = tex2D (_CameraDepthNormalsTexture, i.uv[1]);
 		half4 sample1 = tex2D (_CameraDepthNormalsTexture, i.uv[2]);
 		half4 sample2 = tex2D (_CameraDepthNormalsTexture, i.uv[3]);
-		
+
 		// encoded normal
 		half2 centerNormal = center.xy;
 		// decoded depth
 		float centerDepth = DecodeFloatRG (center.zw);
-		
+
 		half edge = 1.0;
-		
+
 		edge *= CheckSame(centerNormal, centerDepth, sample1);
 		edge *= CheckSame(centerNormal, centerDepth, sample2);
-			
+
 		return edge * lerp(original, _BgColor, _BgFade);
 	}
-	
-	ENDCG 
-	
+
+	ENDCG
+
 Subshader {
  Pass {
 	  ZTest Always Cull Off ZWrite Off
@@ -299,7 +298,7 @@ Subshader {
 	  ZTest Always Cull Off ZWrite Off
 
       CGPROGRAM
-	  #pragma target 3.0   
+	  #pragma target 3.0
       #pragma vertex vertD
       #pragma fragment fragDCheap
       ENDCG
@@ -308,7 +307,7 @@ Subshader {
 	  ZTest Always Cull Off ZWrite Off
 
       CGPROGRAM
-	  #pragma target 3.0   
+	  #pragma target 3.0
       #pragma vertex vertD
       #pragma fragment fragD
       ENDCG
@@ -317,7 +316,7 @@ Subshader {
 	  ZTest Always Cull Off ZWrite Off
 
       CGPROGRAM
-	  #pragma target 3.0   
+	  #pragma target 3.0
       #pragma vertex vertLum
       #pragma fragment fragLum
       ENDCG
@@ -325,5 +324,5 @@ Subshader {
 }
 
 Fallback off
-	
+
 } // shader

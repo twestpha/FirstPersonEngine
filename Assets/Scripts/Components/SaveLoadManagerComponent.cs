@@ -148,7 +148,6 @@ public class Save {
 // Save Load Manager Component
 // This is the main class responsible for handling saves and loads of game data, and then restoring
 // that data to the currently loaded scenes.
-// TODO save slots and slot management?
 //##################################################################################################
 public class SaveLoadManagerComponent : MonoBehaviour {
     private static SaveLoadManagerComponent instance;
@@ -160,7 +159,7 @@ public class SaveLoadManagerComponent : MonoBehaviour {
     // the Save class that cannot be reconciled on a load.
     public const int SAVE_VERSION = 0;
 
-    // Set this before saving and loading to get different slots
+    // Set this before saving and loading to use different slots
     public static int saveSlot = 0;
 
     // Serialized just for viewing in editor, don't edit this

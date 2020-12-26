@@ -45,7 +45,7 @@ using UnityEditor;
 //      4 5 6 7
 // 7) Create a gameobject in your scene and add a TiledBuilder script to it.
 // 8) Assign the TiledBuilder attribute mapFile as the *.csv asset created in Step 4
-// 9) Assign the TiledBuilder attribute palette as the TiledPaletteData asset created in Step 6
+// 9) Assign the TiledBuilder attribute 'palette' as the TiledPaletteData asset created in Step 6
 // 10) Click the 'Generate' Button
 //
 // Note that any valid *.csv file can be used, not necessarily those exported with Tiled. If you

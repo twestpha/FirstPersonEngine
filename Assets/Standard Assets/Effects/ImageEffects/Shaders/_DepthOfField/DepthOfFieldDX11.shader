@@ -13,9 +13,9 @@
 	* composite with frame buffer
 */
 
-Shader "Hidden/Dof/DX11Dof" 
+Shader "Hidden/Dof/DX11Dof"
 {
-	Properties 
+	Properties
 	{
 		_MainTex ("", 2D) = "white" {}
 		_BlurredColor ("", 2D) = "white" {}
@@ -38,7 +38,7 @@ Shader "Hidden/Dof/DX11Dof"
 	sampler2D _FgCocMask;
 
 	half4 _MainTex_ST;
-	
+
 
 	struct appendStruct {
 		float3 pos;
@@ -46,19 +46,18 @@ Shader "Hidden/Dof/DX11Dof"
 	};
 
 	struct gs_out {
-		float4 pos : SV_POSITION; 
+		float4 pos : SV_POSITION;
 		float3 uv : TEXCOORD0;
 		float4 color : TEXCOORD1;
 		float4 misc : TEXCOORD2;
-	};	
+	};
 
-	// TODO: activate border clamp tex sampler state instead?
 	inline float4 clampBorderColor(float2 uv)
 	{
 #if 1
 		if(uv.x<=0) return BOKEH_ZERO_VEC; if(uv.x>=1) return BOKEH_ZERO_VEC;
 		if(uv.y<=0) return BOKEH_ZERO_VEC; if(uv.y>=1) return BOKEH_ZERO_VEC;
-#endif	
+#endif
 		return BOKEH_ONE_VEC;
 	}
 
@@ -81,7 +80,7 @@ Shader "Hidden/Dof/DX11Dof"
 		#endif
 		o.cocOverlap = pointBuffer[id].pos.z;
 
-		return o; 
+		return o;
 	}
 
 	[maxvertexcount(4)]
@@ -103,34 +102,34 @@ Shader "Hidden/Dof/DX11Dof"
 
 		output.pos = input[0].pos + offs*float4(-1,1,0,0);
 		output.misc = float4(f2,0,0);
-		output.uv = float3(0, 1, input[0].cocOverlap); 		
+		output.uv = float3(0, 1, input[0].cocOverlap);
 		output.color = input[0].color * energyAdjustment;
 		outStream.Append (output);
 
-		output.pos = input[0].pos + offs*float4(1,1,0,0); 
+		output.pos = input[0].pos + offs*float4(1,1,0,0);
 		output.misc = float4(f2,0,0);
-		output.uv = float3(1, 1, input[0].cocOverlap); 
+		output.uv = float3(1, 1, input[0].cocOverlap);
 		output.color = input[0].color * energyAdjustment;
 		outStream.Append (output);
 
 		output.pos = input[0].pos + offs*float4(-1,-1,0,0);
 		output.misc = float4(f2,0,0);
-		output.uv = float3(0, 0, input[0].cocOverlap); 
+		output.uv = float3(0, 0, input[0].cocOverlap);
 		output.color = input[0].color * energyAdjustment;
 		outStream.Append (output);
 
 		output.pos = input[0].pos + offs*float4(1,-1,0,0);
 		output.misc = float4(f2,0,0);
-		output.uv = float3(1, 0, input[0].cocOverlap); 
+		output.uv = float3(1, 0, input[0].cocOverlap);
 		output.color = input[0].color * energyAdjustment;
 		outStream.Append (output);
 
 		outStream.RestartStrip();
-	}	
+	}
 
 ENDCG
 
-SubShader 
+SubShader
 {
 
 // pass 0: append buffer "collect"
@@ -155,7 +154,7 @@ Pass
 	struct v2f {
 		float4 pos : SV_POSITION;
 		float2 uv_flip : TEXCOORD0;
-		float2 uv : TEXCOORD1;		
+		float2 uv : TEXCOORD1;
 	};
 
 	v2f vert (appdata v)
@@ -165,10 +164,10 @@ Pass
 		o.uv = UnityStereoScreenSpaceUVAdjust(v.texcoord, _MainTex_ST);
 		o.uv_flip = UnityStereoScreenSpaceUVAdjust(v.texcoord, _MainTex_ST);
 		#if UNITY_UV_STARTS_AT_TOP
-		if(_MainTex_TexelSize.y<0)		
+		if(_MainTex_TexelSize.y<0)
 			o.uv_flip.y = 1.0-o.uv_flip.y;
-		if(_MainTex_TexelSize.y<0)		
-			o.pos.y *= -1.0;			
+		if(_MainTex_TexelSize.y<0)
+			o.pos.y *= -1.0;
 		#endif
 		return o;
 	}
