@@ -56,5 +56,4 @@ A good rule of thumb: Components can talk to other components, but components sh
 * Clean up the TODOs
 * Implement 3D variants for all the sprite-based components (example 3d enemy)
 * Settings Manager system
-* Enemy Corpses and Barks
 * STRETCH GOAL: WAD file importing

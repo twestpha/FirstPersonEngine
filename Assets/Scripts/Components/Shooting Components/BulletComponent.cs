@@ -135,7 +135,8 @@ public class BulletComponent : MonoBehaviour {
                     fx.transform.position = transform.position + (-move).normalized * BULLET_EFFECTS_OFFSET;
                 }
 
-                if(optionalDecalObject != null){
+                // Don't spawn decals when hitting damageable
+                if(optionalDecalObject != null && damageable == null){
                     // Fade these out at some point?
 
                     GameObject decalInstance = GameObject.Instantiate(optionalDecalObject);

@@ -26,11 +26,15 @@ using UnityEngine;
 // TODO use attack tokens
 //##################################################################################################
 public class SimpleExampleEnemy : SpriteEnemyBehavior {
-    // These are usually significantly larger than the trigger radius, so that player can try to
-    // run away and still have the enemies update.
+    // Update radii are usually significantly larger than the trigger radius, so that player can
+    // try to run away and still have the enemies update.
     public const float UDPATE_RADIUS = 45.0f;
 
-    public const float SHOOT_RADIUS = 15.0f;
+    public const float SHOOT_RADIUS = 12.0f;
+
+    public const int IDLE_ANIMATION_INDEX = 0;
+    public const int WALK_ANIMATION_INDEX = 1;
+    public const int SHOOT_ANIMATION_INDEX = 2;
 
     public enum ExampleState {
         Idle,
@@ -47,6 +51,10 @@ public class SimpleExampleEnemy : SpriteEnemyBehavior {
     public Transform patrolPointB;
 
     public Transform muzzleTransform;
+
+    public BarkComponent bark;
+
+    public GameObject bodyToSpawn;
 
     private bool patrollingAToB;
 
@@ -79,11 +87,12 @@ public class SimpleExampleEnemy : SpriteEnemyBehavior {
         base.EnemyUpdate();
 
         float playerDistance = (transform.position - FirstPersonPlayerComponent.player.transform.position).magnitude;
-
+        Debug.Log(playerDistance);
         // any detection of the player during the patrol stops and shoot
         if(exampleState != ExampleState.Shooting && playerDistance < SHOOT_RADIUS){
             exampleState = ExampleState.Shooting;
             StopMoving();
+            rotation.SetAnimationIndex(SHOOT_ANIMATION_INDEX);
         }
 
         // Pretty simple finite state machine
@@ -91,12 +100,14 @@ public class SimpleExampleEnemy : SpriteEnemyBehavior {
             if(patrolIdleTimer.Finished()){
                 exampleState = ExampleState.Patrolling;
                 MoveToPosition(patrollingAToB ? patrolPointB.position : patrolPointA.position);
+                rotation.SetAnimationIndex(WALK_ANIMATION_INDEX);
                 patrollingAToB = !patrollingAToB;
             }
         } else if(exampleState == ExampleState.Patrolling){
             if(AtGoal()){
                 patrolIdleTimer.Start();
                 exampleState = ExampleState.Idle;
+                rotation.SetAnimationIndex(IDLE_ANIMATION_INDEX);
             }
         } else if(exampleState == ExampleState.Shooting){
             if(playerDistance > SHOOT_RADIUS){
@@ -111,6 +122,7 @@ public class SimpleExampleEnemy : SpriteEnemyBehavior {
 
                 gun.Shoot();
                 shootTimer.Start();
+                rotation.SetAnimationIndex(IDLE_ANIMATION_INDEX);
             }
         }
 
@@ -118,5 +130,24 @@ public class SimpleExampleEnemy : SpriteEnemyBehavior {
         if(playerDistance < UDPATE_RADIUS){
             EnemyManagerComponent.RegisterUpdate(this);
         }
+    }
+
+    //##############################################################################################
+    // Play a grunt bark when damaged
+    //##############################################################################################
+    public override void PlayDamagedSequence(){
+        bark.Bark();
+
+        base.PlayDamagedSequence();
+    }
+
+    //##############################################################################################
+    // Spawn a body prefab when killed
+    //##############################################################################################
+    public override void PlayDeathSequence(){
+        GameObject spawnedBody = GameObject.Instantiate(bodyToSpawn);
+        spawnedBody.transform.position = transform.position;
+
+        base.PlayDeathSequence();
     }
 }

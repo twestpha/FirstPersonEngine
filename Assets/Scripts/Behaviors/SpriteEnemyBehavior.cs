@@ -135,14 +135,21 @@ public class SpriteEnemyBehavior : EnemyBehavior {
     }
 
     //##############################################################################################
-    // If the enemy is damaged, register to update it and react
+    // Play the damaged sequence, where more behavior can be tacked onto.
     //##############################################################################################
     public void Damaged(DamageableComponent damaged){
+        PlayDamagedSequence();
+    }
+
+    //##############################################################################################
+    // If the enemy is damaged, register to update it and react
+    //##############################################################################################
+    public virtual void PlayDamagedSequence(){
         EnemyManagerComponent.RegisterUpdate(this);
     }
 
     //##############################################################################################
-    // For now, just play the death sequence. More behavior can be tacked onto here.
+    // Play the death sequence, where more behavior can be tacked onto.
     //##############################################################################################
     public void Killed(DamageableComponent damaged){
         PlayDeathSequence();

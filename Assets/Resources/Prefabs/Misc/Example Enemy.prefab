@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 375796173}
   - component: {fileID: 1035073595873080578}
   - component: {fileID: 2391183773709821628}
+  - component: {fileID: 4475959901249332256}
   m_Layer: 0
   m_Name: Example Enemy
   m_TagString: Untagged
@@ -99,7 +100,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7a5c6ec1277f1634f8c01c2267960f98, type: 2}
+  - {fileID: 2100000, guid: a0d79d407e7b3da4da88d3e6db86ed5f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -151,6 +152,17 @@ MonoBehaviour:
   anims:
   - rots:
     - mats:
+      - {fileID: 2100000, guid: a0d79d407e7b3da4da88d3e6db86ed5f, type: 2}
+    - mats:
+      - {fileID: 2100000, guid: 1df166c5edfc4244f9dfda92da4f4dcb, type: 2}
+    - mats:
+      - {fileID: 2100000, guid: cec71fe284fc0304a8c4b10a131fd4ba, type: 2}
+    - mats:
+      - {fileID: 2100000, guid: 77812aba1b7f8ed41826fb2e94c9435c, type: 2}
+    - mats:
+      - {fileID: 2100000, guid: 9cefd353f960ae045adfc9d5cab3f3a4, type: 2}
+  - rots:
+    - mats:
       - {fileID: 2100000, guid: 7a5c6ec1277f1634f8c01c2267960f98, type: 2}
       - {fileID: 2100000, guid: 38421cffb5584be46a2518c0a06296ce, type: 2}
     - mats:
@@ -165,6 +177,17 @@ MonoBehaviour:
     - mats:
       - {fileID: 2100000, guid: 85e847910d4fd1448b8f7a63262385ee, type: 2}
       - {fileID: 2100000, guid: e8045df6defed634ab0ec360950b6401, type: 2}
+  - rots:
+    - mats:
+      - {fileID: 2100000, guid: 1e09c337d689ceb43af4be3826c20432, type: 2}
+    - mats:
+      - {fileID: 2100000, guid: 52c2e6444dedee44f8264255cd56043b, type: 2}
+    - mats:
+      - {fileID: 2100000, guid: cf012fcd5fdddd84983f6ee33d75c587, type: 2}
+    - mats:
+      - {fileID: 2100000, guid: e6197e258778dcb4c8b1959b882148a7, type: 2}
+    - mats:
+      - {fileID: 2100000, guid: 3b2211ddeef5cec47880938baf6e85a1, type: 2}
 --- !u!114 &4811587513848046831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,7 +216,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 10
+  m_Radius: 7
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!136 &375796174
 CapsuleCollider:
@@ -250,6 +273,9 @@ MonoBehaviour:
   patrolPointA: {fileID: 0}
   patrolPointB: {fileID: 0}
   muzzleTransform: {fileID: 464029926}
+  bark: {fileID: 4475959901249332256}
+  bodyToSpawn: {fileID: 3164836526246312605, guid: 000f2d3fe6403dd47bab3e466cd92086,
+    type: 3}
 --- !u!114 &1035073595873080578
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,3 +308,23 @@ MonoBehaviour:
   currentGunData: {fileID: 11400000, guid: 9081d7abf25f1384fa8eb1170ccbe820, type: 2}
   muzzleTransform: {fileID: 464029926}
   optionalCasingParticle: {fileID: 0}
+  currentAmmoCount: 0
+--- !u!114 &4475959901249332256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4811587513848046836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bffaa88afaf52da40a0488e5e6fc5cd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  barks:
+  - clip: {fileID: 8300000, guid: 12a7baf7b60546049b2b3e69d00100a0, type: 3}
+    volume: 1
+  - clip: {fileID: 8300000, guid: bae01cb48962b7d4496389ec0f320d72, type: 3}
+    volume: 1
+  - clip: {fileID: 8300000, guid: 03532f7c65daf0c4e8f8b23110028d1b, type: 3}
+    volume: 1
