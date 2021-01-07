@@ -27,6 +27,7 @@ using UnityEngine.UI;
 //##################################################################################################
 [RequireComponent(typeof(FirstPersonPlayerComponent))]
 public class FlatAnimatedGunComponent : ZoomableGunComponent {
+    public const float LIGHT_UPDATE_TIME = 0.15f; // seconds
 
     private enum AnimatedGunState {
         Idle,
@@ -42,11 +43,16 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
     public float reloadingFramerate = 1.0f;
     public Sprite[] reloadingSprites;
 
+    public bool tintWithNearestLight;
+
     private AnimatedGunState state;
     private int currentFrame;
 
+    private Light nearestLight;
+
     private Timer firingAnimationTimer;
     private Timer reloadingAnimationTimer;
+    private Timer lightListUpdateTimer;
 
     private DamageableComponent damage;
 
@@ -78,6 +84,10 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
             Logger.Error("Gun Sprite Image on " + gameObject.name + "'s FlatAnimatedGunComponent cannot be null on start");
         }
 
+        if(tintWithNearestLight){
+            lightListUpdateTimer = new Timer(LIGHT_UPDATE_TIME);
+        }
+
         damage = GetComponent<DamageableComponent>();
     }
 
@@ -88,7 +98,48 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
     protected new void Update(){
         base.Update();
 
-        // Don't update animated gun if the player is dead
+        if(tintWithNearestLight){
+            // Note that this will only work with point lights
+
+            // Get all lights in scene. From unity for FindObjectsOfType,
+            // "This function is very slow. It is not recommended to use this function every frame."
+            // Therefore, we only get and iterate the list infrequently, but update the intensity of
+            // the tint with the cached light at full framerate
+            if(lightListUpdateTimer.Finished()){
+                lightListUpdateTimer.Start();
+
+                Light[] lights = FindObjectsOfType<Light>();
+
+                nearestLight = null;
+                float minDistanceSquared = float.MaxValue;
+
+                foreach(Light light in lights){
+                    if(light.type == LightType.Point){
+                        float lightDistanceSquared = (light.transform.position - transform.position).sqrMagnitude;
+
+                        if(lightDistanceSquared < minDistanceSquared && lightDistanceSquared < light.range * light.range){
+                            minDistanceSquared = lightDistanceSquared;
+                            nearestLight = light;
+                        }
+                    }
+                }
+            }
+
+            if(nearestLight != null){
+                // Calculate energy based on 1/distance^2
+                float distanceToNearestLightSquared = (nearestLight.transform.position - transform.position).sqrMagnitude;
+                float energy = Mathf.Clamp(nearestLight.intensity / distanceToNearestLightSquared, 0.0f, 1.0f);
+
+                // apply lighting based on energy, preserving existing alpha from sprite
+                Color energyColor = energy * nearestLight.color;
+                gunSpriteImage.color = new Color(energyColor.r, energyColor.g, energyColor.b, gunSpriteImage.color.a) + RenderSettings.ambientLight;
+            } else {
+                // Fallback to ambient light
+                gunSpriteImage.color = RenderSettings.ambientLight;
+            }
+        }
+
+        // Don't update the rest of the animated gun if the player is dead
         if(damage.Dead()){
             return;
         }
