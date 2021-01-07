@@ -275,7 +275,8 @@ public class WadBuilder : MonoBehaviour {
     private const int INVALID_SIDEDEF_INDEX = -1;
     private const int LUMP_INFO_SIZE = 16;
 
-    private const int WALL_TRIANGLE_COUNT = 6; // each wall has 3 quads (upper, middle, lower) and 2 tris per quad.
+    // each wall has 3 quads (upper, middle, lower) and 2 tris per quad.
+    private const int WALL_TRIANGLE_COUNT = 6; // TODO unused...?
 
     public TextAsset wadAsset;
     public float mapScale = 0.05f; // Using Doom maps, this looks about right
@@ -880,36 +881,66 @@ public class WadBuilder : MonoBehaviour {
         }
 
         // sectorToLineLookup
-        int iterations = 0;
-        while(true){
+        // I think we have to use a mix of algorithms
+        // if we have one single continuous loop of lines (no inner islands), we can use the corner-walking algorithm (maybe?)
+        // if we have inner islands, bridge them, then do the corner-walking?
 
-            // Greedily (using just distance) try to build triangles
-            List<WadLineDef> testSectorLines = new List<List<WadLineDef>>(sectorToLineLookup.Values)[0];
+        int k = 0;
+        foreach(var sectorToLine in sectorToLineLookup){
+            List<WadLineDef> sectorLineDefs = sectorToLine.Value;
+            List<WadLineDef> exploredLineDefs = new List<WadLineDef>();
 
+            // Test the shape of the vertex graph by iterating over as many lines as possible, starting
+            // from a given vertex. If this iterates all of the lines of that graph, this indicates that
+            // the sector has no separate islands of vertexes, and is a single-cycle graph.
+            int loopStartVertexIndex = sectorLineDefs[0].startVertex;
+            int nextVertexIndex = sectorLineDefs[0].endVertex;
+            exploredLineDefs.Add(sectorLineDefs[0]);
 
+            int loopCount = 1; // Starts at one because of the first link
 
-            break;
+            // Shit
+            int iterations = 0;
 
+            while(loopStartVertexIndex != nextVertexIndex){
+                foreach(var line in sectorLineDefs){
+                    if((line.startVertex == nextVertexIndex || line.endVertex == nextVertexIndex) && !exploredLineDefs.Contains(line)){
+                        exploredLineDefs.Add(line);
 
-            if(iterations > 1000){
-                break;
+                        // Use the opposite vertex as the next vertex
+                        if(line.startVertex == nextVertexIndex){
+                            nextVertexIndex = line.endVertex;
+                        } else {
+                            nextVertexIndex = line.startVertex;
+                        }
+
+                        break;
+                    }
+                }
+
+                loopCount++;
+
+                // Bad state
+                iterations++;
+                if(iterations > 2000){
+                    Debug.LogError("ALSKJDKLAS");
+                    return;
+                }
             }
+
+            // sector has disjoint islands if the count of any loop is not the same as the number of line defs in that sector
+            bool sectorHasIslands = loopCount != sectorLineDefs.Count;
+            // Debug.Log("loopCount: " + loopCount);
+            // Debug.Log("sectorLineDefs.Count: " + sectorLineDefs.Count);
+            Debug.Log("Sector (" + sectorToLine.Key.floorTextureName + ", " + sectorToLine.Key.ceilingTextureName + ") has islands: " + sectorHasIslands);
+            Debug.Log(sectorHasIslands);
+            k++;
+
+            // Once we know if we have islands, we can do... something?
+
+            // break;
         }
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
-
 
 
     //##############################################################################################
