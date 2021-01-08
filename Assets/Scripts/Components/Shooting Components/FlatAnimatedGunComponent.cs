@@ -131,11 +131,11 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
                 float energy = Mathf.Clamp(nearestLight.intensity / distanceToNearestLightSquared, 0.0f, 1.0f);
 
                 // apply lighting based on energy, preserving existing alpha from sprite
-                Color energyColor = energy * nearestLight.color;
-                gunSpriteImage.color = new Color(energyColor.r, energyColor.g, energyColor.b, gunSpriteImage.color.a) + RenderSettings.ambientLight;
+                Color lightColor = (energy * nearestLight.color) + RenderSettings.ambientLight;
+                gunSpriteImage.color = new Color(lightColor.r, lightColor.g, lightColor.b, gunSpriteImage.color.a);
             } else {
                 // Fallback to ambient light
-                gunSpriteImage.color = RenderSettings.ambientLight;
+                gunSpriteImage.color = new Color(RenderSettings.ambientLight.r, RenderSettings.ambientLight.g, RenderSettings.ambientLight.b, gunSpriteImage.color.a);
             }
         }
 

@@ -878,6 +878,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: a2b8ef561108c53468fc21dae1a37512, type: 3}
   - {fileID: 21300000, guid: 2b0dc85ea6a8c164d94bbd52870f7ddc, type: 3}
   - {fileID: 21300000, guid: a2b8ef561108c53468fc21dae1a37512, type: 3}
+  tintWithNearestLight: 1
 --- !u!114 &8118323696756032106
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -923,6 +924,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 2e2d89c96358e334dbcf38e12724161e, type: 3}
   - {fileID: 21300000, guid: 9f88be92a4cbdb0448860c72d4b33d0d, type: 3}
   - {fileID: 21300000, guid: 2e2d89c96358e334dbcf38e12724161e, type: 3}
+  tintWithNearestLight: 1
 --- !u!114 &5348790092889975604
 MonoBehaviour:
   m_ObjectHideFlags: 0
