@@ -43,7 +43,15 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
     public float reloadingFramerate = 1.0f;
     public Sprite[] reloadingSprites;
 
-    public bool tintWithNearestLight;
+    [Space(10)]
+    public bool tintWithNearestLight = false;
+
+    [Space(10)]
+    public bool useGunBob = false;
+    public Vector3 gunImageStartPosition;
+    public float gunBobVerticalAmplitude = 25.0f;
+    public float gunBobHorizontalAmplitude = 50.0f;
+    public float gunBobFrequency = 4.0f;
 
     private AnimatedGunState state;
     private int currentFrame;
@@ -54,6 +62,7 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
     private Timer reloadingAnimationTimer;
     private Timer lightListUpdateTimer;
 
+    private RectTransform gunImageRectTransform;
     private DamageableComponent damage;
 
     //##############################################################################################
@@ -88,6 +97,10 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
             lightListUpdateTimer = new Timer(LIGHT_UPDATE_TIME);
         }
 
+        if(useGunBob){
+            gunImageRectTransform = gunSpriteImage.GetComponent<RectTransform>();
+        }
+
         damage = GetComponent<DamageableComponent>();
     }
 
@@ -99,49 +112,16 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
         base.Update();
 
         if(tintWithNearestLight){
-            // Note that this will only work with point lights
-
-            // Get all lights in scene. From unity for FindObjectsOfType,
-            // "This function is very slow. It is not recommended to use this function every frame."
-            // Therefore, we only get and iterate the list infrequently, but update the intensity of
-            // the tint with the cached light at full framerate
-            if(lightListUpdateTimer.Finished()){
-                lightListUpdateTimer.Start();
-
-                Light[] lights = FindObjectsOfType<Light>();
-
-                nearestLight = null;
-                float minDistanceSquared = float.MaxValue;
-
-                foreach(Light light in lights){
-                    if(light.type == LightType.Point){
-                        float lightDistanceSquared = (light.transform.position - transform.position).sqrMagnitude;
-
-                        if(lightDistanceSquared < minDistanceSquared && lightDistanceSquared < light.range * light.range){
-                            minDistanceSquared = lightDistanceSquared;
-                            nearestLight = light;
-                        }
-                    }
-                }
-            }
-
-            if(nearestLight != null){
-                // Calculate energy based on 1/distance^2
-                float distanceToNearestLightSquared = (nearestLight.transform.position - transform.position).sqrMagnitude;
-                float energy = Mathf.Clamp(nearestLight.intensity / distanceToNearestLightSquared, 0.0f, 1.0f);
-
-                // apply lighting based on energy, preserving existing alpha from sprite
-                Color lightColor = (energy * nearestLight.color) + RenderSettings.ambientLight;
-                gunSpriteImage.color = new Color(lightColor.r, lightColor.g, lightColor.b, gunSpriteImage.color.a);
-            } else {
-                // Fallback to ambient light
-                gunSpriteImage.color = new Color(RenderSettings.ambientLight.r, RenderSettings.ambientLight.g, RenderSettings.ambientLight.b, gunSpriteImage.color.a);
-            }
+            UpdateTintWithNearestLight();
         }
 
         // Don't update the rest of the animated gun if the player is dead
         if(damage.Dead()){
             return;
+        }
+
+        if(useGunBob){
+            UpdateGunBob();
         }
 
         // Either use getMouseButton if the gun is automatic, or getMouseButtonDown if not
@@ -213,5 +193,61 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
                 }
             }
         }
+    }
+
+    private void UpdateTintWithNearestLight(){
+        // Note that this will only work with point lights
+
+        // Get all lights in scene. From unity for FindObjectsOfType,
+        // "This function is very slow. It is not recommended to use this function every frame."
+        // Therefore, we only get and iterate the list infrequently, but update the intensity of
+        // the tint with the cached light at full framerate
+        if(lightListUpdateTimer.Finished()){
+            lightListUpdateTimer.Start();
+
+            Light[] lights = FindObjectsOfType<Light>();
+
+            nearestLight = null;
+            float minDistanceSquared = float.MaxValue;
+
+            foreach(Light light in lights){
+                if(light.type == LightType.Point){
+                    float lightDistanceSquared = (light.transform.position - transform.position).sqrMagnitude;
+
+                    if(lightDistanceSquared < minDistanceSquared && lightDistanceSquared < light.range * light.range){
+                        minDistanceSquared = lightDistanceSquared;
+                        nearestLight = light;
+                    }
+                }
+            }
+        }
+
+        if(nearestLight != null){
+            // Calculate energy based on 1/distance^2
+            float distanceToNearestLightSquared = (nearestLight.transform.position - transform.position).sqrMagnitude;
+            float energy = Mathf.Clamp(nearestLight.intensity / distanceToNearestLightSquared, 0.0f, 1.0f);
+
+            // apply lighting based on energy, preserving existing alpha from sprite
+            Color lightColor = (energy * nearestLight.color) + RenderSettings.ambientLight;
+            gunSpriteImage.color = new Color(lightColor.r, lightColor.g, lightColor.b, gunSpriteImage.color.a);
+        } else {
+            // Fallback to ambient light
+            gunSpriteImage.color = new Color(RenderSettings.ambientLight.r, RenderSettings.ambientLight.g, RenderSettings.ambientLight.b, gunSpriteImage.color.a);
+        }
+    }
+
+    private void UpdateGunBob(){
+        // Get player velocity, paramerize it against max speed
+        float playerCurrentVelocity = player.GetVelocity().magnitude;
+        float playerVelocityParameterized = playerCurrentVelocity / player.GetMaxWalkSpeed();
+
+        float scaledSine = playerVelocityParameterized * Mathf.Sin(gunBobFrequency * Time.time);
+        float scaledCosine = playerVelocityParameterized * Mathf.Cos(gunBobFrequency * Time.time);
+
+        gunImageRectTransform.anchoredPosition = new Vector3(
+            gunImageStartPosition.x + gunBobHorizontalAmplitude * scaledSine,
+            gunImageStartPosition.y + -Mathf.Abs(gunBobVerticalAmplitude * scaledCosine),
+            gunImageStartPosition.z
+        );
     }
 }

@@ -480,6 +480,10 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
         return velocity;
     }
 
+    public float GetMaxWalkSpeed(){
+        return maxWalkSpeed;
+    }
+
     public bool Dead(){
         return damage.Dead();
     }

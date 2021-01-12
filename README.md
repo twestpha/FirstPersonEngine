@@ -10,7 +10,8 @@ Then, add the project in Unity Hub, and import the project.
 
 # Current Feature List
 Shooting Components, used for shooting a bullet and dealing damage to damageables
-* 2D and 3D animated gun components
+* 2D flat gun component, with sprite animations, light tinting, and gun bob settings
+* 3D animated gun components, with unity animation settings
 * Gun, Bullet, and Damageable Components
 * Simple Gun Selection
 
