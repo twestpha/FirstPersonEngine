@@ -175,7 +175,6 @@ public class LevelManagerComponent : MonoBehaviour {
 
             if(saveLoadQueued == 0){
                 // Only partially apply save
-                Logger.Info("=== Applying Save ===");
                 SaveLoadManagerComponent.Instance().ApplySave(SaveLoadManagerComponent.SaveApplicationMode.PerLevel);
             }
         }

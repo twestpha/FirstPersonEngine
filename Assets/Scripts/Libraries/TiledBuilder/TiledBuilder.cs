@@ -68,7 +68,7 @@ public class TiledBuilder : MonoBehaviour {
     //##############################################################################################
     // Generate the map using the file and palette provided, parenting all spawned prefabs under
     // this transform.
-    // CAUTION! This destroys all children of the gameObject this is on
+    // CAUTION! This destroys all children of the gameObject this is on.
     //##############################################################################################
     public void GenerateMap(){
         // Destroy all existing children
@@ -85,6 +85,11 @@ public class TiledBuilder : MonoBehaviour {
         int verticalCount = lines.Length;
         int horizontalCount = lines[0].Split(',').Length;
 
+        if(verticalCount <= 0 || horizontalCount <= 0){
+            Debug.LogError("TiledBuilder.GenerateMap: The parsed vertical tile count is " + verticalCount + " and the horiztonal tile count is " + horizontalCount + " which is not allowed.");
+            return;
+        }
+
         for(int i = 0; i < verticalCount; ++i){
             string[] indices = lines[i].Split(',');
 
@@ -94,6 +99,7 @@ public class TiledBuilder : MonoBehaviour {
                 try {
                     tileIndex = Int32.Parse(indices[k]);
                 } catch {
+                    Debug.LogWarning("TiledBuilder.GenerateMap: Tile at position (" + i + ", " + k + ") was not a parseable integer, was " + indices[k] + ", skipping instantiation.");
                     continue;
                 }
 

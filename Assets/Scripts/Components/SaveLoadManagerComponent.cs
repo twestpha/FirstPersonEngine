@@ -291,6 +291,7 @@ public class SaveLoadManagerComponent : MonoBehaviour {
     // For example, open doors in that level that saved that they had been opened.
     //##############################################################################################
     public void ApplySave(SaveApplicationMode mode){
+        Logger.Info("=== Applying Save " + mode + " ===");
 
         // Apply operations that happen regardless of mode go here
 

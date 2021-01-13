@@ -24,7 +24,6 @@ using UnityStandardAssets.ImageEffects;
 // First Person Player Component
 // This class is responsible for managing many aspects of a first-person shooter player. It manages
 // movement and looking, and taking damage and respawning.
-// TODO add head bob settings
 //##################################################################################################
 [RequireComponent(typeof(DamageableComponent))]
 public class FirstPersonPlayerComponent : MonoBehaviour {
@@ -491,7 +490,7 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
     public void AbleMovement(bool abled){
         movementEnabled = abled;
 
-        if(abled){
+        if(!abled){
             // Make sure to clear out velocity
             velocity = Vector3.zero;
         }
