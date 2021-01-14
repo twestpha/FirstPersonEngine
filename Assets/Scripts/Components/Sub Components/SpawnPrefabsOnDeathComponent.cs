@@ -21,25 +21,35 @@ using UnityEngine;
 // Sub Components are a toolbox of simple, common building block behaviours, meant to do a single
 // thing within the constraints of the other existing components.
 //
-// Spawn Effects On Death Component
-// This script simply spawns an effects prefab gameobject, and if marked to, destroys the original
-// gameObject. This is used for exploding simple things into particles.
+// Spawn Prefabs On Death Component
+// This script simply spawns many prefab gameobject, and if marked to, destroys the original
+// gameObject. This is used for exploding damageables into particles on death.
 //##################################################################################################
 [RequireComponent(typeof(DamageableComponent))]
-public class SpawnEffectsOnDeathComponent : MonoBehaviour {
+public class SpawnPrefabsOnDeathComponent : MonoBehaviour {
 
     public bool destroyOriginal;
 
-    public GameObject effectsPrefab;
-    public Vector3 effectsOffset;
+    [System.Serializable]
+    public class DeathSpawnPrefab {
+        public GameObject effectsPrefab;
+        public Vector3 effectsOffset;
+    }
+
+    public DeathSpawnPrefab[] prefabsToSpawnOnDeath;
 
     private void Start(){
         GetComponent<DamageableComponent>().RegisterOnKilledDelegate(Killed);
     }
 
     private void Killed(DamageableComponent damage){
-        GameObject newEffects = Object.Instantiate(effectsPrefab);
-        newEffects.transform.position = transform.position + effectsOffset;
+        for(int i = 0, count = prefabsToSpawnOnDeath.Length; i < count; ++i){
+            DeathSpawnPrefab deathSpawn = prefabsToSpawnOnDeath[i];
+
+            GameObject newEffects = Object.Instantiate(deathSpawn.effectsPrefab);
+            newEffects.transform.position = transform.position + deathSpawn.effectsOffset;
+            newEffects.transform.rotation = transform.rotation;
+        }
 
         if(destroyOriginal){
             Destroy(gameObject);

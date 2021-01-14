@@ -441,13 +441,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 58445005}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e6bb267354702948a6822280acfd835, type: 3}
+  m_Script: {fileID: 11500000, guid: 1cdb99144dc5cba4190e2824659cac98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   destroyOriginal: 0
-  effectsPrefab: {fileID: 8367617204664015571, guid: 5d13f594c29b1294fb79a62f054ff126,
-    type: 3}
-  effectsOffset: {x: 0, y: 0, z: 0}
+  prefabsToSpawnOnDeath:
+  - effectsPrefab: {fileID: 8367617204664015571, guid: 5d13f594c29b1294fb79a62f054ff126,
+      type: 3}
+    effectsOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &58445007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7844,13 +7845,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 2074027677}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e6bb267354702948a6822280acfd835, type: 3}
+  m_Script: {fileID: 11500000, guid: 1cdb99144dc5cba4190e2824659cac98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   destroyOriginal: 0
-  effectsPrefab: {fileID: 8367617204664015571, guid: 5d13f594c29b1294fb79a62f054ff126,
-    type: 3}
-  effectsOffset: {x: 0, y: 0, z: 0}
+  prefabsToSpawnOnDeath:
+  - effectsPrefab: {fileID: 8367617204664015571, guid: 5d13f594c29b1294fb79a62f054ff126,
+      type: 3}
+    effectsOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &2074027679
 MonoBehaviour:
   m_ObjectHideFlags: 0
