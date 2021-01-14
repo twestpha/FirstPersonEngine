@@ -18,7 +18,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //##################################################################################################
-//
+// Destructable Component
+// This component is a sort of rigidbody physics particle manager. It's meant to contain a number of
+// physics objects, called destructables below, and give the an explosion force eminating from the
+// origin, then disable those destructables once done.
 //##################################################################################################
 public class DestructableComponent : MonoBehaviour {
     public const float FORCE_DISABLE_DESTRUCTABLES_TIME = 10.0f; // seconds
@@ -32,11 +35,11 @@ public class DestructableComponent : MonoBehaviour {
     public GameObject[] destructables;
 
     private bool destructed = false;
-    private int[] finishedFrameCount;
     private Timer forceDistableDestructablesTimer = new Timer(FORCE_DISABLE_DESTRUCTABLES_TIME);
 
     //##############################################################################################
-    //
+    // Default the origin if needed, and destruct if needed. If we're not going to disable physics
+    // later, then disable this component so as not to update
     //##############################################################################################
     void Start(){
         if(origin == null){
@@ -47,14 +50,17 @@ public class DestructableComponent : MonoBehaviour {
             Destruct();
         }
 
-        if(disablePhysicsOnFinished){
-            finishedFrameCount = new int[destructables.Length];
-        } else {
+        if(!disablePhysicsOnFinished){
             // Disable this component to prevent updating, since it's not needed
             enabled = false;
         }
     }
 
+    //##############################################################################################
+    // If the destruction has happened, and we should disable physics, check to see which objects
+    // are sleeping, then disable their physics interactions if so. Also, force them disabled if
+    // the timer is done.
+    //##############################################################################################
     void Update(){
         if(destructed && disablePhysicsOnFinished){
             for(int i = 0, count = destructables.Length; i < count; ++i){
@@ -63,6 +69,9 @@ public class DestructableComponent : MonoBehaviour {
                     Rigidbody body = destructable.GetComponent<Rigidbody>();
 
                     if(body.IsSleeping() || forceDistableDestructablesTimer.Finished()){
+                        // isKinematic requires ContinuousSpeculative as per unity warning
+                        body.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+
                         body.isKinematic = true;
                         destructable.GetComponent<Collider>().enabled = false;
 
@@ -70,11 +79,17 @@ public class DestructableComponent : MonoBehaviour {
                     }
                 }
             }
+
+            // Turn this component off if we're all done
+            if(forceDistableDestructablesTimer.Finished()){
+                enabled = false;
+            }
         }
     }
 
     //##############################################################################################
-    //
+    // Impart force and torque outward from the origin, randomize it a little, and apply it to the
+    // destructable's rigidbodies.
     //##############################################################################################
     public void Destruct(){
         destructed = true;
