@@ -867,6 +867,7 @@ MonoBehaviour:
   currentAmmoCount: 0
   playerCamera: {fileID: 0}
   reticleOverlayImage: {fileID: 0}
+  zoomedMuzzleTransform: {fileID: 0}
   gunSpriteImage: {fileID: 5636234756753477762}
   idleSprite: {fileID: 21300000, guid: e6da56c21a87f6c4880fdbe62f95e804, type: 3}
   firingFramerate: 16
@@ -902,6 +903,7 @@ MonoBehaviour:
   currentAmmoCount: 0
   playerCamera: {fileID: 0}
   reticleOverlayImage: {fileID: 0}
+  zoomedMuzzleTransform: {fileID: 0}
   gunSpriteImage: {fileID: 5636234756753477762}
   idleSprite: {fileID: 21300000, guid: 2739533c4ee2fb942aa98453bfeed4e8, type: 3}
   firingFramerate: 12
@@ -953,6 +955,7 @@ MonoBehaviour:
   currentAmmoCount: 0
   playerCamera: {fileID: 8118486971543315907}
   reticleOverlayImage: {fileID: 5173020964325208669}
+  zoomedMuzzleTransform: {fileID: 3191328454233206147}
   gunModel: {fileID: 898578140}
   gunAnimator: {fileID: 7423976104494649798}
   idleAnimationName: idle
@@ -1072,6 +1075,36 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &6399423922893747838
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3191328454233206147}
+  m_Layer: 0
+  m_Name: ZoomedMuzzleTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3191328454233206147
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6399423922893747838}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.106, z: 0.668}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 156909532984263342}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6830994293260228871
 GameObject:
   m_ObjectHideFlags: 0
@@ -1162,7 +1195,7 @@ Transform:
   m_Children:
   - {fileID: 898578139}
   m_Father: {fileID: 156909532984263342}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &7423976104494649798
 Animator:
@@ -1297,6 +1330,7 @@ Transform:
   - {fileID: 7194705733374593677}
   - {fileID: 1812113762654171952}
   - {fileID: 1655509880842377431}
+  - {fileID: 3191328454233206147}
   - {fileID: 2328550340729349358}
   m_Father: {fileID: 4891807089415746351}
   m_RootOrder: 0

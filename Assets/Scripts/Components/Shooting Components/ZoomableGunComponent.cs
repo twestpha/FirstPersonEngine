@@ -23,7 +23,6 @@ using UnityEngine.UI;
 // or less opaque when zooming.
 // This class descends from GunComponent
 //
-// TODO add alternate (centered) muzzle to use while zoomed
 // TODO modify player look sensitivity while zoomed
 //##################################################################################################
 public class ZoomableGunComponent : GunComponent {
@@ -33,6 +32,9 @@ public class ZoomableGunComponent : GunComponent {
     [HeaderAttribute("Zoomable Gun Component (Only needed if gun uses Zoom)")]
     public Camera playerCamera;
     public Image reticleOverlayImage;
+
+    public Transform zoomedMuzzleTransform;
+    private Transform originalMuzzleTransform;
 
     private float defaultFieldOfView;
     private Color tintColor;
@@ -59,6 +61,10 @@ public class ZoomableGunComponent : GunComponent {
                 tintColor = new Color(1.0f, 1.0f, 1.0f, 0.0f);
                 reticleOverlayImage.color = tintColor;
             }
+
+            if(zoomedMuzzleTransform != null){
+                originalMuzzleTransform = muzzleTransform;
+            }
         }
     }
 
@@ -71,6 +77,11 @@ public class ZoomableGunComponent : GunComponent {
         if(currentGunData.useZoom){
             // TODO add a player setting for toggling versus hold-to-zoom
             currentlyZooming = Input.GetMouseButton(1);
+
+            // If available, use the zoomed muzzle transform when zooming
+            if(zoomedMuzzleTransform != null){
+                muzzleTransform = currentlyZooming ? zoomedMuzzleTransform : originalMuzzleTransform;
+            }
 
             // Smooth damp towards the target zoom
             zoomParameter = Mathf.SmoothDamp(zoomParameter, currentlyZooming ? ZOOM_IN : ZOOM_OUT, ref zoomVelocity, currentGunData.zoomTime);

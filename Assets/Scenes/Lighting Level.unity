@@ -5675,9 +5675,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fadeTime: 3
+  changeSunColor: 1
   newSunColor: {r: 0.9009434, g: 1, b: 0.9811321, a: 0}
+  changeSunIntensity: 1
   newSunIntensity: 0.1
+  changeSunShadowStrength: 1
+  newSunShadowStrength: 0.8
+  changeAmbientColor: 1
   newAmbientColor: {r: 0.0754717, g: 0.050907798, b: 0.050907798, a: 0}
+  changeSunDirection: 1
+  newSunDirection: {x: 18, y: 50, z: 50}
+  something: 0
 --- !u!1 &681393057
 GameObject:
   m_ObjectHideFlags: 0
@@ -7080,9 +7088,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fadeTime: 3
+  changeSunColor: 1
   newSunColor: {r: 0.97935385, g: 1, b: 0.7216981, a: 0}
+  changeSunIntensity: 1
   newSunIntensity: 1
+  changeSunShadowStrength: 0
+  newSunShadowStrength: 0
+  changeAmbientColor: 1
   newAmbientColor: {r: 0.42893377, g: 0.5943396, b: 0.58463174, a: 0}
+  changeSunDirection: 0
+  newSunDirection: {x: 0, y: 0, z: 0}
+  something: 0
 --- !u!1 &893167316
 GameObject:
   m_ObjectHideFlags: 0
@@ -8362,9 +8378,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fadeTime: 3
+  changeSunColor: 1
   newSunColor: {r: 1, g: 0.6627451, b: 0.11764706, a: 0}
+  changeSunIntensity: 1
   newSunIntensity: 0.6
+  changeSunShadowStrength: 0
+  newSunShadowStrength: 0
+  changeAmbientColor: 1
   newAmbientColor: {r: 0.11764706, g: 0.19215687, b: 0.44313726, a: 0}
+  changeSunDirection: 1
+  newSunDirection: {x: 50, y: 20.025, z: 0}
+  something: 0
 --- !u!65 &1027553924
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10520,9 +10544,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fadeTime: 3
+  changeSunColor: 1
   newSunColor: {r: 1, g: 0.6627451, b: 0.11764706, a: 0}
+  changeSunIntensity: 1
   newSunIntensity: 0.6
+  changeSunShadowStrength: 0
+  newSunShadowStrength: 0
+  changeAmbientColor: 1
   newAmbientColor: {r: 0.11764706, g: 0.19215687, b: 0.44313726, a: 0}
+  changeSunDirection: 1
+  newSunDirection: {x: 50, y: 20.025, z: 0}
+  something: 0
 --- !u!65 &1313757904
 BoxCollider:
   m_ObjectHideFlags: 0

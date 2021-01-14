@@ -29,16 +29,29 @@ public class LevelLightingVolumeComponent : MonoBehaviour {
     public float fadeTime;
 
     [Header("Sun Settings")]
+    public bool changeSunColor;
     public Color newSunColor;
     private Color oldSunColor;
 
+    [Space(10)]
+    public bool changeSunIntensity;
     public float newSunIntensity;
     private float oldSunIntensity;
 
+    [Space(10)]
+    public bool changeSunShadowStrength;
+    public float newSunShadowStrength;
+    private float oldSunShadowStrength;
+
+    [Space(10)]
+    public bool changeAmbientColor;
     public Color newAmbientColor;
     private Color oldAmbientColor;
 
-    // TODO add other features like effects bloom, shadow intensity, and sun orientation
+    [Space(10)]
+    public bool changeSunDirection;
+    public Vector3 newSunDirection;
+    private Vector3 oldSunDirection;
 
     private bool fading;
     private Timer fadeTimer;
@@ -69,7 +82,9 @@ public class LevelLightingVolumeComponent : MonoBehaviour {
 
         sun.color = Color.black;
         sun.intensity = 0.0f;
+        sun.shadowStrength = 0.0f;
         RenderSettings.ambientLight = Color.black;
+        sun.transform.rotation = Quaternion.identity;
     }
 
     //##############################################################################################
@@ -88,10 +103,29 @@ public class LevelLightingVolumeComponent : MonoBehaviour {
                 fading = false;
             }
 
-            sun.color = Color.Lerp(oldSunColor, newSunColor, t);
-            sun.intensity = Mathf.Lerp(oldSunIntensity, newSunIntensity, t);
+            if(changeSunColor){
+                sun.color = Color.Lerp(oldSunColor, newSunColor, t);
+            }
 
-            RenderSettings.ambientLight = Color.Lerp(oldAmbientColor, newAmbientColor, t);
+            if(changeSunIntensity){
+                sun.intensity = Mathf.Lerp(oldSunIntensity, newSunIntensity, t);
+            }
+
+            if(changeSunShadowStrength){
+                sun.shadowStrength = Mathf.Lerp(oldSunShadowStrength, newSunShadowStrength, t);
+            }
+
+            if(changeAmbientColor){
+                RenderSettings.ambientLight = Color.Lerp(oldAmbientColor, newAmbientColor, t);
+            }
+
+            if(changeSunDirection){
+                sun.transform.rotation = Quaternion.Slerp(
+                    Quaternion.Euler(oldSunDirection),
+                    Quaternion.Euler(newSunDirection),
+                    t
+                );
+            }
 
             if(fadeTimer.Finished()){
                 fading = false;
@@ -113,7 +147,9 @@ public class LevelLightingVolumeComponent : MonoBehaviour {
 
             oldSunColor = sun.color;
             oldSunIntensity = sun.intensity;
+            oldSunShadowStrength = sun.shadowStrength;
             oldAmbientColor = RenderSettings.ambientLight;
+            oldSunDirection = sun.transform.rotation.eulerAngles;
         }
     }
 }
