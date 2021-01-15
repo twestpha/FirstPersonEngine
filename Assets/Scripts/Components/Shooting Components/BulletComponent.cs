@@ -31,6 +31,7 @@ public class BulletComponent : MonoBehaviour {
 
     [HeaderAttribute("Bullet Component")]
     public float maxDistance = 100.0f;
+    public float gravityModifier = 0.0f;
     public GameObject optionalImpactEffects;
     public AudioClip impactSound;
     public float impactSoundVolume = 1.0f;
@@ -109,6 +110,7 @@ public class BulletComponent : MonoBehaviour {
             return;
         }
 
+        velocity += Physics.gravity * gravityModifier * Time.deltaTime * Time.deltaTime;
         Vector3 move = velocity * Time.deltaTime;
         float moveDist = move.magnitude;
 
