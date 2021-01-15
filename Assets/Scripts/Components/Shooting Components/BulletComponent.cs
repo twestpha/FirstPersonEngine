@@ -20,6 +20,8 @@ using UnityEngine;
 // Bullet Component
 // This class is responsible for managing a single bullet, and moving it and destroying it when it
 // collides, spawning the appropriate effects or decals
+// TODO bullet ricochets
+// TODO bullet gravity
 //##################################################################################################
 public class BulletComponent : MonoBehaviour {
     public const int NO_BULLET_COLLIDE_LAYER = 1 << 11;
@@ -37,7 +39,7 @@ public class BulletComponent : MonoBehaviour {
 
     private bool fired;
     private bool shouldKill;
-    private string poolIdentifier; // Register as 'free' with this thing if we're a pooled bullet
+    private string poolIdentifier; // Register as 'free' with this if we're a pooled bullet
 
     private float damage;
     private DamageType type;
@@ -122,6 +124,14 @@ public class BulletComponent : MonoBehaviour {
                 transform.position = hit.point;
 
                 DamageableComponent damageable = hit.collider.gameObject.GetComponent<DamageableComponent>();
+
+                if(damageable == null){
+                    DamageablePieceComponent damageablePiece = hit.collider.gameObject.GetComponent<DamageablePieceComponent>();
+
+                    if(damageablePiece != null){
+                        damageable = damageablePiece.GetDamageableComponent();
+                    }
+                }
 
                 if(damageable != null){
                     damageable.DealDamage(damage, type, startPosition, firer);

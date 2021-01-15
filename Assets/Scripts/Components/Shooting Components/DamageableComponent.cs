@@ -13,7 +13,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //##################################################################################################
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -82,10 +81,6 @@ public class DamageableComponent : MonoBehaviour {
 	void Start(){
         if(maxHealth <= 0.0f){
             Logger.Error("Max Health on " + gameObject.name + "'s DamageableComponent cannot be less than or equal zero");
-        }
-
-        if(!TryGetComponent(out Collider coll)){
-            Logger.Warning("Collider not found on " + gameObject.name + " for DamageableComponent. It is not required, but note that the damageable can therefore not be shot with bullets");
         }
 
         currentHealth = maxHealth;
