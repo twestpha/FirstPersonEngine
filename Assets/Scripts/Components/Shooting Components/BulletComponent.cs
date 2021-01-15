@@ -20,8 +20,6 @@ using UnityEngine;
 // Bullet Component
 // This class is responsible for managing a single bullet, and moving it and destroying it when it
 // collides, spawning the appropriate effects or decals
-// TODO bullet ricochets
-// TODO bullet gravity
 //##################################################################################################
 public class BulletComponent : MonoBehaviour {
     public const int NO_BULLET_COLLIDE_LAYER = 1 << 11;
@@ -32,6 +30,8 @@ public class BulletComponent : MonoBehaviour {
     [HeaderAttribute("Bullet Component")]
     public float maxDistance = 100.0f;
     public float gravityModifier = 0.0f;
+    public int ricochets = 1;
+    public float ricochetChance = 0.0f;
     public GameObject optionalImpactEffects;
     public AudioClip impactSound;
     public float impactSoundVolume = 1.0f;
@@ -39,6 +39,7 @@ public class BulletComponent : MonoBehaviour {
     public GameObject optionalDecalObject;
 
     private bool fired;
+    private int ricochetsRemaining;
     private bool shouldKill;
     private string poolIdentifier; // Register as 'free' with this if we're a pooled bullet
 
@@ -135,29 +136,16 @@ public class BulletComponent : MonoBehaviour {
                     }
                 }
 
-                if(damageable != null){
+                if(damageable == null){
+                    if(Random.value <= ricochetChance){
+                        ricochetsRemaining--;
+                    } else {
+                        ricochetsRemaining = 0;
+                    }
+                } else {
+                    // Never ricochet off a damageable
+                    ricochetsRemaining = 0;
                     damageable.DealDamage(damage, type, startPosition, firer);
-                }
-
-                // TODO add impact effects lookup system for hit object
-                if(optionalImpactEffects != null){
-                    GameObject fx = GameObject.Instantiate(optionalImpactEffects);
-
-                    // Scoot fx back away from collision a little
-                    fx.transform.position = transform.position + (-move).normalized * BULLET_EFFECTS_OFFSET;
-                }
-
-                // Don't spawn decals when hitting damageable
-                if(optionalDecalObject != null && damageable == null){
-                    // Fade these out at some point?
-
-                    GameObject decalInstance = GameObject.Instantiate(optionalDecalObject);
-
-                    // Add random offset to prevent z-fighting
-                    float randomOffset = (Random.value * BULLET_EFFECTS_OFFSET);
-
-                    decalInstance.transform.position = hit.point + (hit.normal * (BULLET_DECAL_OFFSET + randomOffset));
-                    decalInstance.transform.rotation = Quaternion.LookRotation(hit.normal);
                 }
 
                 // Play impact sound if needed
@@ -173,7 +161,34 @@ public class BulletComponent : MonoBehaviour {
                     );
                 }
 
-                shouldKill = true;
+                if(ricochetsRemaining > 0){
+                    float velocityMagnitude = velocity.magnitude;
+                    velocity = Vector3.Reflect(velocity.normalized, hit.normal).normalized * velocityMagnitude;
+                    transform.position = hit.point + (velocity * 0.01f);
+                } else {
+                    // Don't spawn decals when hitting damageable
+                    if(optionalDecalObject != null && damageable == null){
+                        // Fade these out at some point?
+
+                        GameObject decalInstance = GameObject.Instantiate(optionalDecalObject);
+
+                        // Add random offset to prevent z-fighting
+                        float randomOffset = (Random.value * BULLET_EFFECTS_OFFSET);
+
+                        decalInstance.transform.position = hit.point + (hit.normal * (BULLET_DECAL_OFFSET + randomOffset));
+                        decalInstance.transform.rotation = Quaternion.LookRotation(hit.normal);
+                    }
+
+                    // TODO add impact effects lookup system for hit object
+                    if(optionalImpactEffects != null){
+                        GameObject fx = GameObject.Instantiate(optionalImpactEffects);
+
+                        // Scoot fx back away from collision a little
+                        fx.transform.position = transform.position + (-move).normalized * BULLET_EFFECTS_OFFSET;
+                    }
+
+                    shouldKill = true;
+                }
             }
         } else {
             transform.position += move;
@@ -186,6 +201,7 @@ public class BulletComponent : MonoBehaviour {
     public void Fire(float damage_, DamageType type_, Vector3 velocity_, GameObject firer_){
         fired = true;
         shouldKill = false;
+        ricochetsRemaining = ricochets;
 
         damage = damage_;
         type = type_;
