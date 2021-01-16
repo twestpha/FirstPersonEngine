@@ -30,8 +30,12 @@ public class BulletComponent : MonoBehaviour {
     [HeaderAttribute("Bullet Component")]
     public float maxDistance = 100.0f;
     public float gravityModifier = 0.0f;
-    public int ricochets = 1;
-    public float ricochetChance = 0.0f;
+    public int collisions = 1;
+    public enum CollisionMode {
+        Ricochet, Pierce
+    }
+    public CollisionMode collisionMode;
+    public float collisionModeChance = 0.0f;
     public GameObject optionalImpactEffects;
     public AudioClip impactSound;
     public float impactSoundVolume = 1.0f;
@@ -39,7 +43,7 @@ public class BulletComponent : MonoBehaviour {
     public GameObject optionalDecalObject;
 
     private bool fired;
-    private int ricochetsRemaining;
+    private int collisionsRemaining;
     private bool shouldKill;
     private string poolIdentifier; // Register as 'free' with this if we're a pooled bullet
 
@@ -136,40 +140,13 @@ public class BulletComponent : MonoBehaviour {
                     }
                 }
 
-                if(damageable == null){
-                    if(Random.value <= ricochetChance){
-                        ricochetsRemaining--;
-                    } else {
-                        ricochetsRemaining = 0;
-                    }
-                } else {
+                if(damageable != null){
                     // Never ricochet off a damageable
-                    ricochetsRemaining = 0;
+                    collisionsRemaining = 0;
                     damageable.DealDamage(damage, type, startPosition, firer);
-                }
-
-                // Play impact sound if needed
-                if(impactSound != null){
-                    SoundManagerComponent.PlaySound(
-                        impactSound,
-                        SoundCount.Single,
-                        SoundType.ThreeDimensional,
-                        SoundPriority.Low,
-                        impactSoundVolume,
-                        0.2f,
-                        gameObject
-                    );
-                }
-
-                if(ricochetsRemaining > 0){
-                    float velocityMagnitude = velocity.magnitude;
-                    velocity = Vector3.Reflect(velocity.normalized, hit.normal).normalized * velocityMagnitude;
-                    transform.position = hit.point + (velocity * 0.01f);
                 } else {
                     // Don't spawn decals when hitting damageable
                     if(optionalDecalObject != null && damageable == null){
-                        // Fade these out at some point?
-
                         GameObject decalInstance = GameObject.Instantiate(optionalDecalObject);
 
                         // Add random offset to prevent z-fighting
@@ -186,7 +163,38 @@ public class BulletComponent : MonoBehaviour {
                         // Scoot fx back away from collision a little
                         fx.transform.position = transform.position + (-move).normalized * BULLET_EFFECTS_OFFSET;
                     }
+                }
 
+                // Play impact sound if needed
+                if(impactSound != null){
+                    SoundManagerComponent.PlaySound(
+                        impactSound,
+                        SoundCount.Single,
+                        SoundType.ThreeDimensional,
+                        SoundPriority.Low,
+                        impactSoundVolume,
+                        0.2f,
+                        gameObject
+                    );
+                }
+
+                if(collisionsRemaining > 0){
+                    collisionsRemaining--;
+
+                    if(Random.value <= collisionModeChance){
+                        if(collisionMode == CollisionMode.Ricochet){
+                            float velocityMagnitude = velocity.magnitude;
+                            velocity = Vector3.Reflect(velocity.normalized, hit.normal).normalized * velocityMagnitude;
+                            transform.position = hit.point + (velocity * 0.01f);
+                        } else if(collisionMode == CollisionMode.Pierce){
+                            transform.position += move;
+                        }
+                    } else {
+                        collisionsRemaining = 0;
+                    }
+                }
+
+                if(collisionsRemaining <= 0){
                     shouldKill = true;
                 }
             }
@@ -201,7 +209,7 @@ public class BulletComponent : MonoBehaviour {
     public void Fire(float damage_, DamageType type_, Vector3 velocity_, GameObject firer_){
         fired = true;
         shouldKill = false;
-        ricochetsRemaining = ricochets;
+        collisionsRemaining = collisions;
 
         damage = damage_;
         type = type_;

@@ -97,8 +97,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxDistance: 500
   gravityModifier: 1
-  ricochets: 2
-  ricochetChance: 0.02
+  collisions: 1
+  collisionMode: 0
+  collisionModeChance: 0
   optionalImpactEffects: {fileID: 7365444008287897743, guid: 72f6235f2668404429286662bf0ec3d9,
     type: 3}
   impactSound: {fileID: 8300000, guid: 187ed637aa603654ab49f0f65e3cb4df, type: 3}
