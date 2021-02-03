@@ -2,6 +2,8 @@
 This project is an open-source, first-person shooter framework, written in C# for Unity.
 The repository is structured as a Unity project, and there are example levels included for demonstrating the gameplay components. This is a framework applicable for many different types of shooter games, but it's especially suited for retro or "boomer" shooters, including code for 2d guns, sprite enemies, and various map import options.
 
+![demo video](https://www.youtube.com/watch?v=vT7TpG5HoC0)
+
 ![example scene](https://i.imgur.com/mDLxd9D.png)
 
 # Installation and Setup
