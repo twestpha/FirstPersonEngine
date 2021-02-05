@@ -2,7 +2,7 @@
 This project is an open-source, first-person shooter framework, written in C# for Unity.
 The repository is structured as a Unity project, and there are example levels included for demonstrating the gameplay components. This is a framework applicable for many different types of shooter games, but it's especially suited for retro or "boomer" shooters, including code for 2d guns, sprite enemies, and various map import options.
 
-[![example scene](https://i.imgur.com/mDLxd9D.png)(https://www.youtube.com/watch?v=vT7TpG5HoC0)]
+[![Demo Video](https://i.imgur.com/TxvAlyh.png)](https://www.youtube.com/watch?v=vT7TpG5HoC0 "Demonstration Video - Click to Watch")
 
 # Installation and Setup
 Setup should be minimal. Clone this repo and place it in a folder of your choosing. You will need Unity 2020.1.5f1 or newer.
