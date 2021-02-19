@@ -54,8 +54,6 @@ using UnityEditor;
 //
 // Note that this script is surrounded by UNITY_EDITOR. Therefore, this script is only for use in
 // editor, and does nothing (and has no overhead) during runtime.
-//
-// TODO more error checking and handling
 //##################################################################################################
 #if UNITY_EDITOR
 [ExecuteInEditMode]

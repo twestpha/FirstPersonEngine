@@ -22,7 +22,6 @@ using UnityEngine;
 // characteristics of an interactable chunk of 'gameplay'. This allows us to build complicated
 // relationships between existing components, to get novel and interesting behavior.
 //
-// TODO add animations
 // TODO use attack tokens
 //##################################################################################################
 public class SimpleExampleEnemy : SpriteEnemyBehavior {
