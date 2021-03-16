@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 247ef4aa608854c4381dc1c9cc6308ef, type: 3}
+  m_Script: {fileID: 11500000, guid: f97e6427afd992041ae47ab22724945e, type: 3}
   m_Name: SimpleMachineGun
   m_EditorClassIdentifier: 
   damage: 1
