@@ -53,6 +53,8 @@ public class FlatAnimatedGunComponent : ZoomableGunComponent {
     public float gunBobHorizontalAmplitude = 50.0f;
     public float gunBobFrequency = 4.0f;
 
+    // TODO change the gun bob to use animation curves, with nice defaults
+
     private AnimatedGunState state;
     private int currentFrame;
 

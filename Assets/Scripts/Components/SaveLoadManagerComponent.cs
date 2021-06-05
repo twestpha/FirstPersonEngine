@@ -21,107 +21,6 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 //##################################################################################################
-// Serializable Classes
-// The collection of following classes are helpers, since Unity doesn't natively support
-// serializing these to a binary formatter for saving. These all implment a From setter, to convert
-// from their native Unity counterpart type, and a To getter, to convert back. In same cases, this
-// process is failable and will return null.
-// Note that base types (float, int, bool) are already binary serializable, so those don't need
-// implementation here.
-//##################################################################################################
-
-[System.Serializable]
-public class SerializableVector3 {
-    float x, y, z;
-
-    public void FromVector3(Vector3 v){
-        x = v.x;
-        y = v.y;
-        z = v.z;
-    }
-
-    public Vector3 ToVector3(){
-        return new Vector3(x, y, z);
-    }
-}
-
-[System.Serializable]
-public class SerializableQuaternion {
-    float w, x, y, z;
-
-    public void FromQuaternion(Quaternion q){
-        w = q.w;
-        x = q.x;
-        y = q.y;
-        z = q.z;
-    }
-
-    public Quaternion ToQuaternion(){
-        return new Quaternion(x, y, z, w);
-    }
-}
-
-[System.Serializable]
-public class SerializableSpawnedPrefab {
-    // This requires the serializable spawned prefabs to be in the directory /Assets/Prefabs
-    private const string PREFAB_PATH = "Prefabs/";
-    string assetName;
-
-    public void FromGameObject(GameObject g){
-        assetName = g.name;
-
-        // This triggers the below error for non-prefab gameobjects when saving
-        #if UNITY_EDITOR
-            ToGameObject();
-        #endif
-    }
-
-    // Note that this does not instantiate the prefab, simply returning the loaded asset reference.
-    // This also means no state of that gameobject in-game was stored or will get loaded. That must
-    // happen separately.
-    public GameObject ToGameObject(){
-        GameObject foundAsset = Resources.Load<GameObject>(PREFAB_PATH + assetName);
-
-        if(!foundAsset){
-            Logger.Error("Error finding asset '" + PREFAB_PATH + assetName + "' for SerializableSpawnedPrefab instantiation.");
-        }
-
-        return foundAsset;
-    }
-}
-
-[System.Serializable]
-public class SerializableGameObjectReference {
-    string name;
-    int levelIndex;
-
-    public void FromGameObject(GameObject g){
-        name = g.name;
-        levelIndex = g.scene.buildIndex;
-    }
-
-    public GameObject ToGameObject(){
-        LevelManagerComponent.Level owningLevel = (LevelManagerComponent.Level)(levelIndex);
-
-        if(!LevelManagerComponent.LevelCurrentlyLoaded(owningLevel)){
-            return null;
-        }
-
-        // This is an expensive operation, because it requires searching through all gameobjects in
-        // all scenes. But it will find that object, if it exists.
-        GameObject[] allGameObjects = Object.FindObjectsOfType<GameObject>();
-        for(int i = 0; i < allGameObjects.Length; ++i){
-            if(allGameObjects[i].name == name && allGameObjects[i].scene.buildIndex == levelIndex){
-                return allGameObjects[i];
-            }
-        }
-
-        Logger.Error("Error referencing gameobject '" + name + "' (Level " + owningLevel + ") for SerializableGameObjectReference connection.");
-        return null;
-    }
-}
-
-//##################################################################################################
 // Save
 // This class contains all the data that will get saved to disk and loaded back in and restored.
 // It is meant to be edited and extended for each game. Below are some simple examples of doing
@@ -131,14 +30,14 @@ public class SerializableGameObjectReference {
 public class Save {
     public int version = SaveLoadManagerComponent.SAVE_VERSION;
 
-    public SerializableGameObjectReference currentRespawn = new SerializableGameObjectReference();
+    // This is where you would fill out the data that needs to get saved for your
+    // game. For illustrative purposes, we're going to save and load the player, the player's
+    // position, and the current respawn point point.
+    public string playerGameObject = string.Empty;
+    public string playerPosition = string.Empty;
+    public string currentRespawn = string.Empty;
 
-    // This is where you would fill out the structs/arrays of data that needs to get saved for your
-    // game. For illustrative purposes, we're going to save and load the player's position.
-    public SerializableGameObjectReference playerGameObject = new SerializableGameObjectReference();
-    public SerializableVector3 playerPosition = new SerializableVector3();
-
-    // This is for if any serializable defaults need to be overridden.
+    // This is for if defaults that need to be overridden.
     public Save(){
 
     }
@@ -269,15 +168,15 @@ public class SaveLoadManagerComponent : MonoBehaviour {
     // world.
     //##############################################################################################
     public void UpdateSave(){
+        // Continuing the example save data, get the player's position and fill out the save data
+        GameObject player = FirstPersonPlayerComponent.player.gameObject;
+        save.playerGameObject = FromSceneGameObject(player);
+        save.playerPosition = FromVector3(player.transform.position);
+
         PlayerRespawnVolumeComponent respawnComponent = PlayerRespawnVolumeComponent.GetCurrentRespawn();
         if(respawnComponent){
-            save.currentRespawn.FromGameObject(respawnComponent.gameObject);
+            save.currentRespawn = FromSceneGameObject(respawnComponent.gameObject);
         }
-
-        // Continuing our example, get the player's position and fill out the save data
-        GameObject player = FirstPersonPlayerComponent.player.gameObject;
-        save.playerGameObject.FromGameObject(player);
-        save.playerPosition.FromVector3(player.transform.position);
     }
 
     //##############################################################################################
@@ -298,21 +197,19 @@ public class SaveLoadManagerComponent : MonoBehaviour {
         if(mode == SaveApplicationMode.Full){
             // Apply operations that happen only when fully loading the game state here
 
-            if(save.currentRespawn != null){
-                GameObject loadedRespawn = save.currentRespawn.ToGameObject();
+            GameObject loadedRespawn = ToSceneGameObject(save.currentRespawn);
 
-                if(loadedRespawn != null){
-                    PlayerRespawnVolumeComponent.SetCurrentRespawn(loadedRespawn);
-                }
+            if(loadedRespawn != null){
+                PlayerRespawnVolumeComponent.SetCurrentRespawn(loadedRespawn);
             }
 
             // Finishing our example, get the player's position back out of the savedata, and
             // apply it. Only do this for a full load, so we don't teleport the player around every
             // time a level loads.
-            GameObject player = save.playerGameObject.ToGameObject();
+            GameObject player = ToSceneGameObject(save.playerGameObject);
 
             if(player != null){
-                player.transform.position = save.playerPosition.ToVector3();
+                player.transform.position = ToVector3(save.playerPosition);
             }
 
         } else if(mode == SaveApplicationMode.PerLevel){
@@ -343,5 +240,152 @@ public class SaveLoadManagerComponent : MonoBehaviour {
 
         return "/" + saveName;
 
+    }
+
+    //##############################################################################################
+    // Static serialization methods
+    // https://forum.unity.com/threads/unity-binaryformatter-deserialization-problem.16281/
+    // Because of the serialization issue described above, where deserialization of binary formatted
+    // objects will fail (silently, thanks unity) if they are unrecognized types name-defined in
+    // assembly, this class uses static, defined serializations to and from strings. Since strings
+    // are built-in types, they are safe from the above issues.
+    //
+    // This does use a LOT of string operations, and is neither the most performant nor the most
+    // space effecient. Could probably work on that.
+    //
+    // When you are saving and loading this to disk, simply contain the resulting strings in
+    // variables or an array in the Save object, which will get serialized in turn in and out.
+    //
+    // Since this process is reversable and kind of important, it also includes unit testing, below.
+    // This is triggerable from a context menu on a component instance.
+    //
+    // TODO add more error checking
+    // TODO add vector2 and vector4 variants (and quaternion wrapper for the latter)
+    //##############################################################################################
+
+    //##############################################################################################
+    // Unit Tests
+    //##############################################################################################
+    #if UNITY_EDITOR
+    [ContextMenu("Run Serialization Unit Tests")]
+    public void UnitTestSerialization(){
+        Vector3 originalVector3 = new Vector3(1.0f, 3.141592654f, 32453.324654f);
+        string serializedVector3 = FromVector3(originalVector3);
+        Vector3 deserializedVector3 = ToVector3(serializedVector3);
+
+        if(Vector3.Distance(originalVector3, deserializedVector3) > 0.01f){
+            Debug.LogError("[SaveLoadManagerComponent Unit Test] Vector3 Serialization/Deserialization failed");
+            Debug.Log(Vector3.Distance(originalVector3, deserializedVector3));
+        }
+
+        GameObject originalPlayerPrefab = GameObject.Find("Player");
+        string serializedPlayerPrefab = FromPrefabGameObject(originalPlayerPrefab);
+        GameObject deserializedPlayerPrefab = ToPrefabGameObject(serializedPlayerPrefab);
+
+        if(deserializedPlayerPrefab == null){
+            Debug.LogError("[SaveLoadManagerComponent Unit Test] Player Prefab Serialization/Deserialization failed");
+        }
+
+        // Since ToSceneGameObject calls LevelCurrentlyLoaded, this only passes during runtime
+        string serializedPlayerSceneGameObject = FromSceneGameObject(originalPlayerPrefab);
+        GameObject deserializedPlayerSceneGameObject = ToSceneGameObject(serializedPlayerSceneGameObject);
+
+        if(deserializedPlayerSceneGameObject == null){
+            Debug.LogError("[SaveLoadManagerComponent Unit Test] Player Scene GameObject Serialization/Deserialization failed");
+        }
+    }
+    #endif
+
+    //##############################################################################################
+    // Vectors and Quaternions
+    //##############################################################################################
+    private const char   DELIMETER_C = ',';
+    private const string DELIMETER_S = ",";
+
+    static string FromVector3(Vector3 v){
+        return v.x.ToString() + DELIMETER_C + v.y.ToString() + DELIMETER_C + v.z.ToString();
+    }
+
+    static Vector3 ToVector3(string s){
+        string[] tokens = s.Split(DELIMETER_C);
+        return new Vector3(
+            float.Parse(tokens[0]),
+            float.Parse(tokens[1]),
+            float.Parse(tokens[2])
+        );
+    }
+
+    //##############################################################################################
+    // Prefab GameObject
+    // This requires the spawned prefabs to be in the directory /Assets/Resources/Prefabs and not
+    // in a subdirectory. This can be changed below.
+    // See https://docs.unity3d.com/ScriptReference/Resources.Load.html for more details.
+    //##############################################################################################
+    private const string PREFAB_PATH = "Prefabs/";
+
+    static string FromPrefabGameObject(GameObject g){
+        return PREFAB_PATH + g.name;
+    }
+
+    static GameObject ToPrefabGameObject(string s){
+        GameObject foundAsset = s.Contains(PREFAB_PATH) ? Resources.Load<GameObject>(s) : null;
+
+        if(foundAsset == null){
+            Logger.Error("Error finding asset '" + s + "' for ToPrefabGameObject serialization.");
+        }
+
+        return foundAsset;
+    }
+
+    //##############################################################################################
+    // GameObject in Scene
+    // This makes the assumption that the saved object is the only one named that in the given
+    // scene. Unity doesn't enforce that, but this will deliberately fail with an error if that's
+    // the case.
+    //##############################################################################################
+    static string FromSceneGameObject(GameObject g){
+        #if UNITY_EDITOR
+            if(g.name.Contains(DELIMETER_S)){
+                Logger.Error("GameObject '" + g.name + "' name cannot contain the reserved delimeter '" + DELIMETER_S + "' for FromSceneGameObject serialization");
+                return null;
+            }
+
+            int countOfGameObjectsWithName = 0;
+            GameObject[] allGameObjects = Object.FindObjectsOfType<GameObject>();
+            foreach(GameObject other in allGameObjects){
+                if(other != g && other.name == g.name){
+                    countOfGameObjectsWithName++;
+                }
+            }
+
+            if(countOfGameObjectsWithName > 0){
+                Logger.Error("Scene contains multiple gameobjects with name '" + g.name + "'. Skipping FromSceneGameObject serialization.");
+                return null;
+            }
+        #endif
+
+        return g.scene.buildIndex.ToString() + DELIMETER_C + g.name;
+    }
+
+    static GameObject ToSceneGameObject(string s){
+        string[] tokens = s.Split(DELIMETER_C);
+        int levelIndex = int.Parse(tokens[0]);
+        string name = tokens[1];
+
+        LevelManagerComponent.Level owningLevel = (LevelManagerComponent.Level)(levelIndex);
+
+        if(!LevelManagerComponent.LevelCurrentlyLoaded(owningLevel)){
+            return null;
+        }
+
+        GameObject[] allGameObjects = Object.FindObjectsOfType<GameObject>();
+        for(int i = 0; i < allGameObjects.Length; ++i){
+            if(allGameObjects[i].name == name && allGameObjects[i].scene.buildIndex == levelIndex){
+                return allGameObjects[i];
+            }
+        }
+
+        Logger.Error("Error deserializing Scene Gameobject '" + name + "' (Level " + levelIndex + ") in ToSceneGameObject.");
+        return null;
     }
 }
