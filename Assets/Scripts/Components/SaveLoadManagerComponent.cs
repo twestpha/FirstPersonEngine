@@ -258,9 +258,6 @@ public class SaveLoadManagerComponent : MonoBehaviour {
     //
     // Since this process is reversable and kind of important, it also includes unit testing, below.
     // This is triggerable from a context menu on a component instance.
-    //
-    // TODO add more error checking
-    // TODO add vector2 and vector4 variants (and quaternion wrapper for the latter)
     //##############################################################################################
 
     //##############################################################################################
@@ -269,13 +266,36 @@ public class SaveLoadManagerComponent : MonoBehaviour {
     #if UNITY_EDITOR
     [ContextMenu("Run Serialization Unit Tests")]
     public void UnitTestSerialization(){
+        bool allTestsPassed = true;
+
+        Vector2 originalVector2 = new Vector2(68.0f, 0.58858f);
+        string serializedVector2 = FromVector2(originalVector2);
+        Vector2 deserializedVector2 = ToVector2(serializedVector2);
+
+        if(Vector2.Distance(originalVector2, deserializedVector2) > 0.01f){
+            allTestsPassed = false;
+            Debug.LogError("[SaveLoadManagerComponent Unit Test] Vector2 Serialization/Deserialization failed");
+            Debug.Log(Vector2.Distance(originalVector2, deserializedVector2));
+        }
+
         Vector3 originalVector3 = new Vector3(1.0f, 3.141592654f, 32453.324654f);
         string serializedVector3 = FromVector3(originalVector3);
         Vector3 deserializedVector3 = ToVector3(serializedVector3);
 
         if(Vector3.Distance(originalVector3, deserializedVector3) > 0.01f){
+            allTestsPassed = false;
             Debug.LogError("[SaveLoadManagerComponent Unit Test] Vector3 Serialization/Deserialization failed");
             Debug.Log(Vector3.Distance(originalVector3, deserializedVector3));
+        }
+
+        Quaternion originalQuaternion = new Quaternion(0.462f, 0.191f, 0.462f, 0.733f);
+        string serializedQuaternion = FromQuaternion(originalQuaternion);
+        Quaternion deserializedQuaternion = ToQuaternion(serializedQuaternion);
+
+        if(deserializedQuaternion.x != 0.462f){
+            allTestsPassed = false;
+            Debug.LogError("[SaveLoadManagerComponent Unit Test] Quaternion Serialization/Deserialization failed");
+            Debug.Log(deserializedQuaternion);
         }
 
         GameObject originalPlayerPrefab = GameObject.Find("Player");
@@ -283,6 +303,7 @@ public class SaveLoadManagerComponent : MonoBehaviour {
         GameObject deserializedPlayerPrefab = ToPrefabGameObject(serializedPlayerPrefab);
 
         if(deserializedPlayerPrefab == null){
+            allTestsPassed = false;
             Debug.LogError("[SaveLoadManagerComponent Unit Test] Player Prefab Serialization/Deserialization failed");
         }
 
@@ -291,7 +312,12 @@ public class SaveLoadManagerComponent : MonoBehaviour {
         GameObject deserializedPlayerSceneGameObject = ToSceneGameObject(serializedPlayerSceneGameObject);
 
         if(deserializedPlayerSceneGameObject == null){
+            allTestsPassed = false;
             Debug.LogError("[SaveLoadManagerComponent Unit Test] Player Scene GameObject Serialization/Deserialization failed");
+        }
+
+        if(allTestsPassed){
+            Debug.Log("All SaveLoad Serialization Unit Tests Passed!");
         }
     }
     #endif
@@ -302,17 +328,58 @@ public class SaveLoadManagerComponent : MonoBehaviour {
     private const char   DELIMETER_C = ',';
     private const string DELIMETER_S = ",";
 
+    static string FromVector2(Vector2 v){
+        return v.x.ToString() + DELIMETER_C + v.y.ToString();
+    }
+
+    static Vector2 ToVector2(string s){
+        try {
+            string[] tokens = s.Split(DELIMETER_C);
+            return new Vector2(
+                float.Parse(tokens[0]),
+                float.Parse(tokens[1])
+            );
+        } catch {
+            Logger.Error("SaveLoadManagerComponent could not parse Vector2 '" + s + "'");
+            return new Vector2();
+        }
+    }
+
     static string FromVector3(Vector3 v){
         return v.x.ToString() + DELIMETER_C + v.y.ToString() + DELIMETER_C + v.z.ToString();
     }
 
     static Vector3 ToVector3(string s){
-        string[] tokens = s.Split(DELIMETER_C);
-        return new Vector3(
-            float.Parse(tokens[0]),
-            float.Parse(tokens[1]),
-            float.Parse(tokens[2])
-        );
+        try {
+            string[] tokens = s.Split(DELIMETER_C);
+            return new Vector3(
+                float.Parse(tokens[0]),
+                float.Parse(tokens[1]),
+                float.Parse(tokens[2])
+            );
+        } catch {
+            Logger.Error("SaveLoadManagerComponent could not parse Vector3 '" + s + "'");
+            return new Vector3();
+        }
+    }
+
+    static string FromQuaternion(Quaternion q){
+        return q.x.ToString() + DELIMETER_C + q.y.ToString() + DELIMETER_C + q.z.ToString() + DELIMETER_C + q.w.ToString();
+    }
+
+    static Quaternion ToQuaternion(string s){
+        try {
+            string[] tokens = s.Split(DELIMETER_C);
+            return new Quaternion(
+                float.Parse(tokens[0]),
+                float.Parse(tokens[1]),
+                float.Parse(tokens[2]),
+                float.Parse(tokens[3])
+            );
+        } catch {
+            Logger.Error("SaveLoadManagerComponent could not parse Quaternion '" + s + "'");
+            return new Quaternion();
+        }
     }
 
     //##############################################################################################
