@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 1
   damageType: 1
-  coolDown: 0.15
+  coolDown: 0.54
   spread: 0.5
   shots: 1
   automaticAction: 1

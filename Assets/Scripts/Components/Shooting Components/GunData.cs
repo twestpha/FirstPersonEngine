@@ -49,6 +49,8 @@ public class GunData : ScriptableObject {
     // useAmmo and manualReload must be set true for this to have an effect
     public bool progressiveReloadInterruption;
 
+    // TODO add max total ammo
+
     [Header("Zoom Characteristics")]
     public bool useZoom;
     public float zoomTime = 0.15f;

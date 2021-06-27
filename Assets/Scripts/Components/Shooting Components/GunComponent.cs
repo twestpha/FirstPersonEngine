@@ -38,7 +38,7 @@ public class GunComponent : MonoBehaviour {
 
     // For viewing ammo count in editor
     [SerializeField]
-    protected int currentAmmoCount = 0;
+    protected int remainingAmmoCount = -1;
 
     protected Timer gunTimer;
     protected Timer reloadTimer;
@@ -63,7 +63,7 @@ public class GunComponent : MonoBehaviour {
         reloadTimer = new Timer(currentGunData.reloadTime);
 
         if(currentGunData.useAmmo){
-            currentAmmoCount = currentGunData.ammoCount;
+            remainingAmmoCount = currentGunData.ammoCount;
         }
 
         player = GetComponent<FirstPersonPlayerComponent>();
@@ -90,8 +90,8 @@ public class GunComponent : MonoBehaviour {
                 if(reloadTimer.Finished()){
                     reloadTimer.Start();
 
-                    currentAmmoCount++;
-                    if(currentAmmoCount ==  currentGunData.ammoCount){
+                    remainingAmmoCount++;
+                    if(remainingAmmoCount ==  currentGunData.ammoCount){
                         reloading = false;
                     }
                 }
@@ -99,7 +99,7 @@ public class GunComponent : MonoBehaviour {
             } else {
                 if(reloadTimer.Finished()){
                     reloading = false;
-                    currentAmmoCount = currentGunData.ammoCount;
+                    remainingAmmoCount = currentGunData.ammoCount;
                 }
             }
         }
@@ -124,8 +124,8 @@ public class GunComponent : MonoBehaviour {
             gunTimer.Start();
             shooting = true;
 
-            currentAmmoCount--;
-            if(currentAmmoCount == 0){
+            remainingAmmoCount--;
+            if(remainingAmmoCount == 0){
                 ReloadGun();
             }
 
@@ -254,5 +254,12 @@ public class GunComponent : MonoBehaviour {
     //##############################################################################################
     public float GetCooldown(){
         return currentGunData.coolDown;
+    }
+
+    //##############################################################################################
+    // Getter for remaining ammo
+    //##############################################################################################
+    public int GetRemainingAmmoCount(){
+        return remainingAmmoCount;
     }
 }

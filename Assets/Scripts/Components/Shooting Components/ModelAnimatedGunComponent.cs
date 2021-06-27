@@ -105,7 +105,7 @@ public class ModelAnimatedGunComponent : ZoomableGunComponent {
         }
 
         bool reloadInput = Input.GetKeyDown(KeyCode.R); // TODO make this a setting
-        if(!reloading && reloadInput && currentGunData.useAmmo && currentGunData.manualReload && currentAmmoCount < currentGunData.ammoCount){
+        if(!reloading && reloadInput && currentGunData.useAmmo && currentGunData.manualReload && remainingAmmoCount < currentGunData.ammoCount){
             ReloadGun();
         }
 

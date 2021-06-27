@@ -1298,6 +1298,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   save:
     version: 0
+    playerGameObject: 
+    playerPosition: 
+    currentRespawn: 
 --- !u!4 &1869823160
 Transform:
   m_ObjectHideFlags: 0
