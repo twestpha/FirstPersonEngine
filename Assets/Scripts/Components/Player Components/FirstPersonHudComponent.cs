@@ -35,8 +35,8 @@ public class FirstPersonHudComponent : MonoBehaviour {
     private Timer damageFlashTimer;
 
     [Header("Ammo Text")]
-    public Text remainingAmmoText;
-    public Text totalAmmoText; // TODO add max total ammo
+    public Text remainingMagazineAmmoText;
+    public Text remainingBoxAmmoText;
 
     [Header("Current Gun")]
     public Image currentGunImage;
@@ -83,15 +83,22 @@ public class FirstPersonHudComponent : MonoBehaviour {
 
         if(currentGunIndex != previousGunIndex){
             currentGunImage.sprite = gunSprites[currentGunIndex];
-            remainingAmmoText.enabled = gunComponents[currentGunIndex].GetRemainingAmmoCount() >= 0;
+
+            remainingMagazineAmmoText.enabled = gunComponents[currentGunIndex].GetRemainingMagazineAmmoCount() >= 0;
+            remainingBoxAmmoText.enabled = gunComponents[currentGunIndex].GetRemainingBoxAmmoCount() >= 0;
         }
 
-        if(remainingAmmoText != null){
-            int remainingAmmoCount = gunComponents[currentGunIndex].GetRemainingAmmoCount();
+        if(remainingMagazineAmmoText != null){
+            int remainingMagazineAmmoCount = gunComponents[currentGunIndex].GetRemainingMagazineAmmoCount();
+            int remainingBoxAmmoCount = gunComponents[currentGunIndex].GetRemainingBoxAmmoCount();
 
             // Ammo being negative indicates that its not used
-            if(remainingAmmoCount >= 0){
-                remainingAmmoText.text = remainingAmmoCount.ToString();
+            if(remainingMagazineAmmoCount >= 0){
+                remainingMagazineAmmoText.text = remainingMagazineAmmoCount.ToString();
+            }
+
+            if(remainingBoxAmmoCount >= 0){
+                remainingBoxAmmoText.text = remainingBoxAmmoCount.ToString();
             }
         }
     }

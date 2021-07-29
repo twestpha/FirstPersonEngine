@@ -18,6 +18,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //##################################################################################################
+// Ammo Type
+// Used for sorting different types of ammo
+// Meant to be extended or modified to be game-specific
+//##################################################################################################
+public enum AmmoType {
+    AmmoType0,
+    AmmoType1,
+    AmmoType2,
+    AmmoType3,
+    AmmoType4,
+    AmmoType5,
+    AmmoType6,
+    AmmoType7,
+    AmmoType8,
+    // ...
+}
+
+//##################################################################################################
 // Gun Data
 // Contains all the basic characteristics of guns
 // Specialized behavior is expected to be scripted into child classes of GunComponent
@@ -37,7 +55,16 @@ public class GunData : ScriptableObject {
 
     [Header("Ammo Characteristics")]
     public bool useAmmo = false;
-    public int ammoCount = 1;
+
+    // Yes, I know not all guns use magazines; this is for abstraction
+    // A "magazine" here denotes one reload's worth of ammo
+    // A "box" here is the pool of bullets that reload pulls from
+    public int startingMagazineAmmoCount = 1;
+    public int maxMagazineAmmoCount = 1;
+
+    public int startingBoxAmmoCount = 1;
+    public int maxBoxAmmoCount = 1;
+
     public float reloadTime = 1.0f;
 
     // Allows player to manually reload using input
@@ -49,7 +76,8 @@ public class GunData : ScriptableObject {
     // useAmmo and manualReload must be set true for this to have an effect
     public bool progressiveReloadInterruption;
 
-    // TODO add max total ammo
+    // This is for ammo pickups to tell which ammo goes where
+    public AmmoType ammoType;
 
     [Header("Zoom Characteristics")]
     public bool useZoom;

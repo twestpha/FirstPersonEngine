@@ -38,7 +38,10 @@ public class GunComponent : MonoBehaviour {
 
     // For viewing ammo count in editor
     [SerializeField]
-    protected int remainingAmmoCount = -1;
+    protected int remainingMagazineAmmoCount = -1;
+
+    [SerializeField]
+    protected int remainingBoxAmmoCount = -1;
 
     protected Timer gunTimer;
     protected Timer reloadTimer;
@@ -48,23 +51,29 @@ public class GunComponent : MonoBehaviour {
     protected int reloadSoundId;
 
     //##############################################################################################
-    // Check for required data, then setup the gun
+    // This needs to be done at awake, before other components' start
     //##############################################################################################
-	protected void Start(){
+    protected void Awake(){
         if(currentGunData == null){
             Logger.Error("Gun Data on " + gameObject.name + "'s GunComponent cannot be null");
         }
 
+        if(currentGunData.useAmmo){
+            remainingMagazineAmmoCount = currentGunData.startingMagazineAmmoCount;
+            remainingBoxAmmoCount = currentGunData.startingBoxAmmoCount;
+        }
+    }
+
+    //##############################################################################################
+    // Check for required data, then setup the gun
+    //##############################################################################################
+	protected void Start(){
         if(muzzleTransform == null){
             Logger.Error("Muzzle Actor on " + gameObject.name + "'s GunComponent cannot be null");
         }
 
         gunTimer = new Timer(currentGunData.coolDown);
         reloadTimer = new Timer(currentGunData.reloadTime);
-
-        if(currentGunData.useAmmo){
-            remainingAmmoCount = currentGunData.ammoCount;
-        }
 
         player = GetComponent<FirstPersonPlayerComponent>();
 
@@ -73,7 +82,6 @@ public class GunComponent : MonoBehaviour {
                 PooledGameObjectManager.SetupPool(currentGunData.poolIdentifier, currentGunData.poolSize, currentGunData.bulletPrefab);
             }
         }
-
 	}
 
     //##############################################################################################
@@ -90,8 +98,12 @@ public class GunComponent : MonoBehaviour {
                 if(reloadTimer.Finished()){
                     reloadTimer.Start();
 
-                    remainingAmmoCount++;
-                    if(remainingAmmoCount ==  currentGunData.ammoCount){
+                    if(remainingBoxAmmoCount > 0){
+                        remainingMagazineAmmoCount++;
+                        remainingBoxAmmoCount--;
+                    }
+
+                    if(remainingMagazineAmmoCount == currentGunData.maxMagazineAmmoCount || remainingBoxAmmoCount == 0){
                         reloading = false;
                     }
                 }
@@ -99,7 +111,14 @@ public class GunComponent : MonoBehaviour {
             } else {
                 if(reloadTimer.Finished()){
                     reloading = false;
-                    remainingAmmoCount = currentGunData.ammoCount;
+
+                    int ammoNeededForFullReload = currentGunData.maxMagazineAmmoCount - remainingMagazineAmmoCount;
+
+                    // Can't reload if we don't have enough
+                    int ammoToReloadWith = Mathf.Min(remainingBoxAmmoCount, ammoNeededForFullReload);
+
+                    remainingBoxAmmoCount -= ammoToReloadWith;
+                    remainingMagazineAmmoCount += ammoToReloadWith;
                 }
             }
         }
@@ -121,11 +140,15 @@ public class GunComponent : MonoBehaviour {
     //##############################################################################################
     public bool Shoot(float damage){
         if(gunTimer.Finished() && !reloading){
+            if(remainingMagazineAmmoCount == 0 && remainingBoxAmmoCount == 0){
+                return BULLET_NOT_FIRED;
+            }
+
             gunTimer.Start();
             shooting = true;
 
-            remainingAmmoCount--;
-            if(remainingAmmoCount == 0){
+            remainingMagazineAmmoCount--;
+            if(remainingMagazineAmmoCount == 0 && remainingBoxAmmoCount > 0){
                 ReloadGun();
             }
 
@@ -257,9 +280,29 @@ public class GunComponent : MonoBehaviour {
     }
 
     //##############################################################################################
-    // Getter for remaining ammo
+    // Getter for remaining ammo in magazine or box
     //##############################################################################################
-    public int GetRemainingAmmoCount(){
-        return remainingAmmoCount;
+    public int GetRemainingMagazineAmmoCount(){
+        return remainingMagazineAmmoCount;
+    }
+
+    public int GetRemainingBoxAmmoCount(){
+        return remainingBoxAmmoCount;
+    }
+
+    //##############################################################################################
+    // Setter for giving ammo to box
+    //##############################################################################################
+    public void GiveAmmo(AmmoType type, int amount){
+        if(currentGunData.ammoType != type){
+            return;
+        }
+
+        remainingBoxAmmoCount += amount;
+
+        // Clamp to max box count if needed
+        if(remainingBoxAmmoCount > currentGunData.maxBoxAmmoCount){
+            remainingBoxAmmoCount = currentGunData.maxBoxAmmoCount;
+        }
     }
 }

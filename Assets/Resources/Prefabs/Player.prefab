@@ -405,7 +405,7 @@ GameObject:
   - component: {fileID: 3512986827187016010}
   - component: {fileID: 7543892937133699209}
   m_Layer: 5
-  m_Name: RemainingAmmoText
+  m_Name: RemainingMagazineAmmoText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1033,8 +1033,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageFlashLayer: {fileID: 1597958527492994160}
   damageFlashTime: 0.5
-  remainingAmmoText: {fileID: 7543892937133699209}
-  totalAmmoText: {fileID: 9155805054666076653}
+  remainingMagazineAmmoText: {fileID: 7543892937133699209}
+  remainingBoxAmmoText: {fileID: 9155805054666076653}
   currentGunImage: {fileID: 8033034377584197590}
   gunComponents:
   - {fileID: 1562805682}
@@ -1124,7 +1124,8 @@ MonoBehaviour:
   currentGunData: {fileID: 11400000, guid: 29178a9aae8b75241aede82c28617586, type: 2}
   muzzleTransform: {fileID: 1812113762654171952}
   optionalCasingParticle: {fileID: 0}
-  currentAmmoCount: 0
+  remainingMagazineAmmoCount: -1
+  remainingBoxAmmoCount: -1
   playerCamera: {fileID: 0}
   reticleOverlayImage: {fileID: 0}
   zoomedMuzzleTransform: {fileID: 0}
@@ -1160,7 +1161,8 @@ MonoBehaviour:
   currentGunData: {fileID: 11400000, guid: 9081d7abf25f1384fa8eb1170ccbe820, type: 2}
   muzzleTransform: {fileID: 1812113762654171952}
   optionalCasingParticle: {fileID: 0}
-  currentAmmoCount: 0
+  remainingMagazineAmmoCount: -1
+  remainingBoxAmmoCount: -1
   playerCamera: {fileID: 0}
   reticleOverlayImage: {fileID: 0}
   zoomedMuzzleTransform: {fileID: 0}
@@ -1212,7 +1214,8 @@ MonoBehaviour:
   currentGunData: {fileID: 11400000, guid: 89964396264716d4d9cb9b69bf4bfe59, type: 2}
   muzzleTransform: {fileID: 1655509880842377431}
   optionalCasingParticle: {fileID: 0}
-  currentAmmoCount: 0
+  remainingMagazineAmmoCount: -1
+  remainingBoxAmmoCount: -1
   playerCamera: {fileID: 8118486971543315907}
   reticleOverlayImage: {fileID: 5173020964325208669}
   zoomedMuzzleTransform: {fileID: 3191328454233206147}
@@ -1488,7 +1491,7 @@ GameObject:
   - component: {fileID: 820397030744226940}
   - component: {fileID: 9155805054666076653}
   m_Layer: 5
-  m_Name: TotalAmmoText
+  m_Name: RemainingBoxAmmoText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1510,7 +1513,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 431.7, y: 59.112366}
+  m_AnchoredPosition: {x: 431.69995, y: 59.112305}
   m_SizeDelta: {x: 150, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &820397030744226940

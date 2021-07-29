@@ -19,10 +19,14 @@ MonoBehaviour:
   shots: 1
   automaticAction: 1
   useAmmo: 1
-  ammoCount: 25
+  startingMagazineAmmoCount: 20
+  maxMagazineAmmoCount: 20
+  startingBoxAmmoCount: 50
+  maxBoxAmmoCount: 100
   reloadTime: 2
   manualReload: 1
   progressiveReloadInterruption: 0
+  ammoType: 0
   useZoom: 0
   zoomTime: 0.15
   zoomedFieldOfView: 15
