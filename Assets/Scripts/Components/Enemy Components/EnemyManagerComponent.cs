@@ -16,6 +16,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 //##################################################################################################
 // Enemy Manager Component
@@ -66,7 +67,12 @@ public class EnemyManagerComponent : MonoBehaviour {
         for(int i = 0, count = updateList.Count; i < count; ++i){
             // Skip destroyed enemies
             if(updateList[i] != null){
-                updateList[i].EnemyUpdate();
+                // Prevents excepting enemies from taking down all enemy updates
+                try {
+                    updateList[i].EnemyUpdate();
+                } catch (Exception e){
+                    Debug.LogError("Error while updating " + updateList[i] + " with exception " + e);
+                }
             }
         }
 
