@@ -37,4 +37,11 @@ public class SimpleMaterialScrollingComponent : MonoBehaviour {
 
         material.SetTextureOffset("_MainTex", new Vector2(xOffset, yOffset));
     }
+
+    //##############################################################################################
+    // Reset on 'exit' in editor
+    //##############################################################################################
+    void OnDestroy(){
+        material.SetTextureOffset("_MainTex", new Vector2(0.0f, 0.0f));
+    }
 }

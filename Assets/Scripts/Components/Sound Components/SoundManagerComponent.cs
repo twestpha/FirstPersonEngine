@@ -72,6 +72,7 @@ public class SoundManagerComponent : MonoBehaviour {
     // Singleton Instance, set on start
     //##############################################################################################
     private static SoundManagerComponent instance;
+    private static bool destroyed = false;
 
     //##############################################################################################
     // Basic Sound Constants
@@ -157,7 +158,6 @@ public class SoundManagerComponent : MonoBehaviour {
     // Sound Manager Component Variables
     //##############################################################################################
     public float globalVolume = 0.5f;
-
     private int idIndex = 0;
 
     //##############################################################################################
@@ -293,49 +293,83 @@ public class SoundManagerComponent : MonoBehaviour {
     }
 
     // #############################################################################################
+    // This prevents spamming the VerifySingleton method after this component has been destroyed
+    // #############################################################################################
+    private void OnDestroy(){
+        destroyed = true;
+    }
+
+    // #############################################################################################
     // Static Methods
     // First, always verify the singleton has been set up. This is mostly a heads-up for developer
     // setting up their guns and wondering why something's not working.
     // The rest of the functions are common endpoints for making calls into the sound manager.
     //##############################################################################################
-    public static void VerifySingleton(){
+    public static bool VerifySingleton(){
         if(instance == null){
-            Logger.Error("No SoundManagerComponent was found in the game. Consider adding a GameObject to your scene with a SoundManagerComponent on it.");
+            if(!destroyed){
+                Logger.Error("No SoundManagerComponent was found in the game. Consider adding a GameObject to your scene with a SoundManagerComponent on it.");
+            }
+
+            return false;
         }
+
+        return true;
     }
 
     public static int PlaySound(AudioClip clip, SoundCount count, SoundType type, float volume, float pitchBend, SoundPriority priority){
-        VerifySingleton();
+        if(!VerifySingleton()){
+            return INVALID_SOUND;
+        }
+
         return SoundManagerComponent.instance.PlaySoundInternal(clip, count, type, priority, volume, pitchBend, null);
     }
 
     public static int PlaySound(AudioClip clip, SoundCount count, SoundType type, SoundPriority priority, float volume, float pitchBend, GameObject transformObject){
-        VerifySingleton();
+        if(!VerifySingleton()){
+            return INVALID_SOUND;
+        }
+
         return SoundManagerComponent.instance.PlaySoundInternal(clip, count, type, priority, volume, pitchBend, transformObject);
     }
 
     public static void StopSound(int id){
-        VerifySingleton();
+        if(!VerifySingleton()){
+            return;
+        }
+
         SoundManagerComponent.instance.StopSoundInteral(id);
     }
 
     public static void StopAllSounds(){
-        VerifySingleton();
+        if(!VerifySingleton()){
+            return;
+        }
+
         SoundManagerComponent.instance.StopAllSoundsInternal();
     }
 
     public static bool Playing(int id){
-        VerifySingleton();
+        if(!VerifySingleton()){
+            return false;
+        }
+
         return SoundManagerComponent.instance.PlayingInternal(id);
     }
 
     public static void SetGlobalVolume(float volume){
-        VerifySingleton();
+        if(!VerifySingleton()){
+            return;
+        }
+
         SoundManagerComponent.instance.SetGlobalVolumeInternal(volume);
     }
 
     public static void SetSoundVolume(int id, float volume){
-        VerifySingleton();
+        if(!VerifySingleton()){
+            return;
+        }
+
         SoundManagerComponent.instance.SetSoundVolumeInternal(id, volume);
     }
 
