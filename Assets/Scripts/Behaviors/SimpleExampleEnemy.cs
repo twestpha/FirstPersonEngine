@@ -21,8 +21,6 @@ using UnityEngine;
 // scripting. Behaviors are typically less like an API and more like defining the behavior and
 // characteristics of an interactable chunk of 'gameplay'. This allows us to build complicated
 // relationships between existing components, to get novel and interesting behavior.
-//
-// TODO use attack tokens
 //##################################################################################################
 public class SimpleExampleEnemy : SpriteEnemyBehavior {
     // Update radii are usually significantly larger than the trigger radius, so that player can
@@ -86,7 +84,7 @@ public class SimpleExampleEnemy : SpriteEnemyBehavior {
         base.EnemyUpdate();
 
         float playerDistance = (transform.position - FirstPersonPlayerComponent.player.transform.position).magnitude;
-        Debug.Log(playerDistance);
+
         // any detection of the player during the patrol stops and shoot
         if(exampleState != ExampleState.Shooting && playerDistance < SHOOT_RADIUS){
             exampleState = ExampleState.Shooting;
@@ -114,7 +112,9 @@ public class SimpleExampleEnemy : SpriteEnemyBehavior {
                 patrolIdleTimer.Start();
             }
 
-            if(shootTimer.Finished()){
+            bool hasShootToken = AttackTokenComponent.RequestToken(gameObject);
+
+            if(shootTimer.Finished() && hasShootToken){
                 Vector3 toPlayer = FirstPersonPlayerComponent.player.transform.position - transform.position;
                 toPlayer.y = 0.0f;
                 transform.rotation = Quaternion.LookRotation(toPlayer);
