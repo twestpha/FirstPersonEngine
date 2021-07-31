@@ -34,6 +34,9 @@ public class FirstPersonHudComponent : MonoBehaviour {
     private bool damageFlashing;
     private Timer damageFlashTimer;
 
+    [Header("Health Text")]
+    public Text healthText;
+
     [Header("Ammo Text")]
     public Text remainingMagazineAmmoText;
     public Text remainingBoxAmmoText;
@@ -43,6 +46,8 @@ public class FirstPersonHudComponent : MonoBehaviour {
     public GunComponent[] gunComponents;
     public Sprite[] gunSprites;
     private int currentGunIndex = -1;
+
+    private DamageableComponent playerDamageable;
 
     //##############################################################################################
     // The gun components and the sprites must be 1-to-1 so that the sprite lookup finds a match.
@@ -54,7 +59,13 @@ public class FirstPersonHudComponent : MonoBehaviour {
         }
 
         damageFlashTimer = new Timer(damageFlashTime);
-        GetComponent<DamageableComponent>().RegisterOnDamagedDelegate(OnDamaged);
+
+        playerDamageable = GetComponent<DamageableComponent>();
+        playerDamageable.RegisterOnDamagedDelegate(OnDamaged);
+        playerDamageable.RegisterOnHealedDelegate(OnHealed);
+        playerDamageable.RegisterOnRespawnedDelegate(OnRespawned);
+
+        healthText.text = playerDamageable.CurrentHealth().ToString();
     }
 
     //##############################################################################################
@@ -104,11 +115,31 @@ public class FirstPersonHudComponent : MonoBehaviour {
     }
 
     //##############################################################################################
-    // When damage, begin flashing
+    // When damage, begin flashing, and update health text
     //##############################################################################################
     public void OnDamaged(DamageableComponent damaged){
         damageFlashing = true;
         damageFlashLayer.enabled = true;
         damageFlashTimer.Start();
+
+        healthText.text = damaged.CurrentHealth().ToString();
+        if(damaged.Dead()){
+            healthText.enabled = false;
+        }
+    }
+
+    //##############################################################################################
+    // When healed, update health text
+    //##############################################################################################
+    public void OnHealed(DamageableComponent damaged){
+        healthText.text = damaged.CurrentHealth().ToString();
+    }
+
+    //##############################################################################################
+    // When respawned, update health text
+    //##############################################################################################
+    public void OnRespawned(DamageableComponent damaged){
+        healthText.enabled = true;
+        healthText.text = damaged.CurrentHealth().ToString();
     }
 }
