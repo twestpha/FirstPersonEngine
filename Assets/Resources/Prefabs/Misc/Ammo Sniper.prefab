@@ -252,3 +252,5 @@ MonoBehaviour:
   destroyOnPickup: 1
   ammoType: 1
   pickupAmount: 5
+  ammoPickupSound: {fileID: 8300000, guid: bb8545953f2705b42b0ead485e2a9310, type: 3}
+  ammoPickupSoundVolume: 1

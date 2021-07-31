@@ -169,6 +169,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyOnPickup: 1
   healAmount: 2
+  healthPickupSound: {fileID: 8300000, guid: ea1f0aa7fc2abd24889dc9933b30b440, type: 3}
+  healthPickupSoundVolume: 1
 --- !u!1 &6266496748423445468
 GameObject:
   m_ObjectHideFlags: 0
