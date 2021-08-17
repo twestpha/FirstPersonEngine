@@ -164,7 +164,7 @@ public class WadSeg {
 
 //##################################################################################################
 // Wad SSector
-// This is a helper struct for a 'ssector' (subsector) expressed in WAD files. It is 12 bytes long.
+// This is a helper struct for a 'ssector' (subsector) expressed in WAD files. It is 4 bytes long.
 //##################################################################################################
 public class WadSSector {
     public const int SSECTOR_SIZE = 4;

@@ -241,8 +241,6 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
             }
         }
 
-        Debug.LogWarning(totalModifier);
-
         // zoomLookModifier
         float xInput = Input.GetAxis("Mouse X") * xSensitivity * totalModifier;
         float yInput = Input.GetAxis("Mouse Y") * ySensitivity * totalModifier;
