@@ -31,6 +31,7 @@ MonoBehaviour:
   zoomTime: 0.15
   zoomedFieldOfView: 15
   zoomMovementModifier: 0.35
+  zoomLookModifier: 0.4
   momentumRecoil: 0.3
   aimRecoil: 0
   muzzleVelocity: 150

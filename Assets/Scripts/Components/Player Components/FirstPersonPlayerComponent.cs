@@ -53,6 +53,8 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
     public float xSensitivity = 1.0f; // TODO make these a setting
     public float ySensitivity = -1.0f;
 
+    private Dictionary<GameObject, float> lookModifiers = new Dictionary<GameObject, float>();
+
     private bool lookingEnabled;
     private Quaternion playerInputLookRotation;
 
@@ -228,8 +230,22 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
     // Update the look direction based on the mouse input, camera shake amount, and recoil
     //##############################################################################################
     void UpdateLook(){
-        float xInput = Input.GetAxis("Mouse X") * xSensitivity;
-        float yInput = Input.GetAxis("Mouse Y") * ySensitivity;
+        float totalModifier = 1.0f;
+
+        // Make sure to purge null modifiers to cleanup up destroyed, dangling references
+        foreach(var idAndModifier in lookModifiers){
+            if(idAndModifier.Key != null){
+                totalModifier *= idAndModifier.Value;
+            } else {
+                speedModifiers.Remove(idAndModifier.Key);
+            }
+        }
+
+        Debug.LogWarning(totalModifier);
+
+        // zoomLookModifier
+        float xInput = Input.GetAxis("Mouse X") * xSensitivity * totalModifier;
+        float yInput = Input.GetAxis("Mouse Y") * ySensitivity * totalModifier;
 
         xInput = Mathf.Clamp(xInput, -MAX_ANGLE_DELTA, MAX_ANGLE_DELTA);
         yInput = Mathf.Clamp(yInput, -MAX_ANGLE_DELTA, MAX_ANGLE_DELTA);
@@ -501,7 +517,7 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
     }
 
     //##############################################################################################
-    // Add or remove a speed modifier. These are identified by the game object changing the speed.
+    // Add or remove a speed modifier. These are identified by the game object
     //##############################################################################################
     public void AddSpeedModifier(GameObject id, float modifier){
         if(!speedModifiers.ContainsKey(id)){
@@ -516,7 +532,27 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
         if(speedModifiers.ContainsKey(id)){
             speedModifiers.Remove(id);
         } else {
-            Logger.Error("Trying to remove modifier " + id + ", but does not exist");
+            Logger.Error("Trying to remove speed modifier " + id + ", but does not exist");
+        }
+    }
+
+    //##############################################################################################
+    // Add or remove a look modifier. These are identified by the game object
+    //##############################################################################################
+    public void AddLookModifier(GameObject id, float modifier){
+        if(!lookModifiers.ContainsKey(id)){
+            lookModifiers.Add(id, modifier);
+        } else {
+            // Edit the look if it does exist
+            lookModifiers[id] = modifier;
+        }
+    }
+
+    public void RemoveLookModifier(GameObject id){
+        if(lookModifiers.ContainsKey(id)){
+            lookModifiers.Remove(id);
+        } else {
+            Logger.Error("Trying to remove look modifier " + id + ", but does not exist");
         }
     }
 }

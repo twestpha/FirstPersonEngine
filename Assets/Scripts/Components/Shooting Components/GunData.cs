@@ -84,6 +84,7 @@ public class GunData : ScriptableObject {
     public float zoomTime = 0.15f;
     public float zoomedFieldOfView = 15.0f;
     public float zoomMovementModifier = 1.0f;
+    public float zoomLookModifier = 1.0f;
 
     [Header("Recoil")]
     public float momentumRecoil = 0.0f;
