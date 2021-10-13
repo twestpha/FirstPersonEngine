@@ -41,7 +41,9 @@ public class Localizer : MonoBehaviour {
         English,
         Spanish,
         French,
+        Italian,
         German,
+        Russian,
         Japanese,
 
         Count,
@@ -129,5 +131,35 @@ public class Localizer : MonoBehaviour {
         } else {
             return (MISSING_LOCALIZATION + key);
         }
+    }
+
+    //##############################################################################################
+    // Return a localized string for a given key, with arguments passed in, using the format '(0)',
+    // '(1)', etc.
+    // Note that this does NOT localize the arguments, only the key.
+    //##############################################################################################
+    public static string LocalizeWithArgs(string key, string[] args){
+        string rawString = instance.LocalizeInternal(key);
+
+        for(int i = 0, count = args.Length; i < count; ++i){
+            string argToken = "(" + i.ToString() + ")";
+
+            if(rawString.Contains(argToken)){
+                rawString = rawString.Replace(argToken, args[i]);
+            }
+        }
+
+        return rawString;
+    }
+
+    //##############################################################################################
+    // Getter for current language
+    //##############################################################################################
+    public static Language GetCurrentLanguage(){
+        return instance.GetCurrentLanguageInternal();
+    }
+
+    public Language GetCurrentLanguageInternal(){
+        return currentLanguage;
     }
 }
