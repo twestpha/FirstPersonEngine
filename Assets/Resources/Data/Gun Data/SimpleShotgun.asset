@@ -31,6 +31,7 @@ MonoBehaviour:
   zoomTime: 0.15
   zoomedFieldOfView: 15
   zoomMovementModifier: 1
+  zoomLookModifier: 1
   momentumRecoil: 1.5
   aimRecoil: 1.5
   muzzleVelocity: 50
@@ -40,12 +41,8 @@ MonoBehaviour:
   firingEffectsPrefab: {fileID: 5381237789843640210, guid: 8e8b419cca0449744b8099af1bac32f0,
     type: 3}
   firingEffectsOffset: {x: -0.1, y: 0.065, z: 0}
-  fireSound: {fileID: 8300000, guid: 9ce8ae02598843e44b2bd1c34f3dea78, type: 3}
-  fireSoundVolume: 1
-  fireSoundPitchBend: 0
-  reloadSound: {fileID: 8300000, guid: 983660341a200394fa519d2292b22f29, type: 3}
-  reloadSoundVolume: 1
-  reloadSoundPitchBend: 0
+  fireSound: {fileID: 11400000, guid: 181318f761dec4840b3157bbb1a0b390, type: 2}
+  reloadSound: {fileID: 11400000, guid: b2a3adbee89715b4b9a863e5efc3fee2, type: 2}
   usePooledBullets: 0
   poolIdentifier: 
   poolSize: 0

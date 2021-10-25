@@ -26,13 +26,7 @@ using UnityEngine;
 //##################################################################################################
 public class BarkComponent : MonoBehaviour {
 
-    [System.Serializable]
-    public class AudioBark {
-        public AudioClip clip;
-        public float volume;
-    }
-
-    public AudioBark[] barks;
+    public SoundAsset[] barks;
 
     private int previousPickedBark;
 
@@ -53,6 +47,10 @@ public class BarkComponent : MonoBehaviour {
     // result.
     //##############################################################################################
     public void Bark(){
+        if(barks.Length < 1){
+            return;
+        }
+
         int newPickedBark = previousPickedBark;
 
         if(barks.Length != 1){
@@ -65,17 +63,7 @@ public class BarkComponent : MonoBehaviour {
             newPickedBark = 0;
         }
 
-        // Play the sound
-        SoundManagerComponent.PlaySound(
-            barks[newPickedBark].clip,
-            SoundCount.Single,
-            SoundType.ThreeDimensional,
-            SoundPriority.Medium,
-            barks[newPickedBark].volume,
-            0.0f,
-            gameObject
-        );
-
+        SoundManagerComponent.PlaySound(barks[newPickedBark], gameObject);
         previousPickedBark = newPickedBark;
     }
 }

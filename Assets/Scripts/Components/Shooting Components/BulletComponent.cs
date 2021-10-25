@@ -37,8 +37,7 @@ public class BulletComponent : MonoBehaviour {
     public CollisionMode collisionMode;
     public float collisionModeChance = 0.0f;
     public GameObject optionalImpactEffects;
-    public AudioClip impactSound;
-    public float impactSoundVolume = 1.0f;
+    public SoundAsset impactSound;
 
     public GameObject optionalDecalObject;
 
@@ -167,15 +166,7 @@ public class BulletComponent : MonoBehaviour {
 
                 // Play impact sound if needed
                 if(impactSound != null){
-                    SoundManagerComponent.PlaySound(
-                        impactSound,
-                        SoundCount.Single,
-                        SoundType.ThreeDimensional,
-                        SoundPriority.Low,
-                        impactSoundVolume,
-                        0.2f,
-                        gameObject
-                    );
+                    SoundManagerComponent.PlaySound(impactSound, gameObject);
                 }
 
                 if(collisionsRemaining > 0){

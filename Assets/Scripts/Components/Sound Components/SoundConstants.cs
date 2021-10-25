@@ -68,4 +68,8 @@ public class SoundConstants {
     // Doppler Constants
     public const float DOPPLER_ON  = 1.0f;
     public const float DOPPLER_OFF = 0.0f;
+
+    // Spatial Blend Constants
+    public const float SPATIAL_BLEND_TWO_D = 0.0f;
+    public const float SPATIAL_BLEND_THREE_D = 1.0f;
 }

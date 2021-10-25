@@ -213,15 +213,7 @@ public class GunComponent : MonoBehaviour {
 
             // Play firing sound if it exists, outside the loop, so there's only ever one
             if(currentGunData.fireSound != null){
-                SoundManagerComponent.PlaySound(
-                    currentGunData.fireSound,
-                    SoundCount.Single,
-                    SoundType.ThreeDimensional,
-                    SoundPriority.Medium,
-                    currentGunData.fireSoundVolume,
-                    currentGunData.fireSoundPitchBend,
-                    muzzleTransform.gameObject
-                );
+                SoundManagerComponent.PlaySound(currentGunData.fireSound, muzzleTransform.gameObject);
             }
 
             return BULLET_FIRED;
@@ -239,15 +231,7 @@ public class GunComponent : MonoBehaviour {
 
         // Play reloading sound if it exists
         if(currentGunData.reloadSound != null){
-            reloadSoundId = SoundManagerComponent.PlaySound(
-                currentGunData.reloadSound,
-                SoundCount.Single,
-                SoundType.ThreeDimensional,
-                SoundPriority.Medium,
-                currentGunData.reloadSoundVolume,
-                currentGunData.reloadSoundPitchBend,
-                muzzleTransform.gameObject
-            );
+            reloadSoundId = SoundManagerComponent.PlaySound(currentGunData.reloadSound, muzzleTransform.gameObject);
         }
     }
 

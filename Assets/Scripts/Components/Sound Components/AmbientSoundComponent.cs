@@ -28,10 +28,8 @@ public class AmbientSoundComponent : MonoBehaviour {
     // ambient sound
     static public int currentAmbientSoundId = SoundManagerComponent.INVALID_SOUND;
 
-    public float volume = 1.0f;
-
     // This can be set null, for a volume that simply fades out the ambient sound
-    public AudioClip sound;
+    public SoundAsset sound;
 
     public float fadeTime = 1.0f;
 
@@ -59,11 +57,11 @@ public class AmbientSoundComponent : MonoBehaviour {
             float p = fadeTimer.Parameterized();
 
             if(currentAmbientSoundId != SoundManagerComponent.INVALID_SOUND){
-                SoundManagerComponent.SetSoundVolume(currentAmbientSoundId, (1.0f - p) * volume);
+                SoundManagerComponent.SetSoundVolume(currentAmbientSoundId, (1.0f - p));
             }
 
             if(fadingInSoundId != SoundManagerComponent.INVALID_SOUND){
-                SoundManagerComponent.SetSoundVolume(fadingInSoundId, p * volume);
+                SoundManagerComponent.SetSoundVolume(fadingInSoundId, p);
             }
 
             if(fadeTimer.Finished()){
@@ -90,15 +88,7 @@ public class AmbientSoundComponent : MonoBehaviour {
             fading = true;
             fadeTimer.Start();
 
-            fadingInSoundId = SoundManagerComponent.PlaySound(
-                sound,
-                SoundCount.Looping,
-                SoundType.TwoDimensional,
-                SoundPriority.Medium,
-                0.001f,
-                0.0f,
-                gameObject
-            );
+            fadingInSoundId = SoundManagerComponent.PlaySound(sound, gameObject);
         }
     }
 }

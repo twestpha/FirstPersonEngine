@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60c82a14cf8fffa46b331f19a1248295, type: 3}
+  m_Name: sa_simple_bullet_shoot
+  m_EditorClassIdentifier: 
+  _clip: {fileID: 8300000, guid: 9ce8ae02598843e44b2bd1c34f3dea78, type: 3}
+  _volume: 1
+  _pitchBend: 0
+  _features: 3
+  _count: 0
+  _priority: 3

@@ -32,8 +32,7 @@ public class AmmoVolumeComponent : MonoBehaviour {
     public AmmoType ammoType;
     public int pickupAmount;
 
-    public AudioClip ammoPickupSound;
-    public float ammoPickupSoundVolume;
+    public SoundAsset ammoPickupSound;
 
     //##############################################################################################
     // If the colliding object is the player, find matching ammo types and give the gun ammo.
@@ -58,15 +57,7 @@ public class AmmoVolumeComponent : MonoBehaviour {
             }
 
             if(gaveAmmo){
-                SoundManagerComponent.PlaySound(
-                    ammoPickupSound,
-                    SoundCount.Single,
-                    SoundType.ThreeDimensional,
-                    SoundPriority.Medium,
-                    ammoPickupSoundVolume,
-                    0.0f,
-                    gameObject
-                );
+                SoundManagerComponent.PlaySound(ammoPickupSound, gameObject);
 
                 if(destroyOnPickup){
                     Destroy(gameObject);

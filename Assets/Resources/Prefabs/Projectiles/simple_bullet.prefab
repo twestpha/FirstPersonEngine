@@ -53,6 +53,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -102,8 +103,7 @@ MonoBehaviour:
   collisionModeChance: 0
   optionalImpactEffects: {fileID: 7365444008287897743, guid: 72f6235f2668404429286662bf0ec3d9,
     type: 3}
-  impactSound: {fileID: 8300000, guid: 187ed637aa603654ab49f0f65e3cb4df, type: 3}
-  impactSoundVolume: 1
+  impactSound: {fileID: 11400000, guid: 9854a41782e5a6d4698cce60cb63221d, type: 2}
   optionalDecalObject: {fileID: 1090225071650906485, guid: 31b5fd4cfd8f38a4388b3674c412063b,
     type: 3}
 --- !u!114 &-3476637287864309528
@@ -118,12 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fe2efa4b0f2c9244a458645b030dfdb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 1
-  count: 1
-  priority: 1
-  volume: 0.3
-  pitchBend: 0
-  clip: {fileID: 8300000, guid: b61be84fb154de44fa9749a2c372e80a, type: 3}
+  sound: {fileID: 11400000, guid: e81cc47afb145034e839db02c39ff4ee, type: 2}
   playOnStartup: 1
   stopOnDisable: 1
   stopOnDestroy: 1

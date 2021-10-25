@@ -209,6 +209,7 @@ MeshRenderer:
   m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -712,6 +713,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
 --- !u!1 &3689797529565123997
 GameObject:
   m_ObjectHideFlags: 0
@@ -1018,8 +1020,8 @@ MonoBehaviour:
   accelTime: 0.2
   maxWalkSpeed: 10
   respawnTime: 1.5
-  playerHurtBarkComponent: {fileID: 6740197393165697558}
-  playerFootstepBarkComponent: {fileID: 433277578}
+  playerHurtBarkComponent: {fileID: 433277578}
+  playerFootstepBarkComponent: {fileID: 6740197393165697558}
 --- !u!114 &8027614302884669349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1240,12 +1242,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   barks:
-  - clip: {fileID: 8300000, guid: 1546ca37c02164044820c12e23a72014, type: 3}
-    volume: 0.6
-  - clip: {fileID: 8300000, guid: 734383148a92ee14c850a9d64c1370a7, type: 3}
-    volume: 0.6
-  - clip: {fileID: 8300000, guid: 8b05cc05d0a70004eb7b6d7a79a3bef4, type: 3}
-    volume: 0.6
+  - {fileID: 11400000, guid: 53ccaf309a420aa4496c1f1c4667722b, type: 2}
+  - {fileID: 11400000, guid: 5b1cd006f55e48a45ad84fca028d25ec, type: 2}
+  - {fileID: 11400000, guid: 95c0651318642a14497fedf50b727f47, type: 2}
 --- !u!114 &6740197393165697558
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1259,12 +1258,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   barks:
-  - clip: {fileID: 8300000, guid: 12a7baf7b60546049b2b3e69d00100a0, type: 3}
-    volume: 1
-  - clip: {fileID: 8300000, guid: bae01cb48962b7d4496389ec0f320d72, type: 3}
-    volume: 1
-  - clip: {fileID: 8300000, guid: 03532f7c65daf0c4e8f8b23110028d1b, type: 3}
-    volume: 1
+  - {fileID: 11400000, guid: a5edd0c1ddcaee340a30b48b39d0a00a, type: 2}
+  - {fileID: 11400000, guid: 0968b13043dbde34d84241fdde71b8b2, type: 2}
+  - {fileID: 11400000, guid: d098a626653a1f34c8f39d0d6b5c4cd3, type: 2}
 --- !u!1 &5056856965410796791
 GameObject:
   m_ObjectHideFlags: 0

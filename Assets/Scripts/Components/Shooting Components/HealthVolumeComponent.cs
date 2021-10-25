@@ -27,8 +27,7 @@ public class HealthVolumeComponent : MonoBehaviour {
     public bool destroyOnPickup = true;
     public float healAmount;
 
-    public AudioClip healthPickupSound;
-    public float healthPickupSoundVolume;
+    public SoundAsset healthPickupSound;
 
     //##############################################################################################
     // If the colliding object is the player, heal them for the specified amount
@@ -37,15 +36,7 @@ public class HealthVolumeComponent : MonoBehaviour {
     private void OnTriggerEnter(Collider other){
         if(other.tag == "Player"){
             if(other.GetComponent<DamageableComponent>().Heal(healAmount)){
-                SoundManagerComponent.PlaySound(
-                    healthPickupSound,
-                    SoundCount.Single,
-                    SoundType.ThreeDimensional,
-                    SoundPriority.Medium,
-                    healthPickupSoundVolume,
-                    0.0f,
-                    gameObject
-                );
+                SoundManagerComponent.PlaySound(healthPickupSound, gameObject);
 
                 if(destroyOnPickup){
                     Destroy(gameObject);

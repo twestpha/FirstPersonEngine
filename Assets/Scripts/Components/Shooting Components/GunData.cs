@@ -100,13 +100,8 @@ public class GunData : ScriptableObject {
     public Vector3 firingEffectsOffset;
 
     [Header("Sounds")]
-    public AudioClip fireSound;
-    public float fireSoundVolume = 1.0f;
-    public float fireSoundPitchBend = 0.0f;
-
-    public AudioClip reloadSound;
-    public float reloadSoundVolume = 1.0f;
-    public float reloadSoundPitchBend = 0.0f;
+    public SoundAsset fireSound;
+    public SoundAsset reloadSound;
 
     [Header("Meta Characteristics")]
     public bool usePooledBullets;

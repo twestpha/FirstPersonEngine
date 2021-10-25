@@ -24,12 +24,7 @@ using UnityEngine;
 public class SoundComponent : MonoBehaviour {
 
     [HeaderAttribute("Sound Component")]
-    public SoundType type;
-    public SoundCount count;
-    public SoundPriority priority;
-    public float volume;
-    public float pitchBend;
-    public AudioClip clip;
+    public SoundAsset sound;
 
     public bool playOnStartup;
     public bool stopOnDisable;
@@ -51,12 +46,7 @@ public class SoundComponent : MonoBehaviour {
     //##############################################################################################
     public void Play(){
         id = SoundManagerComponent.PlaySound(
-            clip,
-            count,
-            type,
-            priority,
-            volume,
-            pitchBend,
+            sound,
             gameObject
         );
     }
