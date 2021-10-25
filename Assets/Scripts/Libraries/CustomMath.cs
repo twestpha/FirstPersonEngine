@@ -25,10 +25,22 @@ class CustomMath {
     //##############################################################################################
     // Given a current value and a target value (either above or below the current value),
     // return the current value + step change, in the direction towards target
+    // Comes in both float and int flavors
     //##############################################################################################
     public static float StepToTarget(float current, float target, float stepChange){
         float currentToTarget = target - current;
         float sign = currentToTarget > 0.0f ? 1.0f : -1.0f;
+
+        if(Mathf.Abs(currentToTarget) <= stepChange){
+            return target;
+        } else {
+            return current + (sign * stepChange);
+        }
+    }
+
+    public static int StepToTarget(int current, int target, int stepChange){
+        int currentToTarget = target - current;
+        int sign = currentToTarget > 0 ? 1 : -1;
 
         if(Mathf.Abs(currentToTarget) <= stepChange){
             return target;
