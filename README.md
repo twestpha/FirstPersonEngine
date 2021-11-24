@@ -5,7 +5,7 @@ The repository is structured as a Unity project, and there are example levels in
 [![Demo Video](https://i.imgur.com/TxvAlyh.png)](https://www.youtube.com/watch?v=vT7TpG5HoC0 "Demonstration Video - Click to Watch")
 
 # Installation and Setup
-Setup should be minimal. Clone this repo and place it in a folder of your choosing. You will need Unity 2020.1.5f1 or newer.
+Setup should be minimal. Clone this repo and place it in a folder of your choosing. You will need Unity 2021.1.16f1 or newer.
 Then, add the project in Unity Hub, and import the project.
 
 # Current Feature List
