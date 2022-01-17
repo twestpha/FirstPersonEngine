@@ -55,16 +55,7 @@ SubShader {
 					for(int p = 0; p < paletteColorCountInt; p++){
 						float2 palleteUv = float2((p / _PaletteColorCount) + halfPalletePixelWidth, 0.5);
 						float4 paletteColor = tex2D(_Palette, palleteUv);
-
-						// max possible distance = sqrt(3) ~= 1.7, so why is this greater?
 						float colorDistance = FastDistance(col, paletteColor);
-
-						// if(p == 0){
-						// 	// nearestColor = paletteColor;
-						// 	nearestColor.r = colorDistance / 10.0;
-						// 	nearestColor.g = colorDistance / 10.0;
-						// 	nearestColor.b = colorDistance / 10.0;
-						// }
 
 						if(colorDistance <= nearestColorDistance){
 							nearestColorDistance = colorDistance;
