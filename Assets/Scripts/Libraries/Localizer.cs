@@ -101,7 +101,7 @@ public class Localizer : MonoBehaviour {
                     string token = tokens[languageTokenIndex];
 
                     // Replace <br> with \n at this point.
-                    token.Replace("<br>", "\n");
+                    token = token.Replace("<br>", "\n");
 
                     // Save in lookup
                     if(!localizationLookup[(Language)(i)].ContainsKey(key)){
