@@ -3,40 +3,82 @@ Properties {
 	_MainTex ("Base (RGB)", 2D) = "white" {}
     _ResolutionX ("X Resolution", float) = 0.0
     _ResolutionY ("Y Resolution", float) = 0.0
+
+	_PaletteColorCount ("Palette Color Count", float) = 0.0
+	_Palette ("Base (RGB)", 2D) = "white" {}
+
 }
 
 SubShader {
 	Pass {
 		ZTest Always Cull Off ZWrite Off
 
-CGPROGRAM
-#pragma vertex vert_img
-#pragma fragment frag
-#include "UnityCG.cginc"
+		CGPROGRAM
+			#pragma vertex vert_img
+			#pragma fragment frag
+			#include "UnityCG.cginc"
 
-uniform sampler2D _MainTex;
-uniform float _ResolutionX;
-uniform float _ResolutionY;
+			uniform sampler2D _MainTex;
 
-fixed4 frag (v2f_img i) : SV_Target
-{
+			uniform float _ResolutionX;
+			uniform float _ResolutionY;
 
-    float screenPixelX = i.uv.x * floor(_ResolutionX);
-    float screenPixelY = i.uv.y * floor(_ResolutionY);
+			uniform float _PaletteColorCount;
+			uniform sampler2D _Palette;
 
-    screenPixelX = floor(screenPixelX);
-    screenPixelY = floor(screenPixelY);
+			float FastDistance(float4 a, float4 b){
+				float4 d = a - b;
+				return (d.x * d.x) + (d.y * d.y) + (d.z * d.z);
+			}
 
-    screenPixelX = screenPixelX / _ResolutionX;
-    screenPixelY = screenPixelY / _ResolutionY;
+			fixed4 frag (v2f_img i) : SV_Target {
+			    float screenPixelX = i.uv.x * floor(_ResolutionX);
+			    float screenPixelY = i.uv.y * floor(_ResolutionY);
 
-	return tex2D(_MainTex, float2(screenPixelX, screenPixelY));
-}
-ENDCG
+			    screenPixelX = floor(screenPixelX);
+			    screenPixelY = floor(screenPixelY);
 
+			    screenPixelX = screenPixelX / _ResolutionX;
+			    screenPixelY = screenPixelY / _ResolutionY;
+
+				float4 col = tex2D(_MainTex, float2(screenPixelX, screenPixelY));
+
+				if(_PaletteColorCount <= 0){
+					return col;
+				} else {
+					float halfPalletePixelWidth = (1.0 / _PaletteColorCount) / 2.0f;
+					float nearestColorDistance = 999999.0;
+					float4 nearestColor = float4(0.0, 0.0, 0.0, 0.0);
+
+					int paletteColorCountInt = (int)(_PaletteColorCount);
+
+					for(int p = 0; p < paletteColorCountInt; p++){
+						float2 palleteUv = float2((p / _PaletteColorCount) + halfPalletePixelWidth, 0.5);
+						float4 paletteColor = tex2D(_Palette, palleteUv);
+
+						// max possible distance = sqrt(3) ~= 1.7, so why is this greater?
+						float colorDistance = FastDistance(col, paletteColor);
+
+						// if(p == 0){
+						// 	// nearestColor = paletteColor;
+						// 	nearestColor.r = colorDistance / 10.0;
+						// 	nearestColor.g = colorDistance / 10.0;
+						// 	nearestColor.b = colorDistance / 10.0;
+						// }
+
+						if(colorDistance <= nearestColorDistance){
+							nearestColorDistance = colorDistance;
+							nearestColor = paletteColor;
+						}
+					}
+
+					return nearestColor;
+				}
+			}
+		ENDCG
+
+		}
 	}
-}
 
-Fallback off
-
+	Fallback off
 }
