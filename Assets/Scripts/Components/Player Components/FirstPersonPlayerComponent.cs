@@ -43,6 +43,8 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
     public const float SAFE_TIME = 2.0f;
     public const float PLAYER_RESPAWN_HEIGHT_OFFSET = 50.0f;
 
+    public const float SIDE_JUMP_COOLDOWN_TIME = 0.4f;
+
     public const float FOOTSTEP_TIME = 0.4f;
 
     [Header("Camera References")]
@@ -61,6 +63,10 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
     [Header("Movement Settings")]
     public float accelTime = 1.0f;
     public float maxWalkSpeed = 1.0f;
+
+    public bool jumpingEnabled;
+    public float jumpVelocity = 1.0f;
+    public float jumpTime = 1.0f;
 
     private bool movementEnabled;
     private Vector3 velocity;
@@ -98,6 +104,9 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
     private Timer recoilDecayTimer;
     private float recoilAmount;
 
+    private Timer jumpTimer;
+    private Timer sideJumpCooldownTimer;
+
     private float footstepTimeRemaining = FOOTSTEP_TIME;
 
     //##############################################################################################
@@ -128,6 +137,8 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
         shakeDecayTimer = new Timer(SHAKE_DECAY_TIME);
         safeTimer = new Timer(SAFE_TIME);
         recoilDecayTimer = new Timer();
+        jumpTimer = new Timer(jumpTime);
+        sideJumpCooldownTimer = new Timer(SIDE_JUMP_COOLDOWN_TIME);
 	}
 
     //##############################################################################################
@@ -357,8 +368,30 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
         float maxSpeed = maxWalkSpeed;
         movementVector *= maxSpeed;
 
-        // Smoothdamp towards max walk speed
+        // Smoothdamp towards max walk speed without changing vertical velocities (ignore damping gravity and jumping)
+        float previousYVelocity = velocity.y;
         velocity = Vector3.SmoothDamp(velocity, movementVector, ref accel, accelTime);
+        velocity.y = previousYVelocity;
+
+        // Add jump velocity when space is pressed and grounded
+        // Apply jump until space is released or timer expires
+        if(jumpingEnabled && Input.GetKey(KeyCode.Space)){
+            if(character.isGrounded /*|| (character.collisionFlags == CollisionFlags.Sides && sideJumpCooldownTimer.Finished())*/){ // This allows wall-jumping after a short time after the previous jump. Might be too intense for this game?
+                jumpTimer.Start();
+
+                if(character.collisionFlags == CollisionFlags.Sides){
+                    sideJumpCooldownTimer.Start();
+                }
+            }
+
+            if(!jumpTimer.Finished()){
+                velocity.y = jumpVelocity;
+            }
+        }
+
+        if(character.isGrounded){
+            sideJumpCooldownTimer.SetParameterized(1.0f);
+        }
 
         float totalModifier = 1.0f;
 
@@ -372,7 +405,7 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
         }
 
         if(!Dead()){
-            character.SimpleMove(velocity * totalModifier);
+            character.Move(velocity * totalModifier * Time.deltaTime);
 
             if(character.isGrounded && playerFootstepBarkComponent != null){
                 float footstepMultiplier = velocity.magnitude / maxWalkSpeed;
@@ -383,6 +416,12 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
                     footstepTimeRemaining = FOOTSTEP_TIME;
                 }
             }
+        }
+
+        if(character.isGrounded){
+            velocity.y = -1.0f;
+        } else {
+            velocity.y += Physics.gravity.y * Time.deltaTime;
         }
     }
 
