@@ -39,7 +39,7 @@ public class SpawnPrefabsOnDeathComponent : MonoBehaviour {
     public DeathSpawnPrefab[] prefabsToSpawnOnDeath;
 
     private void Start(){
-        GetComponent<DamageableComponent>().RegisterOnKilledDelegate(Killed);
+        GetComponent<DamageableComponent>().killedDelegates.Register(Killed);
     }
 
     private void Killed(DamageableComponent damage){

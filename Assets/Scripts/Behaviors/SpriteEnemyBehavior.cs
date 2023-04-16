@@ -57,8 +57,8 @@ public class SpriteEnemyBehavior : EnemyBehavior {
         materialAnimation = GetComponent<MaterialAnimationComponent>();
 
         if(damage != null){
-            damage.RegisterOnDamagedDelegate(Damaged);
-            damage.RegisterOnKilledDelegate(Killed);
+            damage.damagedDelegates.Register(Damaged);
+            damage.killedDelegates.Register(Killed);
         }
     }
 

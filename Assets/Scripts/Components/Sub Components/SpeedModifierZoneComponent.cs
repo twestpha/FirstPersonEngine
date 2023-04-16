@@ -33,7 +33,7 @@ public class SpeedModifierZoneComponent : MonoBehaviour {
 
     void Start(){
         DamageableComponent playerDamageable = FirstPersonPlayerComponent.player.GetComponent<DamageableComponent>();
-        playerDamageable.RegisterOnKilledDelegate(PlayerKilled);
+        playerDamageable.killedDelegates.Register(PlayerKilled);
     }
 
     void OnTriggerEnter(Collider other){

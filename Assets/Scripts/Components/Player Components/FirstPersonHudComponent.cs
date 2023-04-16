@@ -61,9 +61,9 @@ public class FirstPersonHudComponent : MonoBehaviour {
         damageFlashTimer = new Timer(damageFlashTime);
 
         playerDamageable = GetComponent<DamageableComponent>();
-        playerDamageable.RegisterOnDamagedDelegate(OnDamaged);
-        playerDamageable.RegisterOnHealedDelegate(OnHealed);
-        playerDamageable.RegisterOnRespawnedDelegate(OnRespawned);
+        playerDamageable.damagedDelegates.Register(OnDamaged);
+        playerDamageable.healedDelegates.Register(OnHealed);
+        playerDamageable.respawnedDelegates.Register(OnRespawned);
 
         healthText.text = playerDamageable.CurrentHealth().ToString();
     }

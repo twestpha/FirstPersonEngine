@@ -71,10 +71,10 @@ public class DamageableComponent : MonoBehaviour {
     public delegate void OnDamageableHealed(DamageableComponent damage);
     public delegate void OnDamageableRespawned(DamageableComponent damage);
 
-    private List<OnDamageableDamaged> damagedDelegates;
-    private List<OnDamageableKilled> killedDelegates;
-    private List<OnDamageableHealed> healedDelegates;
-    private List<OnDamageableRespawned> respawnedDelegates;
+    public DelegateList<OnDamageableDamaged> damagedDelegates = new DelegateList<OnDamageableDamaged>();
+    public DelegateList<OnDamageableKilled> killedDelegates = new DelegateList<OnDamageableKilled>();
+    public DelegateList<OnDamageableHealed> healedDelegates = new DelegateList<OnDamageableHealed>();
+    public DelegateList<OnDamageableRespawned> respawnedDelegates = new DelegateList<OnDamageableRespawned>();
 
     private Vector3 damagerOrigin;
     private GameObject damager;
@@ -136,10 +136,10 @@ public class DamageableComponent : MonoBehaviour {
         damagerOrigin = position;
         damager = damager_;
 
-        NotifyDamagedDelegates();
+        damagedDelegates.Invoke(this);
 
         if(currentHealth <= 0){
-            NotifyKilledDelegates();
+            killedDelegates.Invoke(this);
         }
     }
 
@@ -152,83 +152,12 @@ public class DamageableComponent : MonoBehaviour {
             currentHealth += amount;
             currentHealth = Mathf.Min(currentHealth, maxHealth);
 
-            NotifyHealedDelegates();
+            healedDelegates.Invoke(this);
 
             return true;
         }
 
         return false;
-    }
-
-    //##############################################################################################
-    // Iterate the delegates and call them
-    //##############################################################################################
-    public void NotifyDamagedDelegates(){
-        if(damagedDelegates != null){
-            foreach(OnDamageableDamaged damageDelegate in damagedDelegates){
-                damageDelegate(this);
-            }
-        }
-    }
-
-    public void NotifyKilledDelegates(){
-        if(killedDelegates != null){
-            foreach(OnDamageableKilled killedDelegate in killedDelegates){
-                killedDelegate(this);
-            }
-        }
-    }
-
-    public void NotifyHealedDelegates(){
-        if(healedDelegates != null){
-            foreach(OnDamageableHealed healedDelegate in healedDelegates){
-                healedDelegate(this);
-            }
-        }
-    }
-
-    public void NotifyRespawnedDelegates(){
-        if(respawnedDelegates != null){
-            foreach(OnDamageableRespawned respawnedDelegate in respawnedDelegates){
-                respawnedDelegate(this);
-            }
-        }
-    }
-
-    //##############################################################################################
-    // The endpoint for external scripts to register a delegate that gets called when this
-    // damageable is damaged, killed, healed, or respawned
-    //##############################################################################################
-    public void RegisterOnDamagedDelegate(OnDamageableDamaged d){
-        if(damagedDelegates == null){
-            damagedDelegates = new List<OnDamageableDamaged>();
-        }
-
-        damagedDelegates.Add(d);
-    }
-
-    public void RegisterOnKilledDelegate(OnDamageableKilled d){
-        if(killedDelegates == null){
-            killedDelegates = new List<OnDamageableKilled>();
-        }
-
-        killedDelegates.Add(d);
-    }
-
-    public void RegisterOnHealedDelegate(OnDamageableHealed d){
-        if(healedDelegates == null){
-            healedDelegates = new List<OnDamageableHealed>();
-        }
-
-        healedDelegates.Add(d);
-    }
-
-    public void RegisterOnRespawnedDelegate(OnDamageableRespawned d){
-        if(respawnedDelegates == null){
-            respawnedDelegates = new List<OnDamageableRespawned>();
-        }
-
-        respawnedDelegates.Add(d);
     }
 
     //##############################################################################################
@@ -266,7 +195,7 @@ public class DamageableComponent : MonoBehaviour {
 
     public void Respawn(){
         currentHealth = maxHealth;
-        NotifyRespawnedDelegates();
+        respawnedDelegates.Invoke(this);
     }
 
     public GameObject GetDamager(){

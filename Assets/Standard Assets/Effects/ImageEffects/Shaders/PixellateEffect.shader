@@ -18,7 +18,8 @@ SubShader {
 			#pragma fragment frag
 			#include "UnityCG.cginc"
 
-			uniform sampler2D _MainTex;
+			Texture2D _MainTex;
+			SamplerState _MainTex_Point_Repeat_Sampler;
 
 			uniform float _ResolutionX;
 			uniform float _ResolutionY;
@@ -41,7 +42,7 @@ SubShader {
 			    screenPixelX = screenPixelX / _ResolutionX;
 			    screenPixelY = screenPixelY / _ResolutionY;
 
-				float4 col = tex2D(_MainTex, float2(screenPixelX, screenPixelY));
+				float4 col = _MainTex.Sample(_MainTex_Point_Repeat_Sampler, float2(screenPixelX, screenPixelY));
 
 				if(_PaletteColorCount <= 0){
 					return col;

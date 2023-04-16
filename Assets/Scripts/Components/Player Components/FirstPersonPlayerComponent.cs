@@ -130,8 +130,8 @@ public class FirstPersonPlayerComponent : MonoBehaviour {
         character = GetComponent<CharacterController>();
         damage = GetComponent<DamageableComponent>();
 
-        damage.RegisterOnDamagedDelegate(OnDamaged);
-        damage.RegisterOnKilledDelegate(OnKilled);
+        damage.damagedDelegates.Register(OnDamaged);
+        damage.killedDelegates.Register(OnKilled);
 
         respawnTimer = new Timer(respawnTime);
         shakeDecayTimer = new Timer(SHAKE_DECAY_TIME);

@@ -65,7 +65,7 @@ public class BulletComponent : MonoBehaviour {
         // If the bullet has a damageable on it, register to get onKilled notifications
         // This if for things like rockets that can be shot and destroyed mid-air
         if(TryGetComponent(out DamageableComponent damageable)){
-            damageable.RegisterOnKilledDelegate(OnBulletKilled);
+            damageable.killedDelegates.Register(OnBulletKilled);
         }
     }
 

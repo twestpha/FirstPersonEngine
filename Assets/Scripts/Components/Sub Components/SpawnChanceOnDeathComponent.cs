@@ -40,7 +40,7 @@ public class SpawnChanceOnDeathComponent : MonoBehaviour {
     public ChanceSpawnable[] spawnables;
 
     private void Start(){
-        GetComponent<DamageableComponent>().RegisterOnKilledDelegate(Killed);
+        GetComponent<DamageableComponent>().killedDelegates.Register(Killed);
 
         #if UNITY_EDITOR
             float totalChance = 0.0f;
