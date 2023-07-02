@@ -18,8 +18,7 @@ using System;
 using System.Collections.Generic;
 
 //##################################################################################################
-// Delegate List
-// An interface
+//
 //##################################################################################################
 public class DelegateList<T> where T : Delegate {
 
